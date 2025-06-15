@@ -109,6 +109,11 @@ const formatJsonStructure = (structure: any) => {
   border: none;
 }
 
+.main-card:hover {
+  transition: all 0.3s ease;
+  transform: translateY(-4px);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
