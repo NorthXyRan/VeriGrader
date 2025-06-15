@@ -110,7 +110,7 @@ const currentReferenceAnswer = computed(() => {
   const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
 
   if (!referenceAnswer) {
-    return 'There is no answer available. Please check if you have uploaded the reference answer.'  
+    return 'There is no answer available. Please check if you have uploaded the reference answer.'
   }
   
   return referenceAnswer.answer
