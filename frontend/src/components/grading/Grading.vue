@@ -25,6 +25,7 @@
         class="grading-card action-card hover"
         :disabled="!examDataStore.isDataComplete"
         @start-grading="startGrading"
+        @batch-grading="startBatchGrading"
       />
     </div>
     <!-- 第二行：预览 + 参考答案 + 反馈 (4:3:3) -->
@@ -285,6 +286,133 @@ const startGrading = async () => {
       actionSectionRef.value.resetGradingState()
     }
   }
+}
+
+// 批量给分
+const startBatchGrading = async (batchCount: number) => {
+  if (!examDataStore.isDataComplete) {
+    ElMessage.warning('Please complete all data uploads first')
+    return
+  }
+
+  try {
+    ElMessage.info(`Starting batch grading for ${batchCount} randomly selected papers...`)
+
+    // 设置批量给分状态
+    if (actionSectionRef.value) {
+      actionSectionRef.value.setBatchGradingState(true)
+    }
+
+    // 导入给分服务
+    const { gradeSingleStudentAnswer, checkGradingServiceStatus } = await import('../../services/llm/grading/gradingLLMService')
+    
+    // 检查服务状态
+    const serviceStatus = checkGradingServiceStatus()
+    if (!serviceStatus.available) {
+      ElMessage.warning(serviceStatus.message)
+      return
+    }
+
+    // 获取当前题目信息
+    const question = examDataStore.getQuestionById(currentQuestionId.value)
+    const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
+
+    if (!question || !referenceAnswer) {
+      throw new Error(`Current question or reference answer not found`)
+    }
+
+    // 获取所有学生ID并随机选择
+    const allStudentIds = examDataStore.studentList.map(student => student.id)
+    const selectedStudentIds = getRandomStudents(allStudentIds, batchCount)
+
+    console.log('Batch grading info:', {
+      totalStudents: allStudentIds.length,
+      selectedCount: selectedStudentIds.length,
+      selectedIds: selectedStudentIds,
+      questionId: currentQuestionId.value
+    })
+
+    // 逐个批改学生答案
+    let successCount = 0
+    let errorCount = 0
+
+    for (let i = 0; i < selectedStudentIds.length; i++) {
+      const studentId = selectedStudentIds[i]
+      
+      try {
+        // 检查是否已经批改过
+        const existingResult = examDataStore.getHighlightData(studentId, currentQuestionId.value)
+        if (existingResult) {
+          console.log(`Student ${studentId} already graded, re-grading...`)
+        }
+
+        // 获取学生答案
+        const studentAnswer = examDataStore.getStudentAnswer(studentId, currentQuestionId.value)
+        if (!studentAnswer) {
+          console.warn(`Student ${studentId} answer not found, skipping...`)
+          continue
+        }
+
+        ElMessage.info(`Grading student ${studentId} (${i + 1}/${selectedStudentIds.length})...`)
+
+        // 调用单个学生给分服务
+        const gradingResult = await gradeSingleStudentAnswer({
+          question,
+          referenceAnswer,
+          studentAnswer
+        })
+
+        if (gradingResult.success && gradingResult.data && gradingResult.data.length > 0) {
+          // 添加到store
+          examDataStore.addHighlightData(gradingResult.data[0])
+          successCount++
+          
+          console.log(`✅ Student ${studentId} graded successfully: ${gradingResult.data[0].total_score} points`)
+        } else {
+          throw new Error(gradingResult.error || 'Grading result is empty')
+        }
+
+        // 添加延迟避免API限流
+        if (i < selectedStudentIds.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+
+      } catch (error) {
+        console.error(`❌ Failed to grade student ${studentId}:`, error)
+        errorCount++
+      }
+    }
+
+    // 保存到本地存储
+    examDataStore.saveToLocal()
+
+    // 显示批量给分结果
+    if (successCount > 0) {
+      ElMessage.success(`Batch grading completed! ${successCount} papers graded successfully${errorCount > 0 ? `, ${errorCount} failed` : ''}`)
+    } else {
+      ElMessage.error(`Batch grading failed! ${errorCount} papers failed`)
+    }
+
+    // 重置ActionSection状态
+    if (actionSectionRef.value) {
+      actionSectionRef.value.resetBatchGradingState()
+    }
+
+  } catch (error) {
+    console.error('❌ Batch grading failed:', error)
+    ElMessage.error(`Batch grading failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+
+    // 重置状态
+    if (actionSectionRef.value) {
+      actionSectionRef.value.resetBatchGradingState()
+    }
+  }
+}
+
+// 随机选择学生
+const getRandomStudents = (studentIds: number[], count: number): number[] => {
+  const shuffled = [...studentIds].sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, Math.min(count, studentIds.length))
 }
 
 const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {

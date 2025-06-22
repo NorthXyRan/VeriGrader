@@ -19,9 +19,11 @@
               type="success"
               size="default"
               @click="showBatchDialog"
+              :loading="isBatchGrading"
+              :disabled="isBatchGrading"
             >
-              <el-icon><Operation /></el-icon>
-              Batch
+              <el-icon v-if="!isBatchGrading"><Operation /></el-icon>
+              {{ isBatchGrading ? 'Batch Grading...' : 'Batch' }}
             </el-button>
           </el-button-group>
         </div>
@@ -76,8 +78,9 @@ const examStore = useExamDataStore()
 
 // 状态
 const isGrading = ref(false)
+const isBatchGrading = ref(false)
 const batchDialogVisible = ref(false)
-const batchPercent = ref(75)
+const batchPercent = ref(20)
 
 // 计算当前百分比对应的试卷数量
 const currentPaperCount = computed(() => {
@@ -87,7 +90,7 @@ const currentPaperCount = computed(() => {
 
 const emits = defineEmits<{
   (e: 'startGrading'): void
-  (e: 'batchGrading'): void
+  (e: 'batchGrading', batchCount: number): void
 }>()
 
 
@@ -104,7 +107,7 @@ const showBatchDialog = () => {
 // 批量批改 - 关闭弹窗并触发事件
 const handleBatchGrading = () => {
   batchDialogVisible.value = false
-  emits('batchGrading')
+  emits('batchGrading', currentPaperCount.value)
 }
 
 // 重置状态
@@ -112,8 +115,18 @@ const resetGradingState = () => {
   isGrading.value = false
 }
 
+const resetBatchGradingState = () => {
+  isBatchGrading.value = false
+}
+
+const setBatchGradingState = (state: boolean) => {
+  isBatchGrading.value = state
+}
+
 defineExpose({
   resetGradingState,
+  resetBatchGradingState,
+  setBatchGradingState,
 })
 </script>
 
