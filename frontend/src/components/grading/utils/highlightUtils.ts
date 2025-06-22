@@ -194,7 +194,20 @@ export function parseHighlightElement(element: HTMLElement): {
   const type = element.getAttribute('data-type') as HighlightType
   const text = element.getAttribute('data-text') || ''
   const reason = element.getAttribute('data-reason') || ''
-  const scoringPoint = parseInt(element.getAttribute('data-scoring-point') || '0')
+  const scoringPointStr = element.getAttribute('data-scoring-point') || '0'
+  const scoringPoint = parseInt(scoringPointStr) || 0
+  
+  // 调试信息
+  console.log('解析高亮元素:', {
+    element: element,
+    scoringPointStr: scoringPointStr,
+    scoringPoint: scoringPoint,
+    attributes: {
+      'data-scoring-point': element.getAttribute('data-scoring-point'),
+      'data-type': element.getAttribute('data-type'),
+      'data-text': element.getAttribute('data-text')
+    }
+  })
 
   return {
     type,

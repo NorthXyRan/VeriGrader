@@ -16,6 +16,7 @@
         />
         <!-- 显示模式 -->
         <div v-else class="reason-display">
+                    
           <div class="reason-content-text">
             {{ displayReason }}
           </div>
@@ -55,6 +56,7 @@ interface HighlightClickData {
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason?: string
+  scoringPoint?: number
 }
 
 // 内部选中高亮的数据结构
@@ -65,17 +67,12 @@ interface SelectedHighlight {
   scoringPoint?: number
 }
 
-// Props 接口
-interface Props {
-  // 移除原来的 selectedHighlight prop，改为监听事件
-}
-
-const props = defineProps<Props>()
+// 无需Props
 
 // 事件定义 - 只保留必要的
 const emits = defineEmits<{
   (e: 'modifyReason', data: any): void
-  (e: 'saveReason', data: any): void  
+  (e: 'saveReason', data: any): void
   (e: 'submitReason', data: any): void
 }>()
 
@@ -109,41 +106,24 @@ const displayReason = computed(() => {
 
 // 处理高亮点击事件
 const handleHighlightClicked = (data: HighlightClickData) => {
-  const typeMapping = {
-    'unclear': 'unclear' as const,
-    'redundant': 'redundant' as const,
-    'correct': 'correct' as const,
-    'wrong': 'wrong' as const
-  }
-
   selectedHighlight.value = {
     text: data.text,
-    type: typeMapping[data.type as keyof typeof typeMapping],
-    reason: data.reason
+    type: data.type,
+    reason: data.reason,
+    scoringPoint: data.scoringPoint
   }
   
   ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
 }
 
 // 处理标记答案事件
-const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' } | string) => {
-  let markData: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }
-  
-  if (typeof data === 'string') {
-    const selection = window.getSelection()
-    const selectedText = selection?.toString().trim() || ''
-    markData = { text: selectedText, type: data as 'correct' | 'wrong' | 'unclear' | 'redundant' }
-  } else {
-    markData = data
-  }
-
-
+const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }) => {
   selectedHighlight.value = {
-    text: markData.text,
-    type: markData.type
+    text: data.text,
+    type: data.type
   }
 
-  ElMessage.success(`已标记为"${markData.type}"：${markData.text.substring(0, 20)}...`)
+  ElMessage.success(`已标记为"${data.type}"：${data.text.substring(0, 20)}...`)
 }
 
 // 监听选中的高亮变化
@@ -158,29 +138,16 @@ watch(() => selectedHighlight.value, (newHighlight) => {
       reason: newHighlight.reason,
       scoringPoint: newHighlight.scoringPoint
     })
+    
+    // 打印scoringPoint的具体值用于调试
+    console.log('Scoring Point 值为:', newHighlight.scoringPoint, '类型:', typeof newHighlight.scoringPoint)
   } else {
     editableReason.value = ''
     isEditing.value = false
   }
 }, { immediate: true })
 
-// 类型映射配置
-const TYPE_CONFIG = {
-  correct: { tag: 'success', label: '正确', description: '该部分回答正确' },
-  wrong: { tag: 'danger', label: '错误', description: '该部分回答有误' },
-  unclear: { tag: 'warning', label: '模糊', description: '该部分回答不够清晰' },
-  redundant: { tag: 'info', label: '冗余', description: '该部分内容冗余' }
-} as const
-
-// 获取标签类型
-const getTagType = (type: string) => {
-  return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.tag || 'default'
-}
-
-// 获取类型标签
-const getTypeLabel = (type: string) => {
-  return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.label || type
-}
+// 删除不需要的类型配置，简化代码
 
 // 修改理由
 const modifyReason = () => {
@@ -226,16 +193,6 @@ const submitReason = () => {
 
 // 暴露方法给父组件
 defineExpose({
-  setReason: (text: string) => {
-    editableReason.value = text
-  },
-  clearReason: () => {
-    editableReason.value = ''
-  },
-  startEditing: () => {
-    isEditing.value = true
-  },
-  // 新增：暴露事件处理方法给父组件调用
   handleHighlightClicked,
   handleMarkAnswer
 })

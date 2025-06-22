@@ -3,66 +3,121 @@
     <div class="action-group">
       <div class="action-item">
         <div class="action-buttons">
-          <el-button
-            type="primary"
-            size="default"
-            @click="handleStartGrading"
-            :loading="isGrading"
-            :disabled="isGrading"
-          >
-            <el-icon v-if="!isGrading"><VideoPlay /></el-icon>
-            {{ isGrading ? 'Grading...' : 'Start Grading' }}
-          </el-button>
-
-          <!-- TODO: 后续可以在这里添加其他评分相关功能按钮 -->
-          <!-- 建议的功能按钮：
-               1. 重新评分按钮 - 重新运行AI评分
-               2. 导出结果按钮 - 导出当前评分结果
-               3. 查看统计按钮 - 显示评分统计信息
-               4. 批量操作按钮 - 批量确认/修改评分
-               5. 设置按钮 - AI评分参数配置
-          -->
+          <el-button-group>
+            <el-button
+              type="primary"
+              size="default"
+              @click="handleStartGrading"
+              :loading="isGrading"
+              :disabled="isGrading"
+            >
+              <el-icon v-if="!isGrading"><VideoPlay /></el-icon>
+              {{ isGrading ? 'Grading...' : 'One' }}
+            </el-button>
+            
+            <el-button
+              type="success"
+              size="default"
+              @click="showBatchDialog"
+            >
+              <el-icon><Operation /></el-icon>
+              Batch
+            </el-button>
+          </el-button-group>
         </div>
       </div>
     </div>
+
+    <!-- 批量批改弹窗 -->
+    <el-dialog
+      v-model="batchDialogVisible"
+      title="Batch Grading"
+      width="400px"
+      :modal="true"
+      :append-to-body="true"
+      :destroy-on-close="false"
+    >
+      <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px; font-weight: 500;">
+            Batch Percentage: {{ batchPercent }}%
+          </label>
+          <el-slider
+            v-model="batchPercent"
+            :min="0"
+            :max="100"
+            :step="1"
+          />
+          <div style="margin-top: 8px; text-align: center; color: #666; font-size: 14px;">
+            {{ currentPaperCount }} of {{ examStore.studentCount }} papers will be graded
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button
+          type="success"
+          size="default"
+          @click="handleBatchGrading"
+        >
+          Start Batch
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { VideoPlay } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { VideoPlay, Operation } from '@element-plus/icons-vue'
+import { ref, computed } from 'vue'
+import { useExamDataStore } from '@/stores/useExamDataStore'
 
-// 添加 loading 状态
+const examStore = useExamDataStore()
+
+// 状态
 const isGrading = ref(false)
+const batchDialogVisible = ref(false)
+const batchPercent = ref(75)
+
+// 计算当前百分比对应的试卷数量
+const currentPaperCount = computed(() => {
+  const totalCount = examStore.studentCount
+  return Math.ceil((totalCount * batchPercent.value) / 100)
+})
 
 const emits = defineEmits<{
   (e: 'startGrading'): void
-  // TODO: 后续可能需要的事件
-  // (e: 'reGrading'): void              // 重新评分
-  // (e: 'exportResults'): void          // 导出结果
-  // (e: 'viewStatistics'): void         // 查看统计
-  // (e: 'batchConfirm'): void           // 批量确认评分
-  // (e: 'openSettings'): void           // 打开评分设置
+  (e: 'batchGrading'): void
 }>()
+
 
 const handleStartGrading = () => {
   isGrading.value = true
   emits('startGrading')
 }
 
-// 重置评分状态的方法
+// Batch按钮 - 显示弹窗
+const showBatchDialog = () => {
+  batchDialogVisible.value = true
+}
+
+// 批量批改 - 关闭弹窗并触发事件
+const handleBatchGrading = () => {
+  batchDialogVisible.value = false
+  emits('batchGrading')
+}
+
+// 重置状态
 const resetGradingState = () => {
   isGrading.value = false
 }
 
-// 暴露方法给父组件调用
 defineExpose({
   resetGradingState,
 })
 </script>
 
 <style scoped>
-/* === 操作区域：适配父组件的卡片容器 === */
 .action-section {
   display: flex;
   width: 100%;
@@ -94,22 +149,46 @@ defineExpose({
 .action-buttons {
   display: flex;
   flex-direction: row;
-  gap: 6px; /* 按钮之间的间距 */
+  gap: 6px;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 40px; /* 确保容器有足够高度 */
+  min-height: 40px;
 }
 
-/* === 按钮样式适配 === */
-.action-section :deep(.el-button) {
+/* 按钮组样式 */
+.action-section :deep(.el-button-group) {
+  display: flex;
   border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-section :deep(.el-button-group .el-button) {
+  border-radius: 0;
+  margin: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-section :deep(.el-button-group .el-button:first-child) {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.action-section :deep(.el-button-group .el-button:last-child) {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-right: none;
+}
+
+/* 按钮样式 */
+.action-section :deep(.el-button) {
   font-weight: 500;
-  padding: 10px;
+  padding: 10px 16px;
   transition: all 0.2s ease;
   white-space: nowrap;
-  min-width: 120px; /* 设置最小宽度，保证按钮一致性 */
-  height: 40px; /* 固定高度 */
+  min-width: 120px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,8 +203,6 @@ defineExpose({
 .action-section :deep(.el-button--primary:hover:not(.is-disabled)) {
   background: #0056b3;
   border-color: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 .action-section :deep(.el-button--success) {
@@ -137,8 +214,6 @@ defineExpose({
 .action-section :deep(.el-button--success:hover:not(.is-disabled)) {
   background: #3ac85a;
   border-color: #3ac85a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(76, 217, 100, 0.3);
 }
 
 .action-section :deep(.el-button:disabled) {
@@ -147,37 +222,12 @@ defineExpose({
   box-shadow: none !important;
 }
 
-/* === 图标样式 === */
 .action-section :deep(.el-button .el-icon) {
   margin-right: 6px;
   font-size: 14px;
 }
 
-/* === 下拉菜单样式 === */
-.action-section :deep(.el-dropdown) {
-  display: inline-block;
-}
-
-.action-section :deep(.el-dropdown-menu) {
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.action-section :deep(.el-dropdown-menu__item) {
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #374151;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.action-section :deep(.el-dropdown-menu__item:hover) {
-  background-color: #f3f4f6;
-  color: #4cd964;
-}
-
-/* === 响应式设计：中等屏幕 === */
+/* 响应式设计 */
 @media (max-width: 768px) {
   .action-group {
     padding: 12px 16px;
@@ -187,21 +237,39 @@ defineExpose({
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    align-items: stretch; /* 让按钮在垂直布局时拉伸到相同宽度 */
+    align-items: stretch;
   }
 
-  .action-section :deep(.el-button) {
-    width: 100%;
-    min-width: unset;
-    max-width: 260px; /* 限制最大宽度 */
-    justify-content: center;
-    margin: 0 auto; /* 居中对齐 */
-  }
-
-  .action-section :deep(.el-dropdown) {
+  .action-section :deep(.el-button-group) {
+    flex-direction: column;
     width: 100%;
     max-width: 260px;
     margin: 0 auto;
+  }
+
+  .action-section :deep(.el-button-group .el-button) {
+    width: 100%;
+    border-radius: 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .action-section :deep(.el-button-group .el-button:first-child) {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0;
+  }
+
+  .action-section :deep(.el-button-group .el-button:last-child) {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom: none;
+  }
+
+  .action-section :deep(.el-button) {
+    min-width: unset;
+    justify-content: center;
   }
 }
 </style>

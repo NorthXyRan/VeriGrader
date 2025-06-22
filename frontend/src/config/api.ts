@@ -18,7 +18,7 @@ export const API_CONFIG = {
 
     //  批改配置
     GRADING: {
-      MODEL: 'gpt-o3-mini',
+      MODEL: 'o3-mini',
       MAX_TOKENS: 12800,
       TEMPERATURE: 0.3,
     },
