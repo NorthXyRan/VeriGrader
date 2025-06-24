@@ -87,12 +87,24 @@ import ScoringSection from './ScoringSection.vue'
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 
-// 导入选择工具
-import { selectStudents, validateSelection, getSelectionStats } from './utils/selectionUtils'
+// 导入业务逻辑 Composable
+import { useGradingBusiness } from '../../composables/useGradingBusiness'
+import { useHighlightDataOperations } from '../../composables/useHighlightDataOperations'
 
 // 使用分离的 Store
 const examDataStore = useExamDataStore()
 const uploadStatusStore = useUploadStatusStore()
+
+// 使用业务逻辑 Composable
+const { 
+  executeSingleGrading,
+  executeBatchGrading,
+  generateReasonWithFeedback,
+  saveReasonDirectly
+} = useGradingBusiness()
+
+// 使用高亮数据操作 Composable
+const { executeHighlightOperation } = useHighlightDataOperations()
 
 /**
  * ===== UI 状态管理 =====
@@ -159,164 +171,7 @@ const actionSectionRef = ref()
 /**
  * ===== 辅助函数 =====
  */
-
-// 生成理由并保存（带实时反馈）
-const generateAndSaveReason = async (text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', scoringPoint: number) => {
-  // 更新反馈面板的辅助函数
-  const updateFeedback = (reason: string) => {
-    const updateData = {
-      text: text,
-      type: type,
-      reason: reason,
-      scoringPoint: scoringPoint
-    }
-    feedbackPanelRef.value?.handleHighlightClicked(updateData)
-  }
-  let reasonGenerated = false
-  let finalReason = ''
-  
-  try {
-    const { generateReasonForHighlight, checkReasonGenerationServiceStatus } = await import('../../services/llm/grading/reasonGenerationService')
-    
-    const serviceStatus = checkReasonGenerationServiceStatus()
-    if (!serviceStatus.available) {
-      ElMessage.error('LLM服务不可用，无法生成理由')
-      return
-    }
-    
-    const question = examDataStore.getQuestionById(currentQuestionId.value)
-    const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-    const studentAnswer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
-    
-    if (!question || !referenceAnswer || !studentAnswer) {
-      ElMessage.error('缺少必要的上下文数据，无法生成理由')
-      return
-    }
-    
-    // 调用理由生成服务（支持重试）
-    // 创建自定义的重试逻辑，带实时反馈
-    let reasonResult = null
-    const maxRetries = 3
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      if (attempt > 1) {
-        updateFeedback(`理由生成重试中... (第${attempt}/${maxRetries}次尝试)`)
-        await new Promise(resolve => setTimeout(resolve, 1000)) // 等待1秒
-      }
-      
-      try {
-        reasonResult = await generateReasonForHighlight({
-          question,
-          referenceAnswer,
-          studentAnswer,
-          highlightedText: text,
-          highlightType: type
-        }, 1) // 单次尝试
-        
-        if (reasonResult.success && reasonResult.reason && reasonResult.reason.trim()) {
-          break // 成功了就跳出循环
-        }
-      } catch (error) {
-        console.warn(`第${attempt}次尝试失败:`, error)
-        if (attempt === maxRetries) {
-          reasonResult = {
-            success: false,
-            error: error instanceof Error ? error.message : '未知错误'
-          }
-        }
-      }
-    }
-    
-    if (reasonResult && reasonResult.success && reasonResult.reason && reasonResult.reason.trim()) {
-      finalReason = reasonResult.reason.trim()
-      reasonGenerated = true
-      console.log('LLM生成的理由:', finalReason)
-      ElMessage.success('理由生成成功')
-    } else {
-      // 在反馈面板显示失败信息
-      updateFeedback(`理由生成失败: ${reasonResult?.error || '未知错误'}。请重新尝试标注。`)
-      return
-    }
-  } catch (error) {
-    // 在反馈面板显示错误信息
-    updateFeedback(`理由生成出错: ${error instanceof Error ? error.message : '未知错误'}。请检查网络连接后重试。`)
-    return
-  }
-  
-  // 只有成功生成理由才保存数据
-  if (!reasonGenerated || !finalReason) {
-    return
-  }
-  
-  // 保存到数据
-  if (!currentHighlightData.value) {
-    console.warn('没有高亮数据，无法保存标注')
-    return
-  }
-  
-  const targetArray = currentHighlightData.value.answer[type]
-  const newItem = {
-    'Student answer': text,
-    'Scoring point': scoringPoint,
-    reason: finalReason
-  }
-  console.log('保存标注数据:', {
-    text: text,
-    textLength: text.length,
-    type: type,
-    reason: finalReason.substring(0, 50) + '...',
-    reasonLength: finalReason.length
-  })
-  targetArray.push(newItem)
-  
-  // 更新反馈面板显示最终理由
-  const finalHighlightData = {
-    text: text,
-    type: type,
-    reason: finalReason,
-    scoringPoint: scoringPoint
-  }
-  feedbackPanelRef.value?.handleHighlightClicked(finalHighlightData)
-  
-  // 保存到本地
-  examDataStore.saveToLocal()
-}
-
-// 直接保存理由，不调用LLM
-const saveReasonDirectly = (text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', reason: string, scoringPoint: number) => {
-  if (!currentHighlightData.value) {
-    console.warn('没有高亮数据，无法保存标注')
-    return
-  }
-  
-  const targetArray = currentHighlightData.value.answer[type]
-  
-  // 查找并更新现有项或添加新项
-  const existingIndex = targetArray.findIndex((item: any) => item['Student answer'] === text)
-  const newItem = {
-    'Student answer': text,
-    'Scoring point': scoringPoint,
-    reason: reason
-  }
-  
-  if (existingIndex !== -1) {
-    targetArray[existingIndex] = newItem
-  } else {
-    targetArray.push(newItem)
-  }
-  
-  // 更新反馈面板显示
-  const highlightData = {
-    text: text,
-    type: type,
-    reason: reason,
-    scoringPoint: scoringPoint
-  }
-  feedbackPanelRef.value?.handleHighlightClicked(highlightData)
-  
-  // 保存到本地
-  examDataStore.saveToLocal()
-}
+// 业务逻辑已抽取到 useGradingBusiness composable
 
 /**
  * ===== 事件处理 =====
@@ -365,7 +220,7 @@ const handleHighlightClicked = (data: { text: string; type: string; reason: stri
 const handleUpdateHighlightData = async (data: {
   operation: 'add' | 'remove' | 'reset'
   text?: string
-  type?: string
+  type?: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason?: string
   scoringPoint?: number
 }) => {
@@ -375,294 +230,55 @@ const handleUpdateHighlightData = async (data: {
     type: data.type
   })
   
-  if (!currentHighlightData.value) {
-    console.warn('没有当前HighlightData，无法更新')
-    return
-  }
-  
-  const validTypes = ['correct', 'wrong', 'unclear', 'redundant'] as const
-  
+  // 处理添加操作的特殊逻辑
   if (data.operation === 'add' && data.text && data.type) {
-    // 验证类型
-    if (!validTypes.includes(data.type as any)) {
-      console.error('无效的标注类型:', data.type)
-      return
-    }
-    
-    const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
+    const targetType = data.type
     
     if (isInModifyMode.value && data.reason) {
-      // 修改模式且有理由：直接保存，不调用LLM
-      saveReasonDirectly(data.text, targetType, data.reason, data.scoringPoint || 0)
-      isInModifyMode.value = false // 保存后退出修改模式
+      // 修改模式：直接保存理由
+      saveReasonDirectly(
+        data.text, 
+        targetType, 
+        data.reason, 
+        data.scoringPoint || 0,
+        currentStudentId.value,
+        currentQuestionId.value,
+        feedbackPanelRef
+      )
+      isInModifyMode.value = false
     } else {
-      // 非修改模式或没有理由：调用LLM生成
-      const tempHighlightData = {
+      // 标注模式：显示加载状态，调用LLM生成理由
+      feedbackPanelRef.value?.handleHighlightClicked({
         text: data.text,
         type: targetType,
         reason: '当前LLM正在生成理由...',
         scoringPoint: data.scoringPoint || 0
-      }
-      feedbackPanelRef.value?.handleHighlightClicked(tempHighlightData)
+      })
       
-      generateAndSaveReason(data.text, targetType, data.scoringPoint || 0)
+      generateReasonWithFeedback(
+        data.text, 
+        targetType, 
+        data.scoringPoint || 0,
+        currentStudentId.value,
+        currentQuestionId.value,
+        feedbackPanelRef
+      )
     }
-    
-  } else if (data.operation === 'remove' && data.text && data.type) {
-    // 验证类型
-    if (!validTypes.includes(data.type as any)) {
-      console.error('无效的标注类型:', data.type)
-      return
-    }
-    
-    // 移除标注
-    const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
-    const targetArray = currentHighlightData.value.answer[targetType]
-    const index = targetArray.findIndex((item: any) => item['Student answer'] === data.text)
-    if (index !== -1) {
-      targetArray.splice(index, 1)
-      console.log('移除标注')
-    }
-    
-  } else if (data.operation === 'reset') {
-    // 重置所有标注
-    currentHighlightData.value.answer.correct = []
-    currentHighlightData.value.answer.wrong = []
-    currentHighlightData.value.answer.unclear = []
-    currentHighlightData.value.answer.redundant = []
-    currentHighlightData.value.total_score = 0
-    console.log('重置所有标注')
+    return
   }
   
-  // 保存到store
-  examDataStore.saveToLocal()
+  // 使用统一的高亮操作处理器处理其他操作
+  executeHighlightOperation(data, currentStudentId.value, currentQuestionId.value)
 }
 
 // 开始给分
 const startGrading = async () => {
-  if (!examDataStore.isDataComplete) {
-    ElMessage.warning('Please complete all data uploads first')
-    return
-  }
-
-  try {
-    // 检查当前答案是否已经给分
-    const existingResult = examDataStore.getHighlightData(
-      currentStudentId.value,
-      currentQuestionId.value
-    )
-    // 允许重新批改
-    if (existingResult) {
-      ElMessage.info(`Re-grading current answer (previous score: ${existingResult.total_score} points)...`)
-    }
-
-    ElMessage.info('Starting AI grading for current student...')
-
-    // 导入单个学生给分服务
-    const { gradeSingleStudentAnswer, checkGradingServiceStatus } = await import('../../services/llm/grading/gradingLLMService')
-    
-    // 检查服务状态
-    const serviceStatus = checkGradingServiceStatus()
-    if (!serviceStatus.available) {
-      ElMessage.warning(serviceStatus.message)
-      return
-    }
-
-    // 获取当前上下文数据
-    const question = examDataStore.getQuestionById(currentQuestionId.value)
-    const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-    const studentAnswer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
-
-    // 验证当前上下文
-    if (!question) {
-      throw new Error(`Question ${currentQuestionId.value} not found`)
-    }
-    if (!referenceAnswer) {
-      throw new Error(`Reference answer for question ${currentQuestionId.value} not found`)
-    }
-    if (!studentAnswer) {
-      throw new Error(`Student ${currentStudentId.value} answer for question ${currentQuestionId.value} not found`)
-    }
-
-    console.log('Grading context:', {
-      studentId: currentStudentId.value,
-      questionId: currentQuestionId.value,
-      question: question.question.substring(0, 50) + '...',
-      answerLength: studentAnswer.answer.length
-    })
-
-    // 调用单个学生给分服务
-    const gradingResult = await gradeSingleStudentAnswer({
-      question,
-      referenceAnswer,
-      studentAnswer
-    })
-
-    if (!gradingResult.success) {
-      throw new Error(gradingResult.error || 'Grading failed')
-    }
-
-    if (!gradingResult.data || gradingResult.data.length === 0) {
-      throw new Error('Grading result is empty')
-    }
-
-    // 直接使用AI批改结果覆盖现有数据
-    examDataStore.addHighlightData(gradingResult.data[0])
-    console.log('AI批改完成')
-
-    // 保存到本地存储
-    examDataStore.saveToLocal()
-
-    // 显示成功消息
-    ElMessage.success(`Grading completed! Score: ${gradingResult.data[0].total_score} points`)
-
-    // 重置ActionSection加载状态
-    if (actionSectionRef.value) {
-      actionSectionRef.value.resetGradingState()
-    }
-  } catch (error) {
-    console.error('AI grading failed:', error)
-    ElMessage.error(`AI grading failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-
-    // 重置加载状态
-    if (actionSectionRef.value) {
-      actionSectionRef.value.resetGradingState()
-    }
-  }
+  await executeSingleGrading(currentStudentId.value, currentQuestionId.value, actionSectionRef)
 }
 
 // 批量给分
 const startBatchGrading = async (batchCount: number) => {
-  if (!examDataStore.isDataComplete) {
-    ElMessage.warning('Please complete all data uploads first')
-    return
-  }
-
-  try {
-    ElMessage.info(`Starting batch grading for ${batchCount} randomly selected papers...`)
-
-    // 设置批量给分状态
-    if (actionSectionRef.value) {
-      actionSectionRef.value.setBatchGradingState(true)
-    }
-
-    // 导入给分服务
-    const { gradeSingleStudentAnswer, checkGradingServiceStatus } = await import('../../services/llm/grading/gradingLLMService')
-    
-    // 检查服务状态
-    const serviceStatus = checkGradingServiceStatus()
-    if (!serviceStatus.available) {
-      ElMessage.warning(serviceStatus.message)
-      return
-    }
-
-    // 获取当前题目信息
-    const question = examDataStore.getQuestionById(currentQuestionId.value)
-    const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-
-    if (!question || !referenceAnswer) {
-      throw new Error(`Current question or reference answer not found`)
-    }
-
-    // 获取所有学生ID并随机选择
-    const allStudentIds = examDataStore.studentList.map(student => student.id)
-    const selectedStudentIds = selectStudents(allStudentIds, batchCount)
-    
-    // 验证选择结果
-    const validation = validateSelection(allStudentIds, selectedStudentIds, batchCount)
-    if (!validation.valid) {
-      throw new Error(`Selection validation failed: ${validation.errors.join(', ')}`)
-    }
-    
-    // 获取选择统计信息
-    const stats = getSelectionStats(allStudentIds, selectedStudentIds)
-    
-    console.log('Batch grading info:', {
-      totalStudents: stats.totalCount,
-      selectedCount: stats.selectedCount,
-      selectionRate: `${(stats.selectionRate * 100).toFixed(1)}%`,
-      selectedIds: stats.selectedIds,
-      unselectedIds: stats.unselectedIds.slice(0, 5), // 只显示前5个未选中的ID
-      questionId: currentQuestionId.value
-    })
-    
-    ElMessage.info(`Selected ${stats.selectedCount} out of ${stats.totalCount} students (${(stats.selectionRate * 100).toFixed(1)}% selection rate)`)
-
-    // 逐个批改学生答案
-    let successCount = 0
-    let errorCount = 0
-
-    for (let i = 0; i < selectedStudentIds.length; i++) {
-      const studentId = selectedStudentIds[i]
-      
-      try {
-        // 检查是否已经批改过
-        const existingResult = examDataStore.getHighlightData(studentId, currentQuestionId.value)
-        if (existingResult) {
-          console.log(`Student ${studentId} already graded, re-grading...`)
-        }
-
-        // 获取学生答案
-        const studentAnswer = examDataStore.getStudentAnswer(studentId, currentQuestionId.value)
-        if (!studentAnswer) {
-          console.warn(`Student ${studentId} answer not found, skipping...`)
-          continue
-        }
-
-        ElMessage.info(`Grading student ${studentId} (${i + 1}/${selectedStudentIds.length})...`)
-
-        // 调用单个学生给分服务
-        const gradingResult = await gradeSingleStudentAnswer({
-          question,
-          referenceAnswer,
-          studentAnswer
-        })
-
-        if (gradingResult.success && gradingResult.data && gradingResult.data.length > 0) {
-          // 直接使用AI批改结果覆盖现有数据
-          examDataStore.addHighlightData(gradingResult.data[0])
-          successCount++
-          
-          console.log(`Student ${studentId} graded successfully: ${gradingResult.data[0].total_score} points`)
-        } else {
-          throw new Error(gradingResult.error || 'Grading result is empty')
-        }
-
-        // 添加延迟避免API限流
-        if (i < selectedStudentIds.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-        }
-
-      } catch (error) {
-        console.error(`Failed to grade student ${studentId}:`, error)
-        errorCount++
-      }
-    }
-
-    // 保存到本地存储
-    examDataStore.saveToLocal()
-
-    // 显示批量给分结果
-    if (successCount > 0) {
-      ElMessage.success(`Batch grading completed! ${successCount} papers graded successfully${errorCount > 0 ? `, ${errorCount} failed` : ''}`)
-    } else {
-      ElMessage.error(`Batch grading failed! ${errorCount} papers failed`)
-    }
-
-    // 重置ActionSection状态
-    if (actionSectionRef.value) {
-      actionSectionRef.value.resetBatchGradingState()
-    }
-
-  } catch (error) {
-    console.error('Batch grading failed:', error)
-    ElMessage.error(`Batch grading failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-
-    // 重置状态
-    if (actionSectionRef.value) {
-      actionSectionRef.value.resetBatchGradingState()
-    }
-  }
+  await executeBatchGrading(batchCount, currentQuestionId.value, actionSectionRef)
 }
 
 const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {
