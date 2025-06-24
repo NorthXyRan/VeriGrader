@@ -24,46 +24,64 @@ export interface ReasonGenerationResponse {
 }
 
 /**
- * 为教师标注生成评分理由
+ * 为教师标注生成评分理由（支持重试）
  */
-export async function generateReasonForHighlight(request: ReasonGenerationRequest): Promise<ReasonGenerationResponse> {
-  try {
-    console.log('开始生成理由：', {
-      studentId: request.studentAnswer.student_id,
-      questionId: request.question.question_id,
-      highlightType: request.highlightType,
-      textLength: request.highlightedText.length
-    })
-    
-    // 构建理由生成提示词
-    const prompt = buildReasonGenerationPrompt(
-      request.question,
-      request.referenceAnswer,
-      request.studentAnswer,
-      request.highlightedText,
-      request.highlightType
-    )
-    
-    console.log('构建的理由生成Prompt长度:', prompt.length)
-    
-    // 调用LLM API生成理由
-    const reason = await callReasonGenerationAPI(prompt)
-    
-    console.log('理由生成完成')
-    
-    return {
-      success: true,
-      reason: reason.trim(),
-      message: `Successfully generated reason for ${request.highlightType} highlight`
+export async function generateReasonForHighlight(request: ReasonGenerationRequest, maxRetries: number = 3): Promise<ReasonGenerationResponse> {
+  console.log('开始生成理由：', {
+    studentId: request.studentAnswer.student_id,
+    questionId: request.question.question_id,
+    highlightType: request.highlightType,
+    textLength: request.highlightedText.length,
+    maxRetries
+  })
+  
+  // 构建理由生成提示词
+  const prompt = buildReasonGenerationPrompt(
+    request.question,
+    request.referenceAnswer,
+    request.studentAnswer,
+    request.highlightedText,
+    request.highlightType
+  )
+  
+  console.log('构建的理由生成Prompt长度:', prompt.length)
+  
+  let lastError: Error | null = null
+  
+  // 重试逻辑
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`理由生成尝试 ${attempt}/${maxRetries}`)
+      
+      // 调用LLM API生成理由
+      const reason = await callReasonGenerationAPI(prompt)
+      
+      console.log(`理由生成完成 (第${attempt}次尝试)`)
+      
+      return {
+        success: true,
+        reason: reason.trim(),
+        message: `Successfully generated reason for ${request.highlightType} highlight (attempt ${attempt})`
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error')
+      console.warn(`理由生成失败 (第${attempt}次尝试):`, lastError.message)
+      
+      // 如果不是最后一次尝试，等待一下再重试
+      if (attempt < maxRetries) {
+        console.log(`等待1秒后进行第${attempt + 1}次重试...`)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
     }
-  } catch (error) {
-    console.error('理由生成失败：', error)
-    
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      message: 'Reason generation failed, please check network connection and API configuration'
-    }
+  }
+  
+  // 所有重试都失败了
+  console.error(`理由生成失败，已重试${maxRetries}次:`, lastError)
+  
+  return {
+    success: false,
+    error: lastError?.message || 'Unknown error',
+    message: `Reason generation failed after ${maxRetries} attempts`
   }
 }
 
@@ -117,7 +135,11 @@ async function callReasonGenerationAPI(prompt: string): Promise<string> {
   console.log(content)
   console.log('=== 理由生成结束 ===')
   
-  return content
+  if (!content || !content.trim()) {
+    throw new Error('LLM returned empty content')
+  }
+  
+  return content.trim()
 }
 
 /**

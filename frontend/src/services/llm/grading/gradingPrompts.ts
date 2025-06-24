@@ -105,7 +105,7 @@ The reason should:
 2. Explain the scoring decision clearly
 3. Be concise but comprehensive
 4. Use educational language appropriate for student feedback
-
+5. The reason should be concise and to the point, and should not be too long.
 Return only the reason text, no additional formatting or labels.`
 }
 

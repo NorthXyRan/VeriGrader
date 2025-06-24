@@ -62,7 +62,7 @@ const highlightedContent = computed(() => {
 // === 事件处理 ===
 const handleHighlightClick = (event: Event) => {
   const target = event.target as HTMLElement
-  const highlightData = parseHighlightElement(target)
+  const highlightData = parseHighlightElement(target, props.highlightData)
   
   if (highlightData) {
     event.stopPropagation()
@@ -77,7 +77,8 @@ const handleHighlightClick = (event: Event) => {
     console.log('点击高亮:', {
       text: highlightData.text,
       type: highlightData.type,
-      reason: highlightData.reason
+      reason: highlightData.reason.substring(0, 50) + '...',
+      reasonLength: highlightData.reason.length
     })
     
     emits('highlightClicked', highlightData)

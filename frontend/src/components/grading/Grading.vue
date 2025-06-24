@@ -99,6 +99,7 @@ const uploadStatusStore = useUploadStatusStore()
  */
 const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
+const isInModifyMode = ref<boolean>(false) // 是否处于修改模式
 
 /**
  * ===== 计算属性 =====
@@ -159,35 +160,92 @@ const actionSectionRef = ref()
  * ===== 辅助函数 =====
  */
 
-// 生成理由并保存
+// 生成理由并保存（带实时反馈）
 const generateAndSaveReason = async (text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', scoringPoint: number) => {
-  let finalReason = '教师标注'
+  // 更新反馈面板的辅助函数
+  const updateFeedback = (reason: string) => {
+    const updateData = {
+      text: text,
+      type: type,
+      reason: reason,
+      scoringPoint: scoringPoint
+    }
+    feedbackPanelRef.value?.handleHighlightClicked(updateData)
+  }
+  let reasonGenerated = false
+  let finalReason = ''
   
   try {
     const { generateReasonForHighlight, checkReasonGenerationServiceStatus } = await import('../../services/llm/grading/reasonGenerationService')
     
     const serviceStatus = checkReasonGenerationServiceStatus()
-    if (serviceStatus.available) {
-      const question = examDataStore.getQuestionById(currentQuestionId.value)
-      const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-      const studentAnswer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
+    if (!serviceStatus.available) {
+      ElMessage.error('LLM服务不可用，无法生成理由')
+      return
+    }
+    
+    const question = examDataStore.getQuestionById(currentQuestionId.value)
+    const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
+    const studentAnswer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
+    
+    if (!question || !referenceAnswer || !studentAnswer) {
+      ElMessage.error('缺少必要的上下文数据，无法生成理由')
+      return
+    }
+    
+    // 调用理由生成服务（支持重试）
+    // 创建自定义的重试逻辑，带实时反馈
+    let reasonResult = null
+    const maxRetries = 3
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      if (attempt > 1) {
+        updateFeedback(`理由生成重试中... (第${attempt}/${maxRetries}次尝试)`)
+        await new Promise(resolve => setTimeout(resolve, 1000)) // 等待1秒
+      }
       
-      if (question && referenceAnswer && studentAnswer) {
-        const reasonResult = await generateReasonForHighlight({
+      try {
+        reasonResult = await generateReasonForHighlight({
           question,
           referenceAnswer,
           studentAnswer,
           highlightedText: text,
           highlightType: type
-        })
+        }, 1) // 单次尝试
         
-        if (reasonResult.success && reasonResult.reason) {
-          finalReason = reasonResult.reason
+        if (reasonResult.success && reasonResult.reason && reasonResult.reason.trim()) {
+          break // 成功了就跳出循环
+        }
+      } catch (error) {
+        console.warn(`第${attempt}次尝试失败:`, error)
+        if (attempt === maxRetries) {
+          reasonResult = {
+            success: false,
+            error: error instanceof Error ? error.message : '未知错误'
+          }
         }
       }
     }
+    
+    if (reasonResult && reasonResult.success && reasonResult.reason && reasonResult.reason.trim()) {
+      finalReason = reasonResult.reason.trim()
+      reasonGenerated = true
+      console.log('LLM生成的理由:', finalReason)
+      ElMessage.success('理由生成成功')
+    } else {
+      // 在反馈面板显示失败信息
+      updateFeedback(`理由生成失败: ${reasonResult?.error || '未知错误'}。请重新尝试标注。`)
+      return
+    }
   } catch (error) {
-    console.error('理由生成失败:', error)
+    // 在反馈面板显示错误信息
+    updateFeedback(`理由生成出错: ${error instanceof Error ? error.message : '未知错误'}。请检查网络连接后重试。`)
+    return
+  }
+  
+  // 只有成功生成理由才保存数据
+  if (!reasonGenerated || !finalReason) {
+    return
   }
   
   // 保存到数据
@@ -202,6 +260,13 @@ const generateAndSaveReason = async (text: string, type: 'correct' | 'wrong' | '
     'Scoring point': scoringPoint,
     reason: finalReason
   }
+  console.log('保存标注数据:', {
+    text: text,
+    textLength: text.length,
+    type: type,
+    reason: finalReason.substring(0, 50) + '...',
+    reasonLength: finalReason.length
+  })
   targetArray.push(newItem)
   
   // 更新反馈面板显示最终理由
@@ -212,6 +277,42 @@ const generateAndSaveReason = async (text: string, type: 'correct' | 'wrong' | '
     scoringPoint: scoringPoint
   }
   feedbackPanelRef.value?.handleHighlightClicked(finalHighlightData)
+  
+  // 保存到本地
+  examDataStore.saveToLocal()
+}
+
+// 直接保存理由，不调用LLM
+const saveReasonDirectly = (text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', reason: string, scoringPoint: number) => {
+  if (!currentHighlightData.value) {
+    console.warn('没有高亮数据，无法保存标注')
+    return
+  }
+  
+  const targetArray = currentHighlightData.value.answer[type]
+  
+  // 查找并更新现有项或添加新项
+  const existingIndex = targetArray.findIndex((item: any) => item['Student answer'] === text)
+  const newItem = {
+    'Student answer': text,
+    'Scoring point': scoringPoint,
+    reason: reason
+  }
+  
+  if (existingIndex !== -1) {
+    targetArray[existingIndex] = newItem
+  } else {
+    targetArray.push(newItem)
+  }
+  
+  // 更新反馈面板显示
+  const highlightData = {
+    text: text,
+    type: type,
+    reason: reason,
+    scoringPoint: scoringPoint
+  }
+  feedbackPanelRef.value?.handleHighlightClicked(highlightData)
   
   // 保存到本地
   examDataStore.saveToLocal()
@@ -289,19 +390,23 @@ const handleUpdateHighlightData = async (data: {
     }
     
     const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
-    const targetArray = currentHighlightData.value.answer[targetType]
     
-    // 立即显示"正在生成理由"到反馈面板
-    const tempHighlightData = {
-      text: data.text,
-      type: targetType,
-      reason: '当前LLM正在生成理由...',
-      scoringPoint: data.scoringPoint || 0
+    if (isInModifyMode.value && data.reason) {
+      // 修改模式且有理由：直接保存，不调用LLM
+      saveReasonDirectly(data.text, targetType, data.reason, data.scoringPoint || 0)
+      isInModifyMode.value = false // 保存后退出修改模式
+    } else {
+      // 非修改模式或没有理由：调用LLM生成
+      const tempHighlightData = {
+        text: data.text,
+        type: targetType,
+        reason: '当前LLM正在生成理由...',
+        scoringPoint: data.scoringPoint || 0
+      }
+      feedbackPanelRef.value?.handleHighlightClicked(tempHighlightData)
+      
+      generateAndSaveReason(data.text, targetType, data.scoringPoint || 0)
     }
-    feedbackPanelRef.value?.handleHighlightClicked(tempHighlightData)
-    
-    // 异步生成理由
-    generateAndSaveReason(data.text, targetType, data.scoringPoint || 0)
     
   } else if (data.operation === 'remove' && data.text && data.type) {
     // 验证类型
@@ -565,6 +670,7 @@ const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => 
 }
 
 const handleModifyReason = () => {
+  isInModifyMode.value = true
   ElMessage.info('理由编辑模式')
 }
 

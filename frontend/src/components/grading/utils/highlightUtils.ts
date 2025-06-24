@@ -189,7 +189,7 @@ export function generateHighlightedHTML(
 /**
  * 解析高亮元素  把HTML还原成数据
  */
-export function parseHighlightElement(element: HTMLElement): {
+export function parseHighlightElement(element: HTMLElement, highlightData?: HighlightData | null): {
   type: HighlightType
   text: string
   reason: string
@@ -201,15 +201,30 @@ export function parseHighlightElement(element: HTMLElement): {
 
   const type = element.getAttribute('data-type') as HighlightType
   const text = element.getAttribute('data-text') || ''
-  const reason = element.getAttribute('data-reason') || ''
   const scoringPointStr = element.getAttribute('data-scoring-point') || '0'
   const scoringPoint = parseInt(scoringPointStr) || 0
+  
+  // 从原始数据中查找完整理由，避免HTML属性截断问题
+  let reason = ''
+  if (highlightData && type && text) {
+    const targetArray = highlightData.answer[type]
+    const foundItem = targetArray.find((item: any) => item['Student answer'] === text)
+    if (foundItem) {
+      reason = foundItem.reason || ''
+    }
+  }
+  
+  // 如果没有找到，回退到HTML属性（虽然可能被截断）
+  if (!reason) {
+    reason = element.getAttribute('data-reason') || ''
+  }
   
   console.log('[highlightUtils] 解析高亮元素:', {
     text: text.substring(0, 20) + '...',
     type: type,
     scoringPoint: scoringPoint,
-    hasReason: !!reason
+    hasReason: !!reason,
+    reasonLength: reason.length
   })
 
   return {
