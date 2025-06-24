@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
-import { 
+import {
   generateHighlightedHTML,
   parseHighlightElement,
   HIGHLIGHT_CONFIG,
@@ -36,21 +36,25 @@ const emits = defineEmits<{
     reason: string
     scoringPoint: number
   }): void
-  (e: 'markAnswer', data: { 
-    text: string
-    type: HighlightType 
+  (e: 'updateHighlightData', data: {
+    operation: 'add' | 'remove' | 'reset'
+    text?: string
+    type?: HighlightType
+    reason?: string
+    scoringPoint?: number
   }): void
 }>()
 
 // === 内部状态管理 ===
 const hasSelectedText = ref(false)
 const selectedText = ref('')
-const highlightMode = ref(false)
+// 当前点击的高亮数据
+const clickedHighlight = ref<{ text: string; type: HighlightType } | null>(null)
 
 // === 计算属性 ===
 const highlightedContent = computed(() => {
   return generateHighlightedHTML(
-    props.studentAnswer, 
+    props.studentAnswer,
     props.highlightData
   )
 })
@@ -64,8 +68,20 @@ const handleHighlightClick = (event: Event) => {
     event.stopPropagation()
     const config = HIGHLIGHT_CONFIG[highlightData.type]
     
+    // 记录点击的高亮数据
+    clickedHighlight.value = {
+      text: highlightData.text,
+      type: highlightData.type
+    }
+    
+    console.log('点击高亮:', {
+      text: highlightData.text,
+      type: highlightData.type,
+      reason: highlightData.reason
+    })
+    
     emits('highlightClicked', highlightData)
-    ElMessage.info(`查看【${config.label}】标记详情`)
+    ElMessage.info(`选中【${config.label}】标记`)
   }
 }
 
@@ -74,13 +90,6 @@ const handleTextSelection = () => {
   if (selection && selection.toString().trim()) {
     selectedText.value = selection.toString().trim()
     hasSelectedText.value = true
-    
-    // 高亮模式下自动标记为正确
-    if (highlightMode.value) {
-      setTimeout(() => {
-        markAnswer('correct')
-      }, 100)
-    }
   } else {
     hasSelectedText.value = false
     selectedText.value = ''
@@ -89,20 +98,88 @@ const handleTextSelection = () => {
 
 // === 标记功能 ===
 const markAnswer = (type: HighlightType) => {
+  // 检查是否有HighlightData
+  if (!props.highlightData) {
+    ElMessage.warning('请先进行AI批改，然后才能进行教师标注')
+    return
+  }
+  
   if (!selectedText.value) {
     ElMessage.warning('请先选中要标记的文本')
     return
   }
   
   const config = HIGHLIGHT_CONFIG[type]
+  const text = selectedText.value
   
-  emits('markAnswer', {
-    text: selectedText.value,
-    type
+  console.log('教师标注:', {
+    text: text,
+    type: type,
+    operation: '添加到HighlightData'
   })
   
-  ElMessage.success(`已标记为"${config.label}"：${selectedText.value.substring(0, 20)}...`)
+  // 发送更新事件给父组件
+  emits('updateHighlightData', {
+    operation: 'add',
+    text: text,
+    type: type,
+    reason: `教师标注为${config.label}`,
+    scoringPoint: 0 // 教师标注默认0分
+  })
   
+  ElMessage.success(`已标记为"${config.label}"`)
+  clearSelection()
+}
+
+// === 清除功能 ===
+const eraseHighlightedText = () => {
+  // 检查是否有HighlightData
+  if (!props.highlightData) {
+    ElMessage.warning('没有批改数据可以清除')
+    return
+  }
+  
+  if (!clickedHighlight.value) {
+    ElMessage.warning('请先点击要清除的高亮文本')
+    return
+  }
+  
+  console.log('清除标注:', {
+    text: clickedHighlight.value.text,
+    type: clickedHighlight.value.type,
+    operation: '从HighlightData移除'
+  })
+  
+  // 发送移除事件给父组件
+  emits('updateHighlightData', {
+    operation: 'remove',
+    text: clickedHighlight.value.text,
+    type: clickedHighlight.value.type
+  })
+  
+  ElMessage.success('已清除标记')
+  
+  // 清空状态
+  clickedHighlight.value = null
+  clearSelection()
+}
+
+const clearAllMarks = () => {
+  // 检查是否有HighlightData
+  if (!props.highlightData) {
+    ElMessage.warning('没有批改数据可以重置')
+    return
+  }
+  
+  console.log('重置所有标注: 清除整个学生的HighlightData')
+  
+  // 发送重置事件给父组件
+  emits('updateHighlightData', {
+    operation: 'reset'
+  })
+  
+  ElMessage.warning('已清除所有标记')
+  clickedHighlight.value = null
   clearSelection()
 }
 
@@ -112,37 +189,22 @@ const clearSelection = () => {
   selectedText.value = ''
 }
 
-// === 模式控制 ===
-const setHighlightMode = (mode: boolean) => {
-  highlightMode.value = mode
-  console.log('高亮模式:', mode ? '开启' : '关闭')
-}
-
 // === 监听器 ===
 watch(() => props.studentAnswer, () => {
   clearSelection()
+  clickedHighlight.value = null
 })
 
-// === 暴露的方法 ===
+watch(() => props.highlightData, () => {
+  clickedHighlight.value = null
+})
+
+// === 暴露核心方法 ===
 defineExpose({
-  // 核心方法
   markAnswer,
-  setHighlightMode,
-  clearSelection,
-  
-  // 快捷方法
-  quickMark: markAnswer,
-  
-  // 状态访问
-  getSelectedText: () => selectedText.value,
-  getHasSelectedText: () => hasSelectedText.value,
-  
-  // 只读状态
-  readonly: {
-    hasSelectedText: () => hasSelectedText.value,
-    selectedText: () => selectedText.value,
-    highlightMode: () => highlightMode.value
-  }
+  eraseHighlightedText,
+  clearAllMarks,
+  getHasSelectedText: () => hasSelectedText.value
 })
 </script>
 
@@ -178,17 +240,6 @@ defineExpose({
 
 ::-moz-selection {
   background-color: #409eff;
-  color: white;
-}
-
-/* 高亮模式下的选择样式 */
-.paper-preview.highlight-mode ::selection {
-  background-color: #4CD964;
-  color: white;
-}
-
-.paper-preview.highlight-mode ::-moz-selection {
-  background-color: #4CD964;
   color: white;
 }
 

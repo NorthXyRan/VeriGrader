@@ -35,13 +35,13 @@
         <highlight-toolbar
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
-          @mark-answer="handleMarkAnswer"
+          :highlight-data="currentHighlightData"
         />
         <paper-preview
           ref="paperPreviewRef"
           :student-answer="currentStudentAnswer"
           :highlight-data="currentHighlightData"
-          @mark-answer="handleMarkAnswer"
+          @update-highlight-data="handleUpdateHighlightData"
           @highlight-clicked="handleHighlightClicked"
         />
       </div>
@@ -62,7 +62,6 @@
         <feedback-panel
           class="card-content"
           ref="feedbackPanelRef"
-          :current-highlight-data="currentHighlightData"
           @modify-reason="handleModifyReason"
           @save-reason="handleSaveReason"
           @submit-reason="handleSubmitReason"
@@ -87,6 +86,9 @@ import ScoringSection from './ScoringSection.vue'
 // 导入分离式 Store
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
+
+// 导入选择工具
+import { selectStudents, validateSelection, getSelectionStats } from './utils/selectionUtils'
 
 // 使用分离的 Store
 const examDataStore = useExamDataStore()
@@ -154,6 +156,10 @@ const highlightToolbarRef = ref()
 const actionSectionRef = ref()
 
 /**
+ * ===== 辅助函数 =====
+ */
+
+/**
  * ===== 事件处理 =====
  */
 const handleStudentChange = (studentId: number) => {
@@ -168,7 +174,7 @@ const handleStudentChange = (studentId: number) => {
 
   currentStudentId.value = studentId
   ElMessage.success(`切换到学生 ${studentId}`)
-  console.log('👤 切换学生:', studentId)
+  console.log('切换学生:', studentId)
 }
 
 const handleQuestionChange = (question: { id: number; name: string; score: number }) => {
@@ -183,16 +189,98 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
 
   currentQuestionId.value = question.id
   ElMessage.success(`切换到第${question.id}题，满分${questionExists.score}分`)
-  console.log('📝 切换题目:', question.id)
+  console.log('切换题目:', question.id)
 }
 
-// 事件转发
-const handleHighlightClicked = (data: any) => {
+// 高亮点击事件处理
+const handleHighlightClicked = (data: { text: string; type: string; reason: string; scoringPoint: number }) => {
+  console.log('[Grading] 高亮点击事件:', {
+    text: data.text.substring(0, 30) + '...',
+    type: data.type,
+    hasReason: !!data.reason
+  })
   feedbackPanelRef.value?.handleHighlightClicked(data)
 }
 
-const handleMarkAnswer = (data: any) => {
-  feedbackPanelRef.value?.handleMarkAnswer(data)
+// 更新HighlightData的核心方法
+const handleUpdateHighlightData = (data: {
+  operation: 'add' | 'remove' | 'reset'
+  text?: string
+  type?: string
+  reason?: string
+  scoringPoint?: number
+}) => {
+  console.log('[Grading] 更新HighlightData:', {
+    operation: data.operation,
+    text: data.text ? data.text.substring(0, 30) + '...' : undefined,
+    type: data.type
+  })
+  
+  if (!currentHighlightData.value) {
+    console.warn('没有当前HighlightData，无法更新')
+    return
+  }
+  
+  const validTypes = ['correct', 'wrong', 'unclear', 'redundant'] as const
+  
+  if (data.operation === 'add' && data.text && data.type && data.reason !== undefined) {
+    // 验证类型
+    if (!validTypes.includes(data.type as any)) {
+      console.error('无效的标注类型:', data.type)
+      return
+    }
+    
+    // 添加新标注
+    const newItem = {
+      'Student answer': data.text,
+      'Scoring point': data.scoringPoint || 0,
+      reason: data.reason
+    }
+    
+    const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
+    const targetArray = currentHighlightData.value.answer[targetType]
+    
+    // 检查是否已存在
+    const existingIndex = targetArray.findIndex(
+      (item: any) => item['Student answer'] === data.text
+    )
+    
+    if (existingIndex !== -1) {
+      targetArray[existingIndex] = newItem
+      console.log('更新已有标注')
+    } else {
+      targetArray.push(newItem)
+      console.log('添加新标注')
+    }
+    
+  } else if (data.operation === 'remove' && data.text && data.type) {
+    // 验证类型
+    if (!validTypes.includes(data.type as any)) {
+      console.error('无效的标注类型:', data.type)
+      return
+    }
+    
+    // 移除标注
+    const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
+    const targetArray = currentHighlightData.value.answer[targetType]
+    const index = targetArray.findIndex((item: any) => item['Student answer'] === data.text)
+    if (index !== -1) {
+      targetArray.splice(index, 1)
+      console.log('移除标注')
+    }
+    
+  } else if (data.operation === 'reset') {
+    // 重置所有标注
+    currentHighlightData.value.answer.correct = []
+    currentHighlightData.value.answer.wrong = []
+    currentHighlightData.value.answer.unclear = []
+    currentHighlightData.value.answer.redundant = []
+    currentHighlightData.value.total_score = 0
+    console.log('重置所有标注')
+  }
+  
+  // 保存到store
+  examDataStore.saveToLocal()
 }
 
 // 开始给分
@@ -208,10 +296,9 @@ const startGrading = async () => {
       currentStudentId.value,
       currentQuestionId.value
     )
-    
+    // 允许重新批改
     if (existingResult) {
       ElMessage.info(`Re-grading current answer (previous score: ${existingResult.total_score} points)...`)
-      // 允许重新批改，不再return
     }
 
     ElMessage.info('Starting AI grading for current student...')
@@ -264,8 +351,9 @@ const startGrading = async () => {
       throw new Error('Grading result is empty')
     }
 
-    // 将结果添加到store
+    // 直接使用AI批改结果覆盖现有数据
     examDataStore.addHighlightData(gradingResult.data[0])
+    console.log('AI批改完成')
 
     // 保存到本地存储
     examDataStore.saveToLocal()
@@ -278,7 +366,7 @@ const startGrading = async () => {
       actionSectionRef.value.resetGradingState()
     }
   } catch (error) {
-    console.error('❌ AI grading failed:', error)
+    console.error('AI grading failed:', error)
     ElMessage.error(`AI grading failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
 
     // 重置加载状态
@@ -323,14 +411,27 @@ const startBatchGrading = async (batchCount: number) => {
 
     // 获取所有学生ID并随机选择
     const allStudentIds = examDataStore.studentList.map(student => student.id)
-    const selectedStudentIds = getRandomStudents(allStudentIds, batchCount)
-
+    const selectedStudentIds = selectStudents(allStudentIds, batchCount)
+    
+    // 验证选择结果
+    const validation = validateSelection(allStudentIds, selectedStudentIds, batchCount)
+    if (!validation.valid) {
+      throw new Error(`Selection validation failed: ${validation.errors.join(', ')}`)
+    }
+    
+    // 获取选择统计信息
+    const stats = getSelectionStats(allStudentIds, selectedStudentIds)
+    
     console.log('Batch grading info:', {
-      totalStudents: allStudentIds.length,
-      selectedCount: selectedStudentIds.length,
-      selectedIds: selectedStudentIds,
+      totalStudents: stats.totalCount,
+      selectedCount: stats.selectedCount,
+      selectionRate: `${(stats.selectionRate * 100).toFixed(1)}%`,
+      selectedIds: stats.selectedIds,
+      unselectedIds: stats.unselectedIds.slice(0, 5), // 只显示前5个未选中的ID
       questionId: currentQuestionId.value
     })
+    
+    ElMessage.info(`Selected ${stats.selectedCount} out of ${stats.totalCount} students (${(stats.selectionRate * 100).toFixed(1)}% selection rate)`)
 
     // 逐个批改学生答案
     let successCount = 0
@@ -363,11 +464,11 @@ const startBatchGrading = async (batchCount: number) => {
         })
 
         if (gradingResult.success && gradingResult.data && gradingResult.data.length > 0) {
-          // 添加到store
+          // 直接使用AI批改结果覆盖现有数据
           examDataStore.addHighlightData(gradingResult.data[0])
           successCount++
           
-          console.log(`✅ Student ${studentId} graded successfully: ${gradingResult.data[0].total_score} points`)
+          console.log(`Student ${studentId} graded successfully: ${gradingResult.data[0].total_score} points`)
         } else {
           throw new Error(gradingResult.error || 'Grading result is empty')
         }
@@ -378,7 +479,7 @@ const startBatchGrading = async (batchCount: number) => {
         }
 
       } catch (error) {
-        console.error(`❌ Failed to grade student ${studentId}:`, error)
+        console.error(`Failed to grade student ${studentId}:`, error)
         errorCount++
       }
     }
@@ -399,7 +500,7 @@ const startBatchGrading = async (batchCount: number) => {
     }
 
   } catch (error) {
-    console.error('❌ Batch grading failed:', error)
+    console.error('Batch grading failed:', error)
     ElMessage.error(`Batch grading failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
 
     // 重置状态
@@ -409,43 +510,36 @@ const startBatchGrading = async (batchCount: number) => {
   }
 }
 
-// 随机选择学生
-const getRandomStudents = (studentIds: number[], count: number): number[] => {
-  const shuffled = [...studentIds].sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, Math.min(count, studentIds.length))
-}
-
 const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {
   ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
-  // TODO: 保存教师评分变更到JSON文件
-  // 后续实现：
-  // 1. 更新teacher_scores.json文件中的评分数据
-  // 2. 保存评分历史到feedback_history.json
-  // 3. 实现自动保存和版本控制
-  // 4. 添加评分变更的撤销/重做功能
 }
 
 const handleModifyReason = () => {
   ElMessage.info('理由编辑模式')
 }
 
-const handleSaveReason = () => {
+const handleSaveReason = (data: { highlight: any, reason: string }) => {
+  console.log('[Grading] 保存理由:', {
+    text: data.highlight.text.substring(0, 30) + '...',
+    type: data.highlight.type,
+    newReason: data.reason
+  })
+  
+  // 更新HighlightData中的理由
+  handleUpdateHighlightData({
+    operation: 'add',
+    text: data.highlight.text,
+    type: data.highlight.type,
+    reason: data.reason,
+    scoringPoint: data.highlight.scoringPoint || 0
+  })
+  
   ElMessage.success('理由已保存')
-  // TODO: 保存评分理由
-  // 后续实现：
-  // 1. 获取当前编辑的理由内容
-  // 2. 保存到store
-  // 3. 关联到具体的学生、题目和评分项
 }
 
 const handleSubmitReason = () => {
   ElMessage.success('理由已提交，重新评分中...')
   // TODO: 提交教师反馈并触发AI重新评分
-  // 后续实现：
-  // 1. 收集教师的修改意见和反馈
-  // 2. 调用第三方AI API重新评分 
-  // 3. 更新store
-  // 4. 刷新界面的评分结果和高亮显示
 }
 
 /**
@@ -461,7 +555,7 @@ const initializeCurrentIds = () => {
     currentQuestionId.value = examDataStore.questions[0].question_id
   }
 
-  console.log('🎯 初始化当前选择:', {
+  console.log('初始化当前选择:', {
     studentId: currentStudentId.value,
     questionId: currentQuestionId.value,
   })

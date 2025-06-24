@@ -85,7 +85,7 @@ const isEditing = ref(false)
 // 显示的理由内容
 const displayReason = computed(() => {
   if (!selectedHighlight.value) {
-    return 'Select the text on the left to view the AI scoring reason, or click the Modify button to manually input...'
+    return 'Select the text on the left to view the scoring reason, or click the Modify button to manually input...'
   }
   
   if (isEditing.value) {
@@ -93,7 +93,7 @@ const displayReason = computed(() => {
   }
   
   // 显示理由
-  const reason =  selectedHighlight.value.reason || ''
+  const reason = selectedHighlight.value.reason || ''
   
   if (!reason) {
     return 'No reason information, click the Modify button to add a reason...'
@@ -116,15 +116,6 @@ const handleHighlightClicked = (data: HighlightClickData) => {
   ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
 }
 
-// 处理标记答案事件
-const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }) => {
-  selectedHighlight.value = {
-    text: data.text,
-    type: data.type
-  }
-
-  ElMessage.success(`已标记为"${data.type}"：${data.text.substring(0, 20)}...`)
-}
 
 // 监听选中的高亮变化
 watch(() => selectedHighlight.value, (newHighlight) => {
@@ -138,16 +129,11 @@ watch(() => selectedHighlight.value, (newHighlight) => {
       reason: newHighlight.reason,
       scoringPoint: newHighlight.scoringPoint
     })
-    
-    // 打印scoringPoint的具体值用于调试
-    console.log('Scoring Point 值为:', newHighlight.scoringPoint, '类型:', typeof newHighlight.scoringPoint)
   } else {
     editableReason.value = ''
     isEditing.value = false
   }
 }, { immediate: true })
-
-// 删除不需要的类型配置，简化代码
 
 // 修改理由
 const modifyReason = () => {
@@ -194,7 +180,6 @@ const submitReason = () => {
 // 暴露方法给父组件
 defineExpose({
   handleHighlightClicked,
-  handleMarkAnswer
 })
 </script>
 

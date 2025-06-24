@@ -23,6 +23,7 @@ export interface HighlightData {
   total_score: number
 }
 
+
 export type HighlightType = 'correct' | 'wrong' | 'unclear' | 'redundant'
 
 // ============== 统一颜色配置 ==============
@@ -73,11 +74,11 @@ export function escapeHtml(text: string): string {
 // ============== 主函数 ==============
 
 /**
- * 生成高亮后的HTML内容 - 直接插入样式  把数据转换成带高亮的HTML
+ * 生成高亮后的HTML内容，直接使用HighlightData
  */
 export function generateHighlightedHTML(
   content: string,
-  highlightData: HighlightData | null,
+  highlightData: HighlightData | null
 ): string {
   if (!content || !highlightData) {
     return escapeHtml(content || '')
@@ -108,7 +109,7 @@ export function generateHighlightedHTML(
             text: searchText,
             type: type as HighlightType,
             reason: item.reason,
-            scoringPoint: item['Scoring point'],
+            scoringPoint: item['Scoring point']
           })
           pos += 1
         }
@@ -122,13 +123,20 @@ export function generateHighlightedHTML(
     return b.text.length - a.text.length
   })
 
+  console.log('[highlightUtils] 生成高亮HTML:', {
+    totalHighlights: highlights.length,
+    highlightTypes: Object.keys(highlightData.answer).reduce((acc: Record<string, number>, key) => {
+      const typedKey = key as keyof typeof highlightData.answer
+      acc[key] = highlightData.answer[typedKey].length
+      return acc
+    }, {} as Record<string, number>)
+  })
+
   let tempContent = content
 
   // 为每个高亮创建开始和结束标记
   highlights.forEach((highlight, index) => {
     const uniqueId = `HL_${index}_`
-
-    // 将原文替换为带标记的版本
     const markedText = `${uniqueId}START${highlight.text}${uniqueId}END`
 
     const startPos = tempContent.indexOf(highlight.text, highlight.start)
@@ -156,11 +164,11 @@ export function generateHighlightedHTML(
           style="
             background-color: ${config.backgroundColor}; 
             border-left: 3px solid ${config.borderColor}; 
-            padding: 2px 4px; 
-            border-radius: 3px; 
-            cursor: pointer; 
-            margin: 0 1px; 
-            position: relative; 
+            padding: 2px 4px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 1px;
+            position: relative;
             z-index: ${index + 1};
             transition: all 0.2s ease;
           "
@@ -197,22 +205,17 @@ export function parseHighlightElement(element: HTMLElement): {
   const scoringPointStr = element.getAttribute('data-scoring-point') || '0'
   const scoringPoint = parseInt(scoringPointStr) || 0
   
-  // 调试信息
-  console.log('解析高亮元素:', {
-    element: element,
-    scoringPointStr: scoringPointStr,
+  console.log('[highlightUtils] 解析高亮元素:', {
+    text: text.substring(0, 20) + '...',
+    type: type,
     scoringPoint: scoringPoint,
-    attributes: {
-      'data-scoring-point': element.getAttribute('data-scoring-point'),
-      'data-type': element.getAttribute('data-type'),
-      'data-text': element.getAttribute('data-text')
-    }
+    hasReason: !!reason
   })
 
   return {
     type,
     text: text.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
     reason: reason.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
-    scoringPoint,
+    scoringPoint
   }
 }

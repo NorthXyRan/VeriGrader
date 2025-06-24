@@ -40,8 +40,8 @@ export async function gradeSingleStudentAnswer(request: SingleGradingRequest): P
     )
     
     console.log('构建的Prompt长度:', prompt.length)
-    console.log('=== 📝 发送给LLM的完整Prompt ===\n', prompt)
-    console.log('=== Prompt结束 ===')
+    // console.log('=== 发送给LLM的完整Prompt ===\n', prompt)
+    // console.log('=== Prompt结束 ===')
     
     // 直接调用LLM API
     const gradingResult = await callLLMAPI(prompt)

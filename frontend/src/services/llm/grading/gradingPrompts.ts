@@ -40,7 +40,7 @@ export function buildGradingPrompt(
   question: Question,
   referenceAnswer: ReferenceAnswer,
   studentAnswer: StudentAnswer,
-  staticPrompt: any
+  staticPrompt: any,
 ): string {
   return `${staticPrompt.role}
 
@@ -68,6 +68,7 @@ Maximum score for this question: ${question.score}
 IMPORTANT: Replace the null values in the output format with:
 - student_id: ${studentAnswer.student_id}
 - question_id: ${question.question_id}
+- Student answer: The student's answer text must be written completely in accordance with the student's original response, retaining all original formats, including the number of spaces, line breaks, etc., without adding extra text, rewriting, or rephrasing.
 - Scoring Point: actual matched the scoring point from the reference answer(must be a number). If a student's answer matches multiple scoring points, break it down and write it separately, with each scoring point being only one digit.
 - total_score: actual calculated score (must be a number)
 Please evaluate the student answer and return the JSON response according to the format above.`
@@ -82,13 +83,13 @@ export function buildReasonGenerationPrompt(
   studentAnswer: StudentAnswer,
   highlightedText: string,
   highlightType: 'correct' | 'wrong' | 'unclear' | 'redundant',
-  staticPrompt?: any
+  staticPrompt?: any,
 ): string {
   const typeDescriptions = {
     correct: 'correctly matches a scoring point',
     wrong: 'is incorrect or contradicts the reference answer',
     unclear: 'is partially correct or unclear',
-    redundant: 'is correct but irrelevant to the question'
+    redundant: 'is correct but irrelevant to the question',
   }
 
   return `${staticPrompt?.role || 'You are a university computer science instructor providing detailed feedback on student answers.'}

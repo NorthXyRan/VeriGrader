@@ -2,47 +2,38 @@
   <div class="highlight-toolbar">
     <div class="tool-section">
       <div class="tool-group">
-        <el-button 
-          :type="highlightMode ? 'primary' : 'default'"
-          :class="{ 'active': highlightMode }"
-          @click="toggleHighlightMode"
-        >
-          <el-icon><Edit /></el-icon>
-          highlight
-        </el-button>
-      </div>
-      
-      <el-divider direction="vertical" />
-      
-      <div class="tool-group">
-        <el-button 
-          type="success" 
+        <!-- 正确 -->
+        <el-button
+          type="success"
           @click="() => handleMarkAnswer('correct')"
-          :disabled="!hasSelectedText"
+          :disabled="!hasSelectedText || !props.highlightData"
         >
           <el-icon><Check /></el-icon>
           correct
         </el-button>
-        <el-button 
-          type="danger" 
+        <!-- 错误 -->
+        <el-button
+          type="danger"
           @click="() => handleMarkAnswer('wrong')"
-          :disabled="!hasSelectedText"
+          :disabled="!hasSelectedText || !props.highlightData"
         >
           <el-icon><Close /></el-icon>
           wrong
         </el-button>
+        <!-- 模糊 -->
         <el-button 
           type="warning" 
           @click="() => handleMarkAnswer('unclear')"
-          :disabled="!hasSelectedText"
+          :disabled="!hasSelectedText || !props.highlightData"
         >
           <el-icon><QuestionFilled /></el-icon>
           unclear
         </el-button>
-        <el-button 
-          type="info" 
+        <!-- 冗余 -->
+        <el-button
+          type="info"
           @click="() => handleMarkAnswer('redundant')"
-          :disabled="!hasSelectedText"
+          :disabled="!hasSelectedText || !props.highlightData"
         >
           <el-icon><RemoveFilled /></el-icon>
           redundant
@@ -50,19 +41,21 @@
       </div>
       
       <el-divider direction="vertical" />
-      
       <div class="tool-group">
-        <el-button 
+        <!-- 橡皮 -->
+        <el-button
           @click="handleEraseMarks"
-          :disabled="!hasSelectedText"
           class="eraser-btn"
+          :disabled="!props.highlightData"
         >
           <el-icon><Delete /></el-icon>
           erase
         </el-button>
-        <el-button 
+        <!-- 清屏 -->
+        <el-button
           @click="handleClearAll"
           class="clear-btn"
+          :disabled="!props.highlightData"
         >
           <el-icon><Refresh /></el-icon>
           reset
@@ -73,25 +66,20 @@
 </template>
 
 <script setup lang="ts">
-import { Check, Close, Delete, Edit, QuestionFilled, Refresh, RemoveFilled } from '@element-plus/icons-vue';
+import { Check, Close, Delete, QuestionFilled, Refresh, RemoveFilled } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 
 // Props 接口
 interface Props {
   paperPreviewRef?: any
+  highlightData?: any
 }
 
 const props = defineProps<Props>()
 
-const emits = defineEmits<{
-  (e: 'markAnswer', type: 'correct' | 'wrong' | 'unclear' | 'redundant'): void
-  (e: 'eraseMarks'): void
-  (e: 'clearAll'): void
-}>()
 
 // 内部状态管理
-const highlightMode = ref(false)
 const hasSelectedText = ref(false)
 
 // 定时器用于轮询选中状态
@@ -135,126 +123,38 @@ onUnmounted(() => {
   stopPolling()
 })
 
-// 监听 highlightMode 变化，同步到 PaperPreview
-watch(highlightMode, (newMode) => {
-  if (props.paperPreviewRef) {
-    props.paperPreviewRef.setHighlightMode(newMode)
-  }
-})
-
-// 切换高亮模式
-const toggleHighlightMode = () => {
-  highlightMode.value = !highlightMode.value
-  
-  if (highlightMode.value) {
-    ElMessage.info('高亮模式已开启，选中文本进行标记')
-  } else {
-    ElMessage.info('高亮模式已关闭')
-  }
-}
 
 // 标记答案
 const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
+  if (!hasSelectedText.value) {
+    ElMessage.warning('请先选中要标记的文本')
+    return
+  }
+  
   if (props.paperPreviewRef) {
     props.paperPreviewRef.markAnswer(type)
-  } else {
-    emits('markAnswer', type)
   }
 }
 
-// 橡皮功能
+// 橡皮功能 - 清除高亮文本
 const handleEraseMarks = () => {
   if (props.paperPreviewRef) {
-    props.paperPreviewRef.clearSelection()
-    ElMessage.info('已清除选中文本的标记')
-  } else {
-    emits('eraseMarks')
+    props.paperPreviewRef.eraseHighlightedText()
   }
 }
 
-// 清屏功能
+// 清屏功能 - 清除所有手动标注
 const handleClearAll = () => {
   if (props.paperPreviewRef) {
     props.paperPreviewRef.clearAllMarks()
-    ElMessage.warning('已清除所有标记')
-  } else {
-    emits('clearAll')
   }
 }
 
-// 获取当前选中的文本
-const getSelectedText = () => {
-  if (props.paperPreviewRef) {
-    return props.paperPreviewRef.getSelectedText()
-  }
-  return window.getSelection()?.toString().trim() || ''
-}
 
-// 快捷键支持
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (!hasSelectedText.value) return
-  
-  if (event.ctrlKey || event.metaKey) {
-    switch (event.key) {
-      case '1':
-        event.preventDefault()
-        handleMarkAnswer('correct')
-        break
-      case '2':
-        event.preventDefault()
-        handleMarkAnswer('wrong')
-        break
-      case '3':
-        event.preventDefault()
-        handleMarkAnswer('unclear')
-        break
-      case '4':
-        event.preventDefault()
-        handleMarkAnswer('redundant')
-        break
-      case 'Backspace':
-      case 'Delete':
-        event.preventDefault()
-        handleEraseMarks()
-        break
-    }
-  }
-  
-  if (event.key === 'h' || event.key === 'H') {
-    if (!event.ctrlKey && !event.metaKey && !event.altKey) {
-      event.preventDefault()
-      toggleHighlightMode()
-    }
-  }
-}
 
-onMounted(() => {
-  document.addEventListener('keydown', handleKeyDown)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
-})
-
-// 暴露方法给父组件
+// 暴露必要方法给父组件
 defineExpose({
-  toggleHighlightMode,
-  setHighlightMode: (mode: boolean) => {
-    highlightMode.value = mode
-  },
-  getHighlightMode: () => highlightMode.value,
-  markCorrect: () => handleMarkAnswer('correct'),
-  markWrong: () => handleMarkAnswer('wrong'),
-  markUnclear: () => handleMarkAnswer('unclear'),
-  markRedundant: () => handleMarkAnswer('redundant'),
-  eraseMarks: handleEraseMarks,
-  clearAll: handleClearAll,
-  getSelectedText,
-  hasSelection: () => hasSelectedText.value,
-  readonly: {
-    highlightMode: () => highlightMode.value,
-    hasSelectedText: () => hasSelectedText.value
-  }
+  hasSelection: () => hasSelectedText.value
 })
 </script>
 
@@ -375,12 +275,6 @@ defineExpose({
   flex-shrink: 0;
 }
 
-/* === 按钮状态样式 === */
-.active {
-  background-color: #ffd900c1 !important;
-  border-color: #ffd900c1 !important;
-  color: white !important;
-}
 
 /* === 特殊按钮样式 === */
 .eraser-btn {
