@@ -67,7 +67,6 @@ interface SelectedHighlight {
   scoringPoint?: number
 }
 
-// 无需Props
 
 // 事件定义 - 只保留必要的
 const emits = defineEmits<{

@@ -75,7 +75,7 @@ Please evaluate the student answer and return the JSON response according to the
 }
 
 /**
- * 构建提示词，根据老师的高亮修改生成给分原因
+ * 构建提示词，根据老师的高亮标注自动生成给分原因
  */
 export function buildReasonGenerationPrompt(
   question: Question,
@@ -83,16 +83,8 @@ export function buildReasonGenerationPrompt(
   studentAnswer: StudentAnswer,
   highlightedText: string,
   highlightType: 'correct' | 'wrong' | 'unclear' | 'redundant',
-  staticPrompt?: any,
 ): string {
-  const typeDescriptions = {
-    correct: 'correctly matches a scoring point',
-    wrong: 'is incorrect or contradicts the reference answer',
-    unclear: 'is partially correct or unclear',
-    redundant: 'is correct but irrelevant to the question',
-  }
-
-  return `${staticPrompt?.role || 'You are a university computer science instructor providing detailed feedback on student answers.'}
+  return `You are a university computer science instructor providing detailed feedback on student answers.
 
 TASK: Generate a detailed scoring reason for the highlighted text segment.
 
@@ -104,7 +96,7 @@ STUDENT ANSWER: ${studentAnswer.answer}
 
 HIGHLIGHTED TEXT: "${highlightedText}"
 
-CLASSIFICATION: ${highlightType} (${typeDescriptions[highlightType]})
+CLASSIFICATION: ${highlightType}
 
 Please provide a clear and specific reason explaining why this text segment is classified as "${highlightType}".
 
@@ -127,7 +119,7 @@ export const GRADING_PROMPTS = {
   SINGLE_STUDENT_GRADING: buildGradingPrompt,
 
   /**
-   * 生成老师修改高亮的原因
+   * 老师标记高亮自动生成评分理由
    */
   HIGHLIGHT_REASON_GENERATION: buildReasonGenerationPrompt,
 }

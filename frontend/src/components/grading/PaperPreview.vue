@@ -118,12 +118,12 @@ const markAnswer = (type: HighlightType) => {
     operation: '添加到HighlightData'
   })
   
-  // 发送更新事件给父组件
+  // 发送更新事件给父组件，不传递reason让系统自动生成
   emits('updateHighlightData', {
     operation: 'add',
     text: text,
     type: type,
-    reason: `教师标注为${config.label}`,
+    // reason: 不传递reason，让LLM自动生成
     scoringPoint: 0 // 教师标注默认0分
   })
   

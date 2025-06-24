@@ -159,6 +159,64 @@ const actionSectionRef = ref()
  * ===== 辅助函数 =====
  */
 
+// 生成理由并保存
+const generateAndSaveReason = async (text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', scoringPoint: number) => {
+  let finalReason = '教师标注'
+  
+  try {
+    const { generateReasonForHighlight, checkReasonGenerationServiceStatus } = await import('../../services/llm/grading/reasonGenerationService')
+    
+    const serviceStatus = checkReasonGenerationServiceStatus()
+    if (serviceStatus.available) {
+      const question = examDataStore.getQuestionById(currentQuestionId.value)
+      const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
+      const studentAnswer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
+      
+      if (question && referenceAnswer && studentAnswer) {
+        const reasonResult = await generateReasonForHighlight({
+          question,
+          referenceAnswer,
+          studentAnswer,
+          highlightedText: text,
+          highlightType: type
+        })
+        
+        if (reasonResult.success && reasonResult.reason) {
+          finalReason = reasonResult.reason
+        }
+      }
+    }
+  } catch (error) {
+    console.error('理由生成失败:', error)
+  }
+  
+  // 保存到数据
+  if (!currentHighlightData.value) {
+    console.warn('没有高亮数据，无法保存标注')
+    return
+  }
+  
+  const targetArray = currentHighlightData.value.answer[type]
+  const newItem = {
+    'Student answer': text,
+    'Scoring point': scoringPoint,
+    reason: finalReason
+  }
+  targetArray.push(newItem)
+  
+  // 更新反馈面板显示最终理由
+  const finalHighlightData = {
+    text: text,
+    type: type,
+    reason: finalReason,
+    scoringPoint: scoringPoint
+  }
+  feedbackPanelRef.value?.handleHighlightClicked(finalHighlightData)
+  
+  // 保存到本地
+  examDataStore.saveToLocal()
+}
+
 /**
  * ===== 事件处理 =====
  */
@@ -203,7 +261,7 @@ const handleHighlightClicked = (data: { text: string; type: string; reason: stri
 }
 
 // 更新HighlightData的核心方法
-const handleUpdateHighlightData = (data: {
+const handleUpdateHighlightData = async (data: {
   operation: 'add' | 'remove' | 'reset'
   text?: string
   type?: string
@@ -223,35 +281,27 @@ const handleUpdateHighlightData = (data: {
   
   const validTypes = ['correct', 'wrong', 'unclear', 'redundant'] as const
   
-  if (data.operation === 'add' && data.text && data.type && data.reason !== undefined) {
+  if (data.operation === 'add' && data.text && data.type) {
     // 验证类型
     if (!validTypes.includes(data.type as any)) {
       console.error('无效的标注类型:', data.type)
       return
     }
     
-    // 添加新标注
-    const newItem = {
-      'Student answer': data.text,
-      'Scoring point': data.scoringPoint || 0,
-      reason: data.reason
-    }
-    
     const targetType = data.type as 'correct' | 'wrong' | 'unclear' | 'redundant'
     const targetArray = currentHighlightData.value.answer[targetType]
     
-    // 检查是否已存在
-    const existingIndex = targetArray.findIndex(
-      (item: any) => item['Student answer'] === data.text
-    )
-    
-    if (existingIndex !== -1) {
-      targetArray[existingIndex] = newItem
-      console.log('更新已有标注')
-    } else {
-      targetArray.push(newItem)
-      console.log('添加新标注')
+    // 立即显示"正在生成理由"到反馈面板
+    const tempHighlightData = {
+      text: data.text,
+      type: targetType,
+      reason: '当前LLM正在生成理由...',
+      scoringPoint: data.scoringPoint || 0
     }
+    feedbackPanelRef.value?.handleHighlightClicked(tempHighlightData)
+    
+    // 异步生成理由
+    generateAndSaveReason(data.text, targetType, data.scoringPoint || 0)
     
   } else if (data.operation === 'remove' && data.text && data.type) {
     // 验证类型
