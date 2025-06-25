@@ -1,19 +1,25 @@
-/**
- * 批改服务：调用LLM API进行给分
- */
+// 批改服务
 
-import { API_CONFIG, isAPIConfigValid } from '../../../config/api'
 import type { Question, ReferenceAnswer, StudentAnswer, HighlightData } from '../../../stores/useExamDataStore'
-import { loadStaticPromptTemplate, buildGradingPrompt } from './gradingPrompts'
+import { loadStaticPromptTemplate, buildGradingPrompt, buildGradingPromptWithFewShot } from './gradingPrompts'
+import { callLLMAPI, getGradingConfig, checkLLMServiceStatus } from '../baseLLMService'
 
-// 单个学生给分请求接口
+// 单个批改请求
 export interface SingleGradingRequest {
   question: Question                // 问题
   referenceAnswer: ReferenceAnswer  // 参考答案
   studentAnswer: StudentAnswer      // 学生答案
 }
 
-// 给分响应数据接口
+// Few-Shot批改请求
+export interface FewShotGradingRequest {
+  question: Question                // 问题
+  referenceAnswer: ReferenceAnswer  // 参考答案
+  studentAnswer: StudentAnswer      // 学生答案
+  fewShotPrompt: string            // Few-Shot 示例prompt
+}
+
+// 批改响应
 export interface GradingResponse {
   success: boolean                     // 是否成功
   data?: HighlightData[]               // 批改结果
@@ -21,9 +27,7 @@ export interface GradingResponse {
   message?: string                     // 消息
 }
 
-/**
- * 给单个学生答案批改，批改后返回批改结果
- */
+// 单个学生批改
 export async function gradeSingleStudentAnswer(request: SingleGradingRequest): Promise<GradingResponse> {
   try {
     console.log('开始批改：学生', request.studentAnswer.student_id, '问题', request.question.question_id)
@@ -39,12 +43,19 @@ export async function gradeSingleStudentAnswer(request: SingleGradingRequest): P
       staticPrompt
     )
     
-    console.log('构建的Prompt长度:', prompt.length)
-    // console.log('=== 发送给LLM的完整Prompt ===\n', prompt)
-    // console.log('=== Prompt结束 ===')
+    console.log('=== 批改Prompt ===')
+    console.log('长度:', prompt.length)
+    console.log('内容:', prompt)
+    console.log('=== Prompt结束 ===')
     
-    // 直接调用LLM API
-    const gradingResult = await callLLMAPI(prompt)
+    // 调用统一的LLM API
+    const llmResponse = await callLLMAPI(prompt, getGradingConfig())
+    
+    if (!llmResponse.success) {
+      throw new Error(llmResponse.error || 'LLM API call failed')
+    }
+
+    const gradingResult = JSON.parse(llmResponse.content!)
     
     console.log('批改完成：学生', gradingResult.student_id)
     
@@ -72,75 +83,56 @@ export async function gradeSingleStudentAnswer(request: SingleGradingRequest): P
   }
 }
 
-/**
- * 直接调用LLM API
- */
-async function callLLMAPI(prompt: string): Promise<any> {
-  if (!isAPIConfigValid()) {
-    throw new Error('Invalid API configuration, please check API_KEY and API_URL environment variables')
-  }
 
-  const requestBody = {
-    model: API_CONFIG.LLM.GRADING.MODEL,
-    messages: [
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    max_tokens: API_CONFIG.LLM.GRADING.MAX_TOKENS,
-    temperature: API_CONFIG.LLM.GRADING.TEMPERATURE,
-  }
+// 检查服务状态
+export const checkGradingServiceStatus = checkLLMServiceStatus
 
-  const response = await fetch(API_CONFIG.LLM.API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_CONFIG.LLM.API_KEY}`
-    },
-    body: JSON.stringify(requestBody)
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    throw new Error(
-      `API call failed: ${response.status} ${response.statusText}. ${
-        errorData.error?.message || 'Unknown error'
-      }`
+// Few-Shot学生批改
+export async function gradeSingleStudentAnswerWithFewShot(request: FewShotGradingRequest): Promise<GradingResponse> {
+  try {
+    console.log('开始Few-Shot批改：学生', request.studentAnswer.student_id, '问题', request.question.question_id)
+    
+    // 加载静态提示词模板
+    const staticPrompt = await loadStaticPromptTemplate()
+    
+    // 构建带Few-Shot的完整prompt
+    const prompt = buildGradingPromptWithFewShot(
+      request.question,
+      request.referenceAnswer,
+      request.studentAnswer,
+      staticPrompt,
+      request.fewShotPrompt
     )
-  }
-
-  const data = await response.json()
-  
-  if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-    throw new Error('API response format error: missing required fields')
-  }
-
-  const content = data.choices[0].message.content
-  
-  console.log('=== LLM返回的原始回答 ===')
-  console.log(content)
-  console.log('=== LLM回答结束 ===')
-  
-  return  JSON.parse(content)
-}
-
-/**
- * 检查服务状态
- */
-export function checkGradingServiceStatus(): {
-  available: boolean
-  message: string
-} {
-  if (!isAPIConfigValid()) {
-    return {
-      available: false,
-      message: 'Invalid API configuration, please set correct API_KEY and API_URL environment variables'
+    
+    console.log('=== Few-Shot批改Prompt ===')
+    console.log('长度:', prompt.length)
+    console.log('内容:', prompt)
+    console.log('=== Prompt结束 ===')
+    
+    // 调用统一的LLM API
+    const llmResponse = await callLLMAPI(prompt, getGradingConfig())
+    
+    if (!llmResponse.success) {
+      throw new Error(llmResponse.error || 'LLM API call failed')
     }
-  }
 
-  return {
-    available: true,
-    message: 'Grading service available'
+    const gradingResult = JSON.parse(llmResponse.content!)
+    
+    console.log('Few-Shot批改完成：学生', gradingResult.student_id)
+    
+    return {
+      success: true,
+      data: [gradingResult],
+      message: `Successfully graded student ${request.studentAnswer.student_id} with Few-Shot examples`
+    }
+
+  } catch (error) {
+    console.error('Few-Shot批改失败:', error)
+    
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      message: `Few-Shot grading failed for student ${request.studentAnswer.student_id}`
+    }
   }
 }

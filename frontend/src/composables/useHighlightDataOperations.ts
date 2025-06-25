@@ -1,14 +1,11 @@
-/**
- * 高亮数据操作 Composable
- * 统一管理所有高亮数据的增删改查操作
- */
+// 标注数据操作
 
 import { useExamDataStore } from '../stores/useExamDataStore'
 import { useErrorHandler, ErrorType } from './useErrorHandler'
+import { logger } from '../utils/logger'
+import { previewText } from '../utils/textUtils'
 
-/**
- * 标注数据接口
- */
+// 标注数据接口
 export interface AnnotationData {
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
@@ -18,27 +15,12 @@ export interface AnnotationData {
   questionId: number
 }
 
-/**
- * 高亮操作类型
- */
-export interface HighlightOperation {
-  operation: 'add' | 'remove' | 'reset'
-  text?: string
-  type?: 'correct' | 'wrong' | 'unclear' | 'redundant'
-  reason?: string
-  scoringPoint?: number
-}
 
-/**
- * 高亮数据操作 Hook
- */
 export function useHighlightDataOperations() {
   const examDataStore = useExamDataStore()
   const { handleError, handleValidationError } = useErrorHandler()
 
-  /**
-   * 验证标注数据
-   */
+  // 验证数据
   const validateAnnotationData = (data: Partial<AnnotationData>): boolean => {
     const validTypes = ['correct', 'wrong', 'unclear', 'redundant'] as const
 
@@ -65,21 +47,17 @@ export function useHighlightDataOperations() {
     return true
   }
 
-  /**
-   * 获取高亮数据
-   */
+  // 获取数据
   const getHighlightData = (studentId: number, questionId: number) => {
     try {
       return examDataStore.getHighlightData(studentId, questionId)
     } catch (error) {
-      handleError(error, ErrorType.DATA_VALIDATION, 'get_highlight_data')
+      handleError(error as Error, ErrorType.DATA_VALIDATION, 'get_highlight_data')
       return null
     }
   }
 
-  /**
-   * 保存标注数据
-   */
+  // 保存数据
   const saveAnnotation = (data: AnnotationData): boolean => {
     try {
       // 验证数据
@@ -112,10 +90,10 @@ export function useHighlightDataOperations() {
       // 更新或添加
       if (existingIndex !== -1) {
         targetArray[existingIndex] = newItem
-        console.log('更新已有标注:', { text: data.text.substring(0, 30), type: data.type })
+        logger.info('更新已有标注', { text: previewText(data.text), type: data.type })
       } else {
         targetArray.push(newItem)
-        console.log('添加新标注:', { text: data.text.substring(0, 30), type: data.type })
+        logger.info('添加新标注', { text: previewText(data.text), type: data.type })
       }
 
       // 保存到本地存储
@@ -123,14 +101,12 @@ export function useHighlightDataOperations() {
       return true
 
     } catch (error) {
-      handleError(error, ErrorType.GRADING, 'save_annotation')
+      handleError(error as Error, ErrorType.GRADING, 'save_annotation')
       return false
     }
   }
 
-  /**
-   * 移除标注
-   */
+  // 移除标注
   const removeAnnotation = (
     text: string,
     type: 'correct' | 'wrong' | 'unclear' | 'redundant',
@@ -149,20 +125,18 @@ export function useHighlightDataOperations() {
       if (index !== -1) {
         targetArray.splice(index, 1)
         examDataStore.saveToLocal()
-        console.log('移除标注:', { text: text.substring(0, 30), type })
+        logger.info('移除标注', { text: previewText(text), type })
         return true
       }
 
       return false
     } catch (error) {
-      handleError(error, ErrorType.GRADING, 'remove_annotation')
+      handleError(error as Error, ErrorType.GRADING, 'remove_annotation')
       return false
     }
   }
 
-  /**
-   * 重置所有标注
-   */
+  // 重置所有标注
   const resetAllAnnotations = (studentId: number, questionId: number): boolean => {
     try {
       const currentHighlightData = getHighlightData(studentId, questionId)
@@ -178,66 +152,17 @@ export function useHighlightDataOperations() {
       currentHighlightData.total_score = 0
 
       examDataStore.saveToLocal()
-      console.log('重置所有标注:', { studentId, questionId })
+      logger.info('重置所有标注', { studentId, questionId })
       return true
 
     } catch (error) {
-      handleError(error, ErrorType.GRADING, 'reset_annotations')
+      handleError(error as Error, ErrorType.GRADING, 'reset_annotations')
       return false
     }
   }
 
-  /**
-   * 执行高亮操作
-   */
-  const executeHighlightOperation = (
-    operation: HighlightOperation,
-    studentId: number,
-    questionId: number
-  ): boolean => {
-    const validTypes = ['correct', 'wrong', 'unclear', 'redundant'] as const
 
-    switch (operation.operation) {
-      case 'add':
-        if (!operation.text || !operation.type) {
-          handleValidationError('operation', operation, '添加操作需要提供text和type')
-          return false
-        }
-        
-        if (!validTypes.includes(operation.type)) {
-          handleValidationError('type', operation.type, '无效的标注类型')
-          return false
-        }
-
-        return saveAnnotation({
-          text: operation.text,
-          type: operation.type,
-          reason: operation.reason || '',
-          scoringPoint: operation.scoringPoint || 0,
-          studentId,
-          questionId
-        })
-
-      case 'remove':
-        if (!operation.text || !operation.type) {
-          handleValidationError('operation', operation, '移除操作需要提供text和type')
-          return false
-        }
-        
-        return removeAnnotation(operation.text, operation.type, studentId, questionId)
-
-      case 'reset':
-        return resetAllAnnotations(studentId, questionId)
-
-      default:
-        handleValidationError('operation', operation.operation, '无效的操作类型')
-        return false
-    }
-  }
-
-  /**
-   * 查找标注项
-   */
+  // 查找标注
   const findAnnotation = (
     text: string,
     studentId: number,
@@ -261,14 +186,12 @@ export function useHighlightDataOperations() {
 
       return null
     } catch (error) {
-      handleError(error, ErrorType.DATA_VALIDATION, 'find_annotation')
+      handleError(error as Error, ErrorType.DATA_VALIDATION, 'find_annotation')
       return null
     }
   }
 
-  /**
-   * 获取标注统计信息
-   */
+  // 获取统计信息
   const getAnnotationStats = (studentId: number, questionId: number) => {
     try {
       const currentHighlightData = getHighlightData(studentId, questionId)
@@ -284,7 +207,7 @@ export function useHighlightDataOperations() {
         totalScore: currentHighlightData.total_score
       }
     } catch (error) {
-      handleError(error, ErrorType.DATA_VALIDATION, 'get_annotation_stats')
+      handleError(error as Error, ErrorType.DATA_VALIDATION, 'get_annotation_stats')
       return null
     }
   }
@@ -293,7 +216,6 @@ export function useHighlightDataOperations() {
     saveAnnotation,
     removeAnnotation,
     resetAllAnnotations,
-    executeHighlightOperation,
     findAnnotation,
     getAnnotationStats,
     getHighlightData,

@@ -127,7 +127,7 @@ onUnmounted(() => {
 // 标记答案
 const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
   if (!hasSelectedText.value) {
-    ElMessage.warning('请先选中要标记的文本')
+    ElMessage.warning('Please select text to mark first')
     return
   }
   

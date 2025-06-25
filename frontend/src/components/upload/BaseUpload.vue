@@ -211,7 +211,7 @@ const uploadHintText = computed(() =>
 const handleFileChange = (uploadFile) => {
   const file = uploadFile.raw || uploadFile
   if (file && file instanceof File) {
-    console.log('📁 文件已选择:', file.name)
+    console.log('文件已选择:', file.name)
     emit('file-selected', file)
   } else {
     ElMessage.error('Invalid file')

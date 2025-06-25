@@ -1,11 +1,7 @@
-/**
- * 给分相关提示词模板和构建器
- */
+// 批改提示词模板
 import type { Question, ReferenceAnswer, StudentAnswer } from '../../../stores/useExamDataStore'
 
-/**
- * 加载静态提示词模板
- */
+// 加载静态模板
 export async function loadStaticPromptTemplate(): Promise<any> {
   try {
     // 尝试直接导入开发环境
@@ -26,23 +22,14 @@ export async function loadStaticPromptTemplate(): Promise<any> {
   }
 }
 
-/**
- * 构建初始给分提示词
- * 1. Role
- * 2. Task Description
- * 3. Question
- * 4. Reference Answer
- * 5. Grading Rules
- * 6. Output Format
- * 7. Student Answer
- */
+// 构建基础批改提示词
 export function buildGradingPrompt(
   question: Question,
   referenceAnswer: ReferenceAnswer,
   studentAnswer: StudentAnswer,
   staticPrompt: any,
 ): string {
-  return `${staticPrompt.role}
+  return`${staticPrompt.role}
 
 ${staticPrompt.task_description}
 
@@ -68,15 +55,13 @@ Maximum score for this question: ${question.score}
 IMPORTANT: Replace the null values in the output format with:
 - student_id: ${studentAnswer.student_id}
 - question_id: ${question.question_id}
-- Student answer: The student's answer text must be written completely in accordance with the student's original response, retaining all original formats, including the number of spaces, line breaks, etc., without adding extra text, rewriting, or rephrasing.
+- Student answer: 100% identical to the student's original text.
 - Scoring Point: actual matched the scoring point from the reference answer(must be a number). If a student's answer matches multiple scoring points, break it down and write it separately, with each scoring point being only one digit.
 - total_score: actual calculated score (must be a number)
 Please evaluate the student answer and return the JSON response according to the format above.`
 }
 
-/**
- * 构建提示词，根据老师的高亮标注自动生成给分原因
- */
+// 构建理由生成提示词
 export function buildReasonGenerationPrompt(
   question: Question,
   referenceAnswer: ReferenceAnswer,
@@ -88,11 +73,14 @@ export function buildReasonGenerationPrompt(
 
 TASK: Generate a detailed scoring reason for the highlighted text segment.
 
-QUESTION: ${question.question}
+QUESTION:
+${question.question}
 
-REFERENCE ANSWER: ${referenceAnswer.answer}
+REFERENCE ANSWER:
+${referenceAnswer.answer}
 
-STUDENT ANSWER: ${studentAnswer.answer}
+STUDENT ANSWER:
+${studentAnswer.answer}
 
 HIGHLIGHTED TEXT: "${highlightedText}"
 
@@ -106,12 +94,57 @@ The reason should:
 3. Be concise but comprehensive
 4. Use educational language appropriate for student feedback
 5. The reason should be concise and to the point, and should not be too long.
-Return only the reason text, no additional formatting or labels.`
+Return only the reason text, ensure string format, no additional formatting or labels.`
 }
 
-/**
- * 特定给分场景的提示词模板
- */
+// 构建Few-Shot批改提示词
+export function buildGradingPromptWithFewShot(
+  question: Question,
+  referenceAnswer: ReferenceAnswer,
+  studentAnswer: StudentAnswer,
+  staticPrompt: any,
+  fewShotPrompt: string,
+): string {
+  // 如果没有few-shot示例，直接返回基础prompt
+  if (!fewShotPrompt.trim()) {
+    return buildGradingPrompt(question, referenceAnswer, studentAnswer, staticPrompt)
+  }
+
+  // 构建带Few-Shot的完整prompt
+  return `${staticPrompt.role}
+
+${staticPrompt.task_description}
+
+QUESTION:
+${question.question}
+
+REFERENCE ANSWER:
+${referenceAnswer.answer}
+
+GRADING RULES:
+${JSON.stringify(staticPrompt.grading_rules, null, 2)}
+
+SCORING POLICY:
+${staticPrompt.scoring_policy}
+
+${fewShotPrompt}
+
+STUDENT ANSWER:
+${studentAnswer.answer}
+
+OUTPUT FORMAT:
+${JSON.stringify(staticPrompt.output_format.structure, null, 2)}
+
+IMPORTANT: Replace the null values in the output format with:
+- student_id: ${studentAnswer.student_id}
+- question_id: ${question.question_id}
+- Student answer: 100% identical to the student's original text.
+- Scoring Point: actual matched the scoring point from the reference answer(must be a number). If a student's answer matches multiple scoring points, break it down and write it separately, with each scoring point being only one digit.
+- total_score: actual calculated score (must be a number)
+Please evaluate the student answer and return the JSON response according to the format above.`
+}
+
+// 提示词模板
 export const GRADING_PROMPTS = {
   /**
    * 标准单个学生给分
@@ -119,21 +152,13 @@ export const GRADING_PROMPTS = {
   SINGLE_STUDENT_GRADING: buildGradingPrompt,
 
   /**
+   * 带Few-Shot示例的学生给分
+   */
+  FEW_SHOT_STUDENT_GRADING: buildGradingPromptWithFewShot,
+
+  /**
    * 老师标记高亮自动生成评分理由
    */
   HIGHLIGHT_REASON_GENERATION: buildReasonGenerationPrompt,
 }
 
-/**
- * 根据上下文获取适当的提示词构建器
- */
-export function getPromptBuilder(context: 'initial' | 'reason') {
-  switch (context) {
-    case 'initial':
-      return GRADING_PROMPTS.SINGLE_STUDENT_GRADING
-    case 'reason':
-      return GRADING_PROMPTS.HIGHLIGHT_REASON_GENERATION
-    default:
-      return GRADING_PROMPTS.SINGLE_STUDENT_GRADING
-  }
-}

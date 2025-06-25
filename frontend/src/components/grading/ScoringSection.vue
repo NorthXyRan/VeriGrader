@@ -58,6 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emits = defineEmits<{
   (e: 'scoreChange', data: { teacherScore: number, llmScore: number }): void
+  (e: 'saveAsGoldenExample'): void
 }>()
 
 // 评分相关数据
@@ -81,11 +82,16 @@ const handleTeacherScoreInput = (value: string) => {
 const saveScore = () => {
   const score = typeof teacherScore.value === 'string' ? parseFloat(teacherScore.value) : teacherScore.value
   if (score !== undefined && !isNaN(score)) {
-    ElMessage.success(`评分已保存并提交: ${score}分`)
+    // 发送评分变化事件
     emits('scoreChange', {
       teacherScore: score,
       llmScore: props.llmScore || 0
     })
+    
+    // 发送设置金标试卷事件
+    emits('saveAsGoldenExample')
+    
+    ElMessage.success(`Score saved and set as golden standard: ${score} points`)
   }
 }
 </script>

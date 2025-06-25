@@ -41,6 +41,14 @@ export interface HighlightData {
     redundant: HighlightItem[]
   }
   total_score: number
+  isGold?: boolean  // 金标试卷标记
+}
+
+export interface ReasonExample {
+  questionId: number
+  studentAnswer: string
+  highlightType: 'correct' | 'wrong' | 'unclear' | 'redundant'
+  reason: string
 }
 
 // ===== 核心数据存储 =====
@@ -51,6 +59,7 @@ export const useExamDataStore = defineStore('examData', () => {
   const studentAnswers = ref<StudentAnswer[]>([])        // 学生答案列表
   const studentList = ref<StudentInfo[]>([])             // 学生列表
   const highlightDataList = ref<HighlightData[]>([])     // 评分结果
+  const reasonExamples = ref<ReasonExample[]>([])        // Few-Shot 理由示例
 
   // ===== 计算属性 =====
   const questionCount = computed(() => questions.value.length)
@@ -118,11 +127,90 @@ export const useExamDataStore = defineStore('examData', () => {
       (data) =>
         data.student_id === highlight.student_id && data.question_id === highlight.question_id,
     )
+    
+    const existing = existingIndex >= 0 ? highlightDataList.value[existingIndex] : null
+    const operation = existing ? '更新' : '新增'
+    
     if (existingIndex >= 0) {
       highlightDataList.value[existingIndex] = highlight
     } else {
       highlightDataList.value.push(highlight)
     }
+    
+    console.log(`STORE: [数据存储] ${operation}批改结果:`, {
+      学生ID: highlight.student_id,
+      题目ID: highlight.question_id,
+      分数变化: existing ? `${existing.total_score} → ${highlight.total_score}` : highlight.total_score,
+      标注统计: {
+        正确: highlight.answer.correct.length,
+        错误: highlight.answer.wrong.length,
+        不清楚: highlight.answer.unclear.length,
+        冗余: highlight.answer.redundant.length
+      },
+      是否金标: highlight.isGold || false
+    })
+  }
+
+  // ===== Few-Shot 相关方法 =====
+  
+  // 添加单个理由示例
+  const addReasonExample = (example: ReasonExample) => {
+    reasonExamples.value.push(example)
+    console.log('添加理由示例到题目', example.questionId, '，当前示例总数:', reasonExamples.value.length)
+  }
+
+  // 设置金标试卷并批量提取理由
+  const setGoldPaper = (studentId: number, questionId: number): boolean => {
+    const highlightData = getHighlightData(studentId, questionId)
+    if (!highlightData) {
+      console.error('未找到高亮数据，无法设置金标')
+      return false
+    }
+
+    // 设置金标标记
+    highlightData.isGold = true
+    
+    // 批量提取理由示例
+    const extractCount = batchExtractReasons(highlightData)
+    
+    console.log(`设置金标试卷 学生${studentId}-题目${questionId}，提取${extractCount}条理由示例`)
+    return true
+  }
+
+  // 批量提取理由示例
+  const batchExtractReasons = (highlightData: HighlightData): number => {
+    const types = ['correct', 'wrong', 'unclear', 'redundant'] as const
+    let extractCount = 0
+    
+    types.forEach(type => {
+      const items = highlightData.answer[type]
+      items.forEach(item => {
+        if (item.reason && item.reason.trim()) {
+          reasonExamples.value.push({
+            questionId: highlightData.question_id,
+            studentAnswer: item['Student answer'],
+            highlightType: type,
+            reason: item.reason
+          })
+          extractCount++
+        }
+      })
+    })
+    
+    console.log('批量提取理由完成，提取', extractCount, '条，总计', reasonExamples.value.length, '条')
+    
+    return extractCount
+  }
+
+  // 检查是否为金标试卷
+  const isGoldPaper = (studentId: number, questionId: number): boolean => {
+    const highlightData = getHighlightData(studentId, questionId)
+    return highlightData?.isGold === true
+  }
+
+  // 获取指定题目的理由示例
+  const getReasonExamplesByQuestion = (questionId: number): ReasonExample[] => {
+    return reasonExamples.value.filter(example => example.questionId === questionId)
   }
 
   // ===== 数据重置 =====
@@ -138,6 +226,7 @@ export const useExamDataStore = defineStore('examData', () => {
     studentAnswers.value = []
     studentList.value = []
     highlightDataList.value = []
+    reasonExamples.value = []
   }
 
   const resetAllData = () => {
@@ -156,6 +245,7 @@ export const useExamDataStore = defineStore('examData', () => {
       localStorage.setItem('exam_student_answers', JSON.stringify(studentAnswers.value))
       localStorage.setItem('exam_student_list', JSON.stringify(studentList.value))
       localStorage.setItem('exam_highlight_data', JSON.stringify(highlightDataList.value))
+      localStorage.setItem('exam_reason_examples', JSON.stringify(reasonExamples.value))
     } catch (error) {
       console.error('保存数据失败:', error)
     }
@@ -168,12 +258,14 @@ export const useExamDataStore = defineStore('examData', () => {
       const savedStudentAnswers = localStorage.getItem('exam_student_answers')
       const savedStudentList = localStorage.getItem('exam_student_list')
       const savedHighlightData = localStorage.getItem('exam_highlight_data')
+      const savedReasonExamples = localStorage.getItem('exam_reason_examples')
 
       if (savedQuestions) questions.value = JSON.parse(savedQuestions)
       if (savedReferenceAnswers) referenceAnswers.value = JSON.parse(savedReferenceAnswers)
       if (savedStudentAnswers) studentAnswers.value = JSON.parse(savedStudentAnswers)
       if (savedStudentList) studentList.value = JSON.parse(savedStudentList)
       if (savedHighlightData) highlightDataList.value = JSON.parse(savedHighlightData)
+      if (savedReasonExamples) reasonExamples.value = JSON.parse(savedReasonExamples)
     } catch (error) {
       console.error('加载数据失败:', error)
     }
@@ -186,6 +278,7 @@ export const useExamDataStore = defineStore('examData', () => {
     studentAnswers,
     studentList,
     highlightDataList,
+    reasonExamples,
 
     // 计算属性
     questionCount,
@@ -204,6 +297,14 @@ export const useExamDataStore = defineStore('examData', () => {
     setStudentAnswers,
     setHighlightData,
     addHighlightData,
+    
+    // Few-Shot 方法
+    addReasonExample,
+    setGoldPaper,
+    isGoldPaper,
+    getReasonExamplesByQuestion,
+    
+    // 重置方法
     resetQuestions,
     resetReferenceAnswers,
     resetStudentData,

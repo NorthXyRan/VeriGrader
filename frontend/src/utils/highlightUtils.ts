@@ -3,6 +3,8 @@
  * 只在这里定义颜色，Vue组件不重复定义
  */
 
+import { logger } from '@/utils/logger'
+
 // ============== 类型定义 ==============
 
 export interface HighlightItem {
@@ -123,7 +125,7 @@ export function generateHighlightedHTML(
     return b.text.length - a.text.length
   })
 
-  console.log('[highlightUtils] 生成高亮HTML:', {
+  logger.info('生成高亮HTML', {
     totalHighlights: highlights.length,
     highlightTypes: Object.keys(highlightData.answer).reduce((acc: Record<string, number>, key) => {
       const typedKey = key as keyof typeof highlightData.answer
@@ -219,7 +221,7 @@ export function parseHighlightElement(element: HTMLElement, highlightData?: High
     reason = element.getAttribute('data-reason') || ''
   }
   
-  console.log('[highlightUtils] 解析高亮元素:', {
+  logger.info('解析高亮元素', {
     text: text.substring(0, 20) + '...',
     type: type,
     scoringPoint: scoringPoint,

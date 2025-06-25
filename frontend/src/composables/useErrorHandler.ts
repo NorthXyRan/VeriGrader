@@ -1,13 +1,8 @@
-/**
- * 统一错误处理 Composable
- * 提供一致的错误处理和用户反馈机制
- */
+// 统一错误处理
 
 import { ElMessage } from 'element-plus'
 
-/**
- * 错误类型枚举
- */
+// 错误类型
 export enum ErrorType {
   GRADING = 'grading',
   REASON_GENERATION = 'reason_generation',
@@ -16,9 +11,7 @@ export enum ErrorType {
   NETWORK = 'network'
 }
 
-/**
- * 错误处理配置
- */
+// 错误处理配置
 interface ErrorConfig {
   showMessage: boolean
   logToConsole: boolean
@@ -31,14 +24,9 @@ const defaultErrorConfig: ErrorConfig = {
   messageType: 'error'
 }
 
-/**
- * 错误处理 Hook
- */
 export function useErrorHandler() {
   
-  /**
-   * 格式化错误信息
-   */
+  // 格式化错误信息
   const formatErrorMessage = (error: Error | string, context: string): string => {
     const errorMsg = error instanceof Error ? error.message : error
     
@@ -59,9 +47,7 @@ export function useErrorHandler() {
     return errorMsg
   }
 
-  /**
-   * 处理批改相关错误
-   */
+  // 处理批改错误
   const handleGradingError = (
     error: Error | string, 
     context: string = 'grading',
@@ -79,9 +65,7 @@ export function useErrorHandler() {
     }
   }
 
-  /**
-   * 处理理由生成错误
-   */
+  // 处理理由生成错误
   const handleReasonGenerationError = (
     error: Error | string,
     attempt?: number,
@@ -98,9 +82,7 @@ export function useErrorHandler() {
     }
   }
 
-  /**
-   * 处理数据验证错误
-   */
+  // 处理数据验证错误
   const handleValidationError = (
     field: string,
     value: any,
@@ -111,9 +93,7 @@ export function useErrorHandler() {
     ElMessage.warning(message)
   }
 
-  /**
-   * 处理服务不可用错误
-   */
+  // 处理服务不可用错误
   const handleServiceUnavailableError = (
     serviceName: string,
     details?: string
@@ -123,9 +103,7 @@ export function useErrorHandler() {
     ElMessage.error(message)
   }
 
-  /**
-   * 处理网络错误
-   */
+  // 处理网络错误
   const handleNetworkError = (
     operation: string,
     error: Error | string
@@ -137,9 +115,7 @@ export function useErrorHandler() {
     ElMessage.error(message)
   }
 
-  /**
-   * 通用错误处理器
-   */
+  // 通用错误处理器
   const handleError = (
     error: Error | string,
     type: ErrorType = ErrorType.GRADING,
@@ -166,9 +142,7 @@ export function useErrorHandler() {
     }
   }
 
-  /**
-   * 创建错误重试处理器
-   */
+  // 创建重试处理器
   const createRetryHandler = (
     operation: string,
     maxRetries: number = 3

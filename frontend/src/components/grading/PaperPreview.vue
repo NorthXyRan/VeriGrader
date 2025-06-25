@@ -17,7 +17,8 @@ import {
   HIGHLIGHT_CONFIG,
   type HighlightData,
   type HighlightType
-} from './utils/highlightUtils'
+} from '@/utils/highlightUtils'
+import { logger } from '@/utils/logger'
 
 interface Props {
   studentAnswer?: string
@@ -74,7 +75,7 @@ const handleHighlightClick = (event: Event) => {
       type: highlightData.type
     }
     
-    console.log('点击高亮:', {
+    logger.info('点击高亮', {
       text: highlightData.text,
       type: highlightData.type,
       reason: highlightData.reason.substring(0, 50) + '...',
@@ -82,7 +83,7 @@ const handleHighlightClick = (event: Event) => {
     })
     
     emits('highlightClicked', highlightData)
-    ElMessage.info(`选中【${config.label}】标记`)
+    // Highlight clicked, no message needed
   }
 }
 
@@ -101,19 +102,19 @@ const handleTextSelection = () => {
 const markAnswer = (type: HighlightType) => {
   // 检查是否有HighlightData
   if (!props.highlightData) {
-    ElMessage.warning('请先进行AI批改，然后才能进行教师标注')
+    ElMessage.warning('Please perform AI grading first before teacher annotation')
     return
   }
   
   if (!selectedText.value) {
-    ElMessage.warning('请先选中要标记的文本')
+    ElMessage.warning('Please select text to mark first')
     return
   }
   
   const config = HIGHLIGHT_CONFIG[type]
   const text = selectedText.value
   
-  console.log('教师标注:', {
+  logger.info('教师标注', {
     text: text,
     type: type,
     operation: '添加到HighlightData'
@@ -128,7 +129,7 @@ const markAnswer = (type: HighlightType) => {
     scoringPoint: 0 // 教师标注默认0分
   })
   
-  ElMessage.success(`已标记为"${config.label}"`)
+  // Message removed to avoid noise
   clearSelection()
 }
 
@@ -136,16 +137,16 @@ const markAnswer = (type: HighlightType) => {
 const eraseHighlightedText = () => {
   // 检查是否有HighlightData
   if (!props.highlightData) {
-    ElMessage.warning('没有批改数据可以清除')
+    ElMessage.warning('No grading data to clear')
     return
   }
   
   if (!clickedHighlight.value) {
-    ElMessage.warning('请先点击要清除的高亮文本')
+    ElMessage.warning('Please click the highlighted text to clear first')
     return
   }
   
-  console.log('清除标注:', {
+  logger.info('清除标注', {
     text: clickedHighlight.value.text,
     type: clickedHighlight.value.type,
     operation: '从HighlightData移除'
@@ -158,7 +159,7 @@ const eraseHighlightedText = () => {
     type: clickedHighlight.value.type
   })
   
-  ElMessage.success('已清除标记')
+  // Clear action completed silently
   
   // 清空状态
   clickedHighlight.value = null
@@ -168,18 +169,18 @@ const eraseHighlightedText = () => {
 const clearAllMarks = () => {
   // 检查是否有HighlightData
   if (!props.highlightData) {
-    ElMessage.warning('没有批改数据可以重置')
+    ElMessage.warning('No grading data to reset')
     return
   }
   
-  console.log('重置所有标注: 清除整个学生的HighlightData')
+  logger.info('重置所有标注', { operation: '清除整个学生的HighlightData' })
   
   // 发送重置事件给父组件
   emits('updateHighlightData', {
     operation: 'reset'
   })
   
-  ElMessage.warning('已清除所有标记')
+  ElMessage.success('All marks cleared')
   clickedHighlight.value = null
   clearSelection()
 }

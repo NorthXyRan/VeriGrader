@@ -1,4 +1,4 @@
-// API 配置文件
+// API配置
 export const API_CONFIG = {
   // LLM API 配置
   LLM: {
@@ -8,7 +8,7 @@ export const API_CONFIG = {
     // 文件上传配置
     UPLOAD: {
       MODEL: 'gpt-4o-all',
-      MAX_TOKENS: 1688,
+      MAX_TOKENS: 16384,
       TEMPERATURE: 0.1,
 
       MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
@@ -19,18 +19,25 @@ export const API_CONFIG = {
     //  批改配置
     GRADING: {
       MODEL: 'o3-mini',
-      MAX_TOKENS: 12800,
+      MAX_TOKENS: 4096,
+      TEMPERATURE: 0.3,
+    },
+
+    // 理由生成配置
+    REASON_GENERATION: {
+      MODEL: 'o3-mini',
+      MAX_TOKENS: 150,
       TEMPERATURE: 0.3,
     },
   },
 }
 
-// 检查 API 配置是否有效
+// 检查API配置
 export function isAPIConfigValid() {
   return API_CONFIG.LLM.API_KEY && API_CONFIG.LLM.API_KEY !== 'your-api-key-here'
 }
 
-// 获取环境信息
+// 环境信息
 export function getEnvironmentInfo() {
   return {
     isDevelopment: import.meta.env.DEV,

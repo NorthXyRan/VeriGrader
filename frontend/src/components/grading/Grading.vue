@@ -19,6 +19,7 @@
         :llm-score="currentLLMScore"
         :max-score="currentMaxScore"
         @score-change="handleScoreChange"
+        @save-as-golden-example="handleSaveAsGoldenExample"
       />
       <action-section
         ref="actionSectionRef"
@@ -64,7 +65,7 @@
           ref="feedbackPanelRef"
           @modify-reason="handleModifyReason"
           @save-reason="handleSaveReason"
-          @submit-reason="handleSubmitReason"
+          @submit-reason-example="handleSubmitReasonExample"
         />
       </div>
     </div>
@@ -83,19 +84,21 @@ import PaperPreview from './PaperPreview.vue'
 import ReferenceAnswer from './ReferenceAnswer.vue'
 import ScoringSection from './ScoringSection.vue'
 
-// 导入分离式 Store
+// Store
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 
-// 导入业务逻辑 Composable
+// Composables
 import { useGradingBusiness } from '../../composables/useGradingBusiness'
 import { useHighlightDataOperations } from '../../composables/useHighlightDataOperations'
+import { useFewShotManager } from '../../composables/useFewShotManager'
+import { logger } from '@/utils/logger'
 
-// 使用分离的 Store
+// 数据存储
 const examDataStore = useExamDataStore()
 const uploadStatusStore = useUploadStatusStore()
 
-// 使用业务逻辑 Composable
+// 批改业务逻辑
 const { 
   executeSingleGrading,
   executeBatchGrading,
@@ -103,20 +106,18 @@ const {
   saveReasonDirectly
 } = useGradingBusiness()
 
-// 使用高亮数据操作 Composable
-const { executeHighlightOperation } = useHighlightDataOperations()
+// 标注数据操作
+const { saveAnnotation, removeAnnotation, resetAllAnnotations } = useHighlightDataOperations()
 
-/**
- * ===== UI 状态管理 =====
- */
+// Few-Shot学习管理
+const { addReasonExample, setGoldPaper, isGoldPaper } = useFewShotManager()
+
+// UI状态
 const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
-const isInModifyMode = ref<boolean>(false) // 是否处于修改模式
+const isInModifyMode = ref<boolean>(false)
 
-/**
- * ===== 计算属性 =====
- */
-// 当前题目信息
+// 当前题目
 const currentQuestion = computed(() => {
   return examDataStore.getQuestionById(currentQuestionId.value)
 })
@@ -134,61 +135,53 @@ const currentReferenceAnswer = computed(() => {
 
 // 学生答案
 const currentStudentAnswer = computed(() => {
-
   const answer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
-
   if (!answer) {
     return 'There is no student answer available. Please check if you have uploaded or answered this question.'
   }
-
   return answer.answer
 })
 
-// 当前高亮数据
+// 当前标注数据
 const currentHighlightData = computed(() => {
   if (!currentStudentId.value || !currentQuestionId.value) return null
   return examDataStore.getHighlightData(currentStudentId.value, currentQuestionId.value)
 })
 
-// 当前AI评分
+// AI评分
 const currentLLMScore = computed(() => {
   return currentHighlightData.value?.total_score || 0
 })
 
-// 当前题目满分
+// 题目满分
 const currentMaxScore = computed(() => {
   return currentQuestion.value?.score || 0
 })
 
-/**
- * ===== 组件引用 =====
- */
+// 是否为金标试卷
+const isCurrentPaperGolden = computed(() => {
+  return isGoldPaper(currentStudentId.value, currentQuestionId.value)
+})
+
+// 组件引用
 const feedbackPanelRef = ref()
 const paperPreviewRef = ref()
 const highlightToolbarRef = ref()
 const actionSectionRef = ref()
 
-/**
- * ===== 辅助函数 =====
- */
-// 业务逻辑已抽取到 useGradingBusiness composable
-
-/**
- * ===== 事件处理 =====
- */
+// 事件处理
 const handleStudentChange = (studentId: number) => {
   if (studentId === currentStudentId.value) return
 
   const studentExists = examDataStore.studentList.some((student) => student.id === studentId)
 
   if (!studentExists) {
-    ElMessage.warning(`学生 ${studentId} 不存在`)
+    ElMessage.warning(`Student ${studentId} not found`)
     return
   }
 
   currentStudentId.value = studentId
-  ElMessage.success(`切换到学生 ${studentId}`)
-  console.log('切换学生:', studentId)
+  logger.info('切换学生', { studentId })
 }
 
 const handleQuestionChange = (question: { id: number; name: string; score: number }) => {
@@ -197,18 +190,17 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
   const questionExists = examDataStore.getQuestionById(question.id)
 
   if (!questionExists) {
-    ElMessage.warning(`题目 ${question.id} 不存在`)
+    ElMessage.warning(`Question ${question.id} not found`)
     return
   }
 
   currentQuestionId.value = question.id
-  ElMessage.success(`切换到第${question.id}题，满分${questionExists.score}分`)
-  console.log('切换题目:', question.id)
+  logger.info('切换题目', { questionId: question.id })
 }
 
-// 高亮点击事件处理
+// 高亮点击处理
 const handleHighlightClicked = (data: { text: string; type: string; reason: string; scoringPoint: number }) => {
-  console.log('[Grading] 高亮点击事件:', {
+  logger.info('高亮点击事件', {
     text: data.text.substring(0, 30) + '...',
     type: data.type,
     hasReason: !!data.reason
@@ -216,7 +208,7 @@ const handleHighlightClicked = (data: { text: string; type: string; reason: stri
   feedbackPanelRef.value?.handleHighlightClicked(data)
 }
 
-// 更新HighlightData的核心方法
+// 更新标注数据
 const handleUpdateHighlightData = async (data: {
   operation: 'add' | 'remove' | 'reset'
   text?: string
@@ -224,7 +216,7 @@ const handleUpdateHighlightData = async (data: {
   reason?: string
   scoringPoint?: number
 }) => {
-  console.log('[Grading] 更新HighlightData:', {
+  logger.info('更新HighlightData', {
     operation: data.operation,
     text: data.text ? data.text.substring(0, 30) + '...' : undefined,
     type: data.type
@@ -256,8 +248,8 @@ const handleUpdateHighlightData = async (data: {
       })
       
       generateReasonWithFeedback(
-        data.text, 
-        targetType, 
+        data.text,
+        targetType,
         data.scoringPoint || 0,
         currentStudentId.value,
         currentQuestionId.value,
@@ -267,31 +259,34 @@ const handleUpdateHighlightData = async (data: {
     return
   }
   
-  // 使用统一的高亮操作处理器处理其他操作
-  executeHighlightOperation(data, currentStudentId.value, currentQuestionId.value)
+  // 处理其他操作（删除和重置）
+  if (data.operation === 'remove' && data.text && data.type) {
+    removeAnnotation(data.text, data.type, currentStudentId.value, currentQuestionId.value)
+  } else if (data.operation === 'reset') {
+    resetAllAnnotations(currentStudentId.value, currentQuestionId.value)
+  }
 }
 
-// 开始给分
+// 单个批改
 const startGrading = async () => {
   await executeSingleGrading(currentStudentId.value, currentQuestionId.value, actionSectionRef)
 }
 
-// 批量给分
+// 批量批改
 const startBatchGrading = async (batchCount: number) => {
   await executeBatchGrading(batchCount, currentQuestionId.value, actionSectionRef)
 }
 
 const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {
-  ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
+  // Score change handled silently, no need for message
 }
 
 const handleModifyReason = () => {
   isInModifyMode.value = true
-  ElMessage.info('理由编辑模式')
 }
 
 const handleSaveReason = (data: { highlight: any, reason: string }) => {
-  console.log('[Grading] 保存理由:', {
+  logger.info('保存理由', {
     text: data.highlight.text.substring(0, 30) + '...',
     type: data.highlight.type,
     newReason: data.reason
@@ -306,19 +301,38 @@ const handleSaveReason = (data: { highlight: any, reason: string }) => {
     scoringPoint: data.highlight.scoringPoint || 0
   })
   
-  ElMessage.success('理由已保存')
+  ElMessage.success('Reason saved')
 }
 
-const handleSubmitReason = () => {
-  ElMessage.success('理由已提交，重新评分中...')
-  // TODO: 提交教师反馈并触发AI重新评分
+
+// 提交理由示例
+const handleSubmitReasonExample = (data: {
+  text: string
+  type: 'correct' | 'wrong' | 'unclear' | 'redundant'
+  reason: string
+}) => {
+  addReasonExample({
+    questionId: currentQuestionId.value,
+    studentAnswer: data.text,
+    highlightType: data.type,
+    reason: data.reason
+  })
+  ElMessage.success('Reason example added to library')
 }
 
-/**
- * ===== 初始化当前选择 =====
- */
+// 设置金标试卷
+const handleSaveAsGoldenExample = () => {
+  const success = setGoldPaper(currentStudentId.value, currentQuestionId.value)
+  
+  if (success) {
+    ElMessage.success('Paper set as golden standard, all reasons extracted to example library')
+  } else {
+    ElMessage.error('Failed to set golden standard, please check paper data')
+  }
+}
+
+// 初始化
 const initializeCurrentIds = () => {
-  // 设置第一个可用的学生和题目
   if (examDataStore.studentList.length > 0) {
     currentStudentId.value = examDataStore.studentList[0].id
   }
@@ -327,7 +341,7 @@ const initializeCurrentIds = () => {
     currentQuestionId.value = examDataStore.questions[0].question_id
   }
 
-  console.log('初始化当前选择:', {
+  logger.info('初始化当前选择', {
     studentId: currentStudentId.value,
     questionId: currentQuestionId.value,
   })
@@ -338,24 +352,25 @@ const initializeCurrentIds = () => {
  */
 onMounted(async () => {
   try {
-    console.log('Grading页面初始化开始')
+    logger.info('Grading页面初始化开始')
 
     // 从本地恢复所有状态
     examDataStore.loadFromLocal()
     uploadStatusStore.loadFromLocal()
 
-    console.log('数据状态检查:')
-    console.log('- 题目数量:', examDataStore.questionCount)
-    console.log('- 参考答案数量:', examDataStore.referenceAnswerCount)
-    console.log('- 学生数量:', examDataStore.studentCount)
-    console.log('- 答案数量:', examDataStore.totalAnswerCount)
-    console.log('- 数据完整性:', examDataStore.isDataComplete)
+    logger.info('数据状态检查', {
+      题目数量: examDataStore.questionCount,
+      参考答案数量: examDataStore.referenceAnswerCount,
+      学生数量: examDataStore.studentCount,
+      答案数量: examDataStore.totalAnswerCount,
+      数据完整性: examDataStore.isDataComplete
+    })
 
     initializeCurrentIds()
 
-    console.log('Grading页面初始化完成')
+    logger.info('Grading页面初始化完成')
   } catch (error) {
-    console.error('初始化失败:', error)
+    logger.error('初始化失败', error)
     ElMessage.error('初始化失败: ' + (error instanceof Error ? error.message : '未知错误'))
   }
 })

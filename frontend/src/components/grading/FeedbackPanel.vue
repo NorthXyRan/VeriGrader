@@ -50,6 +50,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
+import { logger } from '@/utils/logger'
 
 // 接收高亮点击事件的数据结构
 interface HighlightClickData {
@@ -73,6 +74,7 @@ const emits = defineEmits<{
   (e: 'modifyReason', data: any): void
   (e: 'saveReason', data: any): void
   (e: 'submitReason', data: any): void
+  (e: 'submitReasonExample', data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant', reason: string }): void
 }>()
 
 // === 内部状态管理 ===
@@ -112,7 +114,7 @@ const handleHighlightClicked = (data: HighlightClickData) => {
     scoringPoint: data.scoringPoint
   }
   
-  ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
+  // Remove unnecessary info message for viewing highlight
 }
 
 
@@ -122,7 +124,7 @@ watch(() => selectedHighlight.value, (newHighlight) => {
     editableReason.value = newHighlight.reason || ''
     isEditing.value = false
     
-    console.log('选中高亮变化:', {
+    logger.info('选中高亮变化', {
       text: newHighlight.text,
       type: newHighlight.type,
       reason: newHighlight.reason,
@@ -140,13 +142,13 @@ const modifyReason = () => {
     emits('modifyReason', selectedHighlight.value)
   }
   isEditing.value = true
-  ElMessage.info('现在可以编辑理由内容')
+  // Edit mode enabled silently
 }
 
 // 保存理由
 const saveReason = () => {
   if (!editableReason.value.trim()) {
-    ElMessage.warning('请输入理由内容')
+    ElMessage.warning('Please enter reason content')
     return
   }
   
@@ -157,22 +159,31 @@ const saveReason = () => {
       reason: editableReason.value.trim()
     })
   }
-  ElMessage.success('理由已保存')
+  // Message will be shown by parent component
 }
 
 // 提交理由
 const submitReason = () => {
   if (!editableReason.value.trim()) {
-    ElMessage.warning('请输入理由内容')
+    ElMessage.warning('Please enter reason content')
     return
   }
   
   if (selectedHighlight.value) {
+    // 发送原有的submitReason事件
     emits('submitReason', {
       highlight: selectedHighlight.value,
       reason: editableReason.value.trim()
     })
-    ElMessage.success('理由已提交')
+    
+    // 同时发送submitReasonExample事件用于Few-Shot
+    emits('submitReasonExample', {
+      text: selectedHighlight.value.text,
+      type: selectedHighlight.value.type,
+      reason: editableReason.value.trim()
+    })
+    
+    ElMessage.success('Reason submitted and added to example library')
   }
 }
 

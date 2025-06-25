@@ -29,10 +29,11 @@
               {
                 active: currentStudentId === student.id,
                 graded: gradedPapers.includes(student.id),
+                golden: isStudentGolden(student.id),
               },
             ]"
             @click="handleStudentChange(student.id)"
-            :title="`学生ID: ${student.id}${gradedPapers.includes(student.id) ? '（已批改）' : '（未批改）'}`"
+            :title="`学生ID: ${student.id}${getStudentStatusText(student.id)}`"
           >
             {{ student.id }}
           </div>
@@ -129,6 +130,7 @@ interface HighlightData {
     redundant: any[]
   }
   total_score: number
+  isGold?: boolean
 }
 
 interface Props {
@@ -241,7 +243,7 @@ const emits = defineEmits<{
  */
 const handleStudentChange = (studentId: number) => {
   if (!studentId) {
-    ElMessage.warning('学生ID无效')
+    ElMessage.warning('Invalid student ID')
     return
   }
   emits('studentChange', studentId)
@@ -257,7 +259,7 @@ const handleQuestionChange = (questionIndex: number, question: any) => {
 
 const showCurrentQuestion = () => {
   if (!props.currentQuestion) {
-    ElMessage.warning('请先选择题目')
+    ElMessage.warning('Please select a question first')
     return
   }
   questionDialogVisible.value = true
@@ -265,10 +267,34 @@ const showCurrentQuestion = () => {
 
 const jumpToStudent = (student: { id?: number } | undefined) => {
   if (!student?.id) {
-    ElMessage.warning('未找到学生信息')
+    ElMessage.warning('Student information not found')
     return
   }
   handleStudentChange(student.id)
+}
+
+/**
+ * ===== 金标相关方法 =====
+ */
+// 检查学生是否为金标
+const isStudentGolden = (studentId: number): boolean => {
+  // 遍历高亮数据，检查该学生在当前题目下是否为金标
+  const highlightData = props.highlightDataList.find(
+    data => data.student_id === studentId && data.question_id === props.currentQuestion
+  )
+  
+  return highlightData?.isGold === true
+}
+
+// 获取学生状态文本
+const getStudentStatusText = (studentId: number): string => {
+  if (isStudentGolden(studentId)) {
+    return '（金标试卷）'
+  } else if (gradedPapers.value.includes(studentId)) {
+    return '（已批改）'
+  } else {
+    return '（未批改）'
+  }
 }
 </script>
 
@@ -381,6 +407,18 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
 
 .select-item.graded:hover {
   background-color: #3ac85a;
+}
+
+.select-item.golden {
+  background-color: #ffd700 !important;
+  color: #000000 !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+.select-item.golden:hover {
+  background-color: #ffcc00 !important;
+  box-shadow: 0 3px 12px rgba(255, 215, 0, 0.4) !important;
 }
 
 /**
