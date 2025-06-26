@@ -141,7 +141,7 @@ watch(() => props.status, (newStatus, oldStatus) => {
     if (uploadRef.value) {
       uploadRef.value.clearFiles()
     }
-    console.log('📝 文件列表已清空，可以重新上传')
+    console.log('文件列表已清空，可以重新上传')
   }
 })
 
