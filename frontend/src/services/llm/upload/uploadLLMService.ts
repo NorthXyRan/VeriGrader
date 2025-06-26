@@ -1,6 +1,6 @@
 // services/llm/upload/uploadLLMService.ts
-import { ElMessage } from 'element-plus'
 import { API_CONFIG, isAPIConfigValid } from '@/config/api'
+import { ElMessage } from 'element-plus'
 import { UPLOAD_PROMPTS } from './uploadPrompts'
 
 /**
@@ -21,15 +21,15 @@ export class UploadLLMService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_CONFIG.LLM.API_KEY}`
+          Authorization: `Bearer ${API_CONFIG.LLM.API_KEY}`,
         },
         body: JSON.stringify({
           model: API_CONFIG.LLM.UPLOAD.MODEL,
           messages: [{ role: 'user', content: prompt }],
           temperature: API_CONFIG.LLM.UPLOAD.TEMPERATURE,
           max_tokens: API_CONFIG.LLM.UPLOAD.MAX_TOKENS,
-          stream: false
-        })
+          stream: false,
+        }),
       })
 
       if (!response.ok) {
@@ -72,25 +72,26 @@ export class UploadLLMService {
       // 根据类型选择提示信息
       const messageMap = {
         paper: '正在调用大模型分析试卷...',
-        answer: '正在调用大模型解析参考答案...'
+        answer: '正在调用大模型解析参考答案...',
       }
-      
+
       const successMap = {
         paper: '试卷解析成功',
-        answer: '参考答案解析成功'
+        answer: '参考答案解析成功',
       }
-      
+
       ElMessage.info(messageMap[type])
-      
+
       // 根据类型选择对应的prompt
-      const prompt = type === 'paper' 
-        ? UPLOAD_PROMPTS.PARSE_PAPER(content)
-        : UPLOAD_PROMPTS.PARSE_ANSWER(content)
-      
+      const prompt =
+        type === 'paper'
+          ? UPLOAD_PROMPTS.PARSE_PAPER(content)
+          : UPLOAD_PROMPTS.PARSE_ANSWER(content)
+
       // 调用API
       const response = await this.callOpenAI(prompt)
       const result = this.parseJSON(response)
-      
+
       ElMessage.success(successMap[type])
       return result
     } catch (error) {
