@@ -107,7 +107,7 @@
     {
       "student_id": 21,
       "question_id": 1,
-      "answer": "① 插值：找到一个函数，在某个特定点有一个特定值。方法：拉格朗日插值法，牛顿插值等\n适用于数据点较少的场景，但对于数据点较多时，误差会很大，误差与阶数有关。\n\n② 逼近：通过找到一个函数，让该函数尽可能逼近这些点（目标点）。\n方法：最小二乘法、泰勒展开。\n适用于数据点较多的场景。\n逼近的误差与逼近的形式和逼近的函数有关。"
+      "answer": "① Interpolation: Find a function that has a specific value at a specific point. Methods: Lagrange interpolation, Newton interpolation, etc.\nSuitable for scenarios with fewer data points, but when there are many data points, the error can be large, and the error is related to the order.\n\n② Approximation: Find a function that approximates these points (target points) as closely as possible.\nMethods: Least squares method, Taylor expansion.\nSuitable for scenarios with many data points.\nThe approximation error is related to the form of the approximation and the approximating function."
     },
     {
       "student_id": 22,
