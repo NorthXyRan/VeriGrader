@@ -4,11 +4,10 @@
 
 ```
 paper/
-├── config.json          # 试卷配置文件
-├── example1/            # 示例试卷
-│   ├── paper.json       # 题目信息（支持多个题目）
-│   └── answer.json      # 参考答案（对应多个题目）
-└── README.md           # 说明文档
+├── paper.json       					# 题目信息（支持多个题目）
+├── answer.json      					# 参考答案（对应多个题目）
+├── student_answer.json				# 学生试卷
+└── README.md          			  # 说明文档
 ```
 
 ## 文件格式
@@ -72,35 +71,60 @@ paper/
 }
 ```
 
-## 添加新试卷
+### student_answer.json - 对应的学生试卷
 
-### 1. 创建试卷目录
-
-在 `paper/` 目录下创建新的试卷目录，例如 `exam2024/`
-
-### 2. 创建 paper.json 文件
-
-在试卷目录中创建包含多个题目的 `paper.json` 文件
-
-### 3. 创建 answer.json 文件（可选）
-
-在试卷目录中创建对应的 `answer.json` 文件
-
-### 4. 更新配置文件
-
-在 `config.json` 文件中添加新试卷的配置：
+**多个答案格式：**
 
 ```json
 {
-  "papers": [
-    {
-      "directory": "exam2024",
-      "name": "2024年期末考试",
-      "description": "数值分析期末考试"
-    }
-  ]
-}
+  "student_id": 1,
+  "question_id": 1,
+  "answer": ""
+},
+{
+  "student_id": 1,
+  "question_id": 2,
+  "answer": ""
+},
+{
+  "student_id": 2,
+  "question_id": 1,
+  "answer": ""
+},
+...
 ```
+
+**单个答案格式：**
+
+```json
+{
+  "student_id": 1,
+  "question_id": 1,
+  "answer": ""
+},
+{
+  "student_id": 2,
+  "question_id": 1,
+  "answer": ""
+},
+...
+```
+
+### 
+
+## 添加流程
+
+### 1. 创建 paper.json 文件
+
+在试卷目录中创建包含多个题目的 `paper.json` 文件
+
+### 2. 创建 answer.json 文件
+
+在试卷目录中创建对应的 `answer.json` 文件
+
+### 3. 创建 student_answer.json 文件
+
+在试卷目录中创建对应的 `student_answer.json` 文件
 
 ## 添加新题目到现有试卷
 
@@ -146,16 +170,12 @@ paper/
 - `question_id`: 对应的题目标识符
 - `answer`: 参考答案内容
 
-### config.json
+### Student_answer.json
 
-- `directory`: 试卷目录名
-- `name`: 试卷显示名称
-- `description`: 试卷描述（可选）
+- `student_id`: 对应的学生标识符
 
-## 注意事项
+- `question_id`: 对应的题目标识符
 
-1. 确保 `question_id` 在 `paper.json` 和 `answer.json` 中保持一致
-2. 同一试卷内的 `question_id` 应该是唯一的
-3. 系统会自动将题目显示为"第1题"、"第2题"等
-4. 如果某个题目没有对应的参考答案，系统会显示"暂无参考答案"
-5. 支持单个题目和多个题目两种格式，系统会自动识别
+- `answer`: 学生作答内容
+
+  
