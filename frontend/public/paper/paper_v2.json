@@ -1,0 +1,15 @@
+{
+    "questionCount": 2,
+    "questions": [
+        {
+            "question_id": 1,
+            "question": "Why data visualization can help data analysis? Please provide examples for illustrations ",
+            "score": 12
+        },
+        {
+            "question_id": 2, 
+            "question": "Give at least two data visaulization applications (with explanation) that can promote our society or country ",
+            "score": 8
+        }
+    ]
+}

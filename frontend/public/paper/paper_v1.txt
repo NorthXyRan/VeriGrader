@@ -1,0 +1,2 @@
+1. What's the differences between interpolation and approximation? （Problem Distinction ， Methodological Differences ， Advantages Comparison ， Disadvantages Comparison） 8分
+2. 请解释数值积分中的梯形公式和辛普森公式的原理，并比较它们的精度。（原理说明、精度分析、适用场景） 6分

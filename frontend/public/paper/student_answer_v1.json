@@ -1,0 +1,152 @@
+[
+    {
+      "student_id": 1,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation:\n\nProblem: Interpolation means fitting a function that passes through the given data points, matching their values exactly. Approximation means choosing a fitting function with errors sufficiently small between the function and the data points, reflecting the overall distribution of the data points, and able to fit the object represented by the data.\n\nSolution: Interpolation obtains a function that passes through all the data points, but it may not meet other requirements. Approximation fits a curve with sufficiently small errors based on the data points. Function fitting means, within an acceptable error range, fitting numbers that meet the requirements. For function fitting, one would choose a possible function space and basis functions, then adjust parameters to obtain a fitting function with sufficiently small error.\n\nAdvantages: Interpolation has zero error, and can cover and approximate the data points. Approximation has non-zero error, but is sufficiently smooth and continuous.\n\nDisadvantages: The curve obtained by interpolation is not smooth and may be discontinuous; approximation is easily affected by noise points and may produce unexpected values."
+    },
+    {
+      "student_id": 2,
+      "question_id": 1,
+      "answer": "Interpolation:\n\nProblem: Ensure that each point passes through a curve.\nSolution: (Lagrange interpolation) polynomial interpolation, piecewise interpolation, trigonometric interpolation.\nAdvantages: Precisely passes through the numerical points.\nDisadvantages: Overfitting, leading to deviations from the true value at non-node points.\n\nApproximation:\n\nProblem: A curve can be obtained within an upper and lower range while ignoring some points.\nSolution: Least squares method, orthogonal polynomial approximation, regularization.\nAdvantages: Flexible, stable, controllable error.\nDisadvantages: Does not match the data points exactly."
+    },
+    {
+      "student_id": 3,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation (problem, solution, advantages, disadvantages):\n\n1. Interpolation: Ensures that each point passes through the curve.\nProblem: Noise sensitivity problem.\nSolution: Lagrange theorem.\n2. Approximation: Gaussian function, polynomial approximation, can ignore noise while generating a curve.\nSolution: Bernstein theorem.\n\nInterpolation disadvantages: Overfitting (when noise is present), cannot guarantee accuracy.\nAdvantages: Easy to operate, precisely restores data points.\nApproximation disadvantages: Cannot guarantee the accuracy of each point.\nAdvantages: Strong noise resistance."
+    },
+    {
+      "student_id": 4,
+      "question_id": 1,
+      "answer": "1) What is the difference between interpolation and approximation? (problem, solution, advantages, disadvantages)\n2) Interpolation: ensures that each point passes through a curve.\n3) Approximation: a curve can be obtained while ignoring some points or within an upper and lower range around the points.\n\nInterpolation:\nAdvantages: easy to operate and calculate.\nDisadvantages: overfitting, a very special curve passes through the corresponding points.\nApproximation:\nAdvantages: strong noise resistance.\nDisadvantages: cannot guarantee the accuracy of the points.\nSolution: polynomial approximation, Lagrange theorem, Bernstein theorem."
+    },
+    {
+      "student_id": 5,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation:\n\n1) Problem: Both are used to connect isolated points with a smooth curve to integrate patterns. Approximation can pass near the points, while interpolation passes exactly through the points with zero error.\n2) Solution: The solution for interpolation is the method of undetermined coefficients: substituting each point into the chosen equation and solving the system simultaneously. Approximation uses the least squares method: fitting by minimizing the squared error.\n3) Advantages: Interpolation uses exact data, resulting in zero error. Approximation is better for datasets with a lot of noise, reducing their impact, and avoids curve oscillation.\n4) Disadvantages: Interpolation is not suitable for datasets with a lot of noise, and solving multiple simultaneous equations is difficult. Approximation may completely lose local features and may not be sufficiently accurate, so attention must be paid when choosing the model (parameters)."
+    },
+    {
+      "student_id": 6,
+      "question_id": 1,
+      "answer": "Interpolation:\n\nSubstitute the values of the sampled points into the function to solve for the coefficients in the function; method of undetermined coefficients.\nThe final function must pass through the sampled points.\nEasily affected by outlier points.\n\nApproximation:\n\nUse function values to get close to the extrema of the sampled points, without requiring the function to pass through the sampled points; least squares method.\nNot easily affected by outlier points, relatively stable.\nMay overfit and deviate significantly from the actual situation."
+    },
+    {
+      "student_id": 7,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation\n\nProblem:\nInterpolation: The interpolation curve described based on sample points passes through each sample point.\nApproximation: The curve described based on sample points approximates the sample points but does not pass through them.\n\nSolution:\n1. Lagrange interpolation method\n2. Least squares method, regularization approximation.\n\nAdvantages:\n1. Can perfectly pass through data points and ensure smoothness.\n2. Suitable for practical data, avoiding overfitting.\n\nDisadvantages:\n1. May overfit, with high computational complexity.\n2. Not passing through data points may lose local features."
+    },
+    {
+      "student_id": 8,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation (problem, solution, advantages, disadvantages)?\n\nProblem: Interpolation requires each value to be on the corresponding function;\nApproximation allows expressing the trend of the point distribution near the function.\n\nSolution:\nInterpolation: Lagrange interpolation method;\nApproximation: Least squares method.\n\nAdvantages:\nInterpolation: can accurately express the functional relationship of known values;\nApproximation: fits real-life situations where data has deviations.\n\nDisadvantages:\nInterpolation: the resulting function may overfit and not match reality;\nApproximation: the resulting function depends greatly on the number of samples."
+    },
+    {
+      "student_id": 9,
+      "question_id": 1,
+      "answer": "Difference:\nInterpolation: All points are on the specified function;\nApproximation: All points need to be near the fitted function.\n\nSolution:\nInterpolation: Lagrange interpolation method;\nApproximation: Least squares approximation.\n\nAdvantages:\nInterpolation can provide a clear curve.\nDisadvantages: However, when the data is too large, the error can be quite big.\n\nApproximation: For large data, it can provide a relatively suitable function, but with higher computational complexity."
+    },
+    {
+      "student_id": 10,
+      "question_id": 1,
+      "answer": "The problem with interpolation is:\nThe solution is one.\nAdvantages: can make the curve smooth.\nDisadvantages:\nThe problem with approximation is that it can cause the surface rendering to shake violently and lead to overfitting.\nThe solution is to adjust parameters or reduce the number of squared equations.\nAdvantages: may perfectly fit.\nDisadvantages: may introduce noise due to overly pursuing perfection."
+    },
+    {
+      "student_id": 11,
+      "question_id": 1,
+      "answer": "Interpolation:\n\nProblem: Find a curve (function) that passes through some points.\nSolution: Polynomial, substitute the points to solve for the coefficients, for example with n points the highest polynomial term is x^(n−1).\nAdvantages: The curve must pass through the given points (substitution equals zero).\nDisadvantages: Other points may not match expectations well, only suitable for polynomials, and can only be a function.\n\nApproximation:\n\nProblem: Find a curve for some points.\nSolution: Use various mathematical methods to solve for the curve so that the result approximates the actual curve, for example using a Gaussian function solution.\nAdvantages: The resulting function will better match reality and can be used for solving non-functional curves.\nDisadvantages: It may not pass through the given points."
+    },
+    {
+      "student_id": 12,
+      "question_id": 1,
+      "answer": "Interpolation is the process of generating values between given discrete data points. To achieve more regular interpolation, common methods include linear interpolation, bilinear interpolation, and Newton interpolation.\n\nApproximation is, given a set of data (usually large), to derive a function that can fit this set of data as closely as possible. Common methods include polynomial approximation, least squares method, etc."
+    },
+    {
+      "student_id": 13,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation (problem, solution, advantages, disadvantages).\n\nInterpolation: inserting information, used for operations such as capacity gradual release, more accurate in action, but it may not fully meet requirements, scattered, similar to fixed-point functions.\n\nApproximation: smoother and similar to limit function operations, highly flexible, more difficult to handle, takes up more resources, and is more commonly used in practical applications, similar to limits."
+    },
+    {
+      "student_id": 14,
+      "question_id": 1,
+      "answer": "What is the difference between interpolation and approximation?\n\n① Interpolation refers to a curve that passes through every point, ensuring that each point is traversed.\nSolution: using multiple Bézier curves or polynomials.\nAdvantages: can ensure that every point is passed through, avoiding missing special points, and obtaining the most realistic image.\nDisadvantages: passing through all points may sometimes waste space, and some extremely unreasonable points can also affect the visual impression.\n\n② Approximation is a curve that does not pass through every point, but approaches some points infinitely or finitely, thus forming a relatively continuous and smooth curve.\nSolution: spline or Lagrange method.\nAdvantages: visually more comfortable, relatively smooth and continuous, avoiding a single unreasonable point affecting the entire curve.\nDisadvantages: cannot exactly match every point, which may sometimes lead to unavoidable deviations, affecting the precision requirements."
+    },
+    {
+      "student_id": 15,
+      "question_id": 1,
+      "answer": "Interpolation: calculates a curve through some points.\nAdvantages: simple.\nDisadvantages: poor fitting effect.\n\nApproximation: each point on the curve can be expressed with a polynomial.\nAdvantages: good fitting effect.\nDisadvantages: complex."
+    },
+    {
+      "student_id": 16,
+      "question_id": 1,
+      "answer": "Both interpolation and approximation solve the problem of finding other points on a curve given known point coordinates, but:\n\n① Interpolation mainly solves the problem of supplementing more given points, and the points found do not necessarily have to be on the curve; approximation, which is fitting, aims to use the given points to obtain an accurate curve result.\n\n② Solution: interpolation methods include linear interpolation, quadratic interpolation, etc., basically relying only on a few nearby points; approximation methods include multivariate function fitting, polynomial fitting, etc., generally solved by gradient descent or least squares.\n\n③ Advantages: interpolation is easier to understand, fast and simple; approximation methods yield more accurate point coordinates.\n\n④ Disadvantages: interpolation has large errors in the calculated point coordinates; approximation methods are more complex, have strict parameter requirements, and may suffer from underfitting or overfitting."
+    },
+    {
+      "student_id": 17,
+      "question_id": 1,
+      "answer": "Interpolation  \nAdvantages: data error is zero;  \nDisadvantages: may be affected by noisy data.  \nSolution: P(x)Σyili(x)\n\nApproximation  \nAdvantages: not easily corrupted by bad data, good fitting;  \nDisadvantages: data error is not zero.  \nSolution: least squares approximation, Bernstein polynomial approximation"
+    },
+    {
+      "student_id": 18,
+      "question_id": 1,
+      "answer": "Problem:\nInterpolation: constructs a function that strictly passes through all given data points.\nApproximation: constructs a function that approaches the original data or function in overall trend.\n\nSolution:\nInterpolation: polynomial interpolation, Lagrange;\nApproximation: least squares interpolation.\n\nAdvantages:\nInterpolation: strictly passes through all data points, suitable for precise reconstruction;\nApproximation: ignores noise influence, reflects overall trend, avoids high-degree polynomial oscillations.\n\nDisadvantages:\nInterpolation: may have overfitting risk, global interpolation efficiency decreases when there are many nodes.\nApproximation: may ignore information from some key nodes."
+    },
+    {
+      "student_id": 19,
+      "question_id": 1,
+      "answer": "Advantages of interpolation: compact expression, simple and stable, relatively good fitting effect.\nSolution: polynomial interpolation, Bernstein, Gaussian.\nDisadvantages of approximation: may have underfitting or overfitting."
+    },
+    {
+      "student_id": 20,
+      "question_id": 1,
+      "answer": "① Interpolation: given a set of known data points, the interpolation function must strictly equal the original data;\nApproximation: is a function that is as close as possible to these points overall.\n\n② Interpolation emphasizes passing through every data point exactly, while approximation focuses on the overall trend;\ninterpolation error is zero but may lead to high-degree polynomials,\napproximation has small overall error.\n\n③ Advantages:\nInterpolation is good at exactly passing through data points;\nDisadvantages:\nwhen the data size is large, results may be unstable, and complexity is high, requiring many equations to solve.\n\n④ Advantages:\napproximation can be more efficient and concise;\nDisadvantages:\ncannot exactly cover each data point.\n\n⑤ Solution:\nApproximation: optimization problems such as least squares, Chebyshev approximation?..;\nInterpolation: solving linear systems, such as Lagrange evaluation."
+    },
+    {
+      "student_id": 21,
+      "question_id": 1,
+      "answer": "① Interpolation: Find a function that has a specific value at a specific point. Methods: Lagrange interpolation, Newton interpolation, etc.\nSuitable for scenarios with fewer data points, but when there are many data points, the error can be large, and the error is related to the order.\n\n② Approximation: Find a function that approximates these points (target points) as closely as possible.\nMethods: Least squares method, Taylor expansion.\nSuitable for scenarios with many data points.\nThe approximation error is related to the form of the approximation and the approximating function."
+    },
+    {
+      "student_id": 22,
+      "question_id": 1,
+      "answer": "Interpolation: interpolation algorithms must pass through the sample points. Because interpolation has to go through all sample points, it is prone to oscillation and can produce invalid results.\nAdvantages: interpolation is more precise because it passes through all sample points;\nDisadvantages: more difficult to compute.\nSolution: polynomial.\n\nApproximation: approximation algorithms may not pass through the sample points;\nSolution: least squares method."
+    },
+    {
+      "student_id": 23,
+      "question_id": 1,
+      "answer": "Interpolation is a method of function fitting through polynomial interpolation.\n\nApproximation is a method of function fitting through numerical approximation.\n\nAdvantages of interpolation: can perform function fitting more precisely;\nDisadvantages: not intuitive enough.\n\nAdvantages of approximation: more intuitive;\nDisadvantages: not precise enough."
+    },
+    {
+      "student_id": 24,
+      "question_id": 1,
+      "answer": "Problem\nInterpolation: the core goal of interpolation is to pass through all known data points.\nApproximation: the core goal is to fit as much data as possible without forcing the function to pass through the data points, making the error between the target function and data points as small as possible.\n\nSolution\nInterpolation: Lagrange polynomial — by constructing a polynomial that passes through all points.\nApproximation: least squares method, polynomial approximation — optimize the target function.\n\nAdvantages and disadvantages\nInterpolation: high precision, strictly passes through data points, but may lead to overfitting;\nApproximation: the model is simple and elegant, better reflects the general pattern of data, but cannot guarantee to pass through data points, which may cause large local errors."
+    },
+    {
+      "student_id": 25,
+      "question_id": 1,
+      "answer": "1. Interpolation\n2. Approximation\n\nProblem:\n1) Find a function curve.\n2) Fit the existing data points.\n\nSolution:\n1) Solve a system of equations (Lagrange solution method)\n2) Polynomial approximation, least squares method, Bernstein polynomial construction, RBPF, neural networks.\n\nAdvantages:\n1) Completely fits the existing data points, zero error\n2) Smooth curve.\n\nDisadvantages:\n1) Affected by noise, not smooth and hard to meet real-world physical requirements\n2) Overfitting/underfitting"
+    },
+    {
+      "student_id": 26,
+      "question_id": 1,
+      "answer": "Interpolation requires that the final fitting function strictly passes through all sample points, whereas approximation only requires being sufficiently close.\n\nAdvantages of interpolation: can fit the sample points to the maximum extent;\nDisadvantages: easily distorted by extreme samples and noise, leading to overfitting.\n\nAdvantages of approximation: fits the samples to a certain extent and is less affected by noise;\nDisadvantages: the degree of fit may be lower, the function may be too smooth, leading to underfitting."
+    },
+    {
+      "student_id": 27,
+      "question_id": 1,
+      "answer": "Interpolation vs Approximation:\n\n1. Interpolation refers to constructing a function that passes through all sample points, with exact matching.\n2. Approximation refers to finding a function that gets as close as possible to the known sample points, with approximate matching.\n3. Interpolation usually results in a more complex function with higher polynomial degree.\n4. Because interpolation strictly matches all sample points, it is prone to overfitting.\n5. Interpolation has higher computational cost."
+    },
+    {
+      "student_id": 28,
+      "question_id": 1,
+      "answer": "Interpolation:\nSolution: substitute points into the function to evaluate;\nDisadvantages: not smooth enough.\n\nApproximation:\nAdvantages: higher accuracy\nSolution: use a curve to fit and approximate the points\nDisadvantages: prone to overfitting."
+    },
+    {
+      "student_id": 29,
+      "question_id": 1,
+      "answer": "The difference between interpolation and approximation:\n\nInterpolation is to find a function that precisely passes through all data points, ensuring complete matching at the given points.\nSolution: Lagrange interpolation polynomial, Newton interpolation.\n\nApproximation: refers to finding a function that is close overall;\nSolution: least squares fitting, Taylor expansion.\n\nInterpolation requires every data point to lie on the function, which is more difficult;\nApproximation does not require every data point to lie on the function, and they may all not be on the function, which is less difficult."
+    },
+    {
+        "student_id": 30,
+        "question_id": 1,
+        "answer": "What is the difference between interpolation and approximation?\n\nProblem:\nInterpolation: multiple forms of interpolation;\nApproximation: multiple forms of interpolation;\n\nSolution:\nInterpolation: multiple forms of interpolation;\nApproximation: polynomial interpolation;\n\nAdvantages:\nInterpolation: multiple forms of interpolation;\nApproximation: polynomial interpolation;\n\nDisadvantages:\nInterpolation: multiple forms of interpolation;\nApproximation: polynomial interpolation."
+    }
+  ]

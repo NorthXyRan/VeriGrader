@@ -1,0 +1,13 @@
+{
+    "answerCount": 2,
+    "answers": [
+        {
+            "question_id": 1,
+            "answer": "I. Problem Distinctions\n\nInterpolation: Given a set of discrete points, find a curve or function that passes through all points. [Score 1]\nApproximation: Given a set of discrete points, find a curve or function that is as close as possible to but not necessarily passing through all points, often used in noisy data situations. [Score 2]\n\nII. Solution Differences\n\nInterpolation: Polynomial interpolation (e.g. Lagrange interpolation, Newton interpolation), spline interpolation (e.g. cubic spline) [Score 3]\nApproximation: Least squares method (polynomial approximation, spline approximation), Bezier curve fitting, smoothing methods [Score 4]\n\nIII. Advantage Comparison\n\nInterpolation: Passes through all data points accurately, suitable for precise data modeling without noise [Score 5]\nApproximation: Robust to noise or errors, suitable for data fitting and trend modeling [Score 6]\n\nIV. Disadvantage Comparison\n\nInterpolation: Sensitive to noise, high-order interpolation may cause oscillations (Runge phenomenon) [Score 7]\nApproximation: Does not pass through original data points, may lose some details, and has weaker explanatory power [Score 8]"
+        },
+        {
+            "question_id": 2,
+            "answer": "一、原理说明\n梯形公式：将积分区间分割为若干小区间，在每个小区间内用直线连接函数值，形成梯形来近似积分。【给分点 1】\n辛普森公式：将积分区间分割为偶数个小区间，在每两个小区间内用二次抛物线拟合函数，利用抛物线下的面积来近似积分。【给分点 2】\n\n二、精度分析\n梯形公式：误差阶为O(h²)，其中h为步长，适用于函数变化较为平缓的情况。【给分点 3】\n辛普森公式：误差阶为O(h⁴)，精度比梯形公式高，对于光滑函数有更好的近似效果。【给分点 4】\n\n三、适用场景\n梯形公式：计算简单，适用于快速估算和函数变化不大的积分。【给分点 5】\n辛普森公式：精度要求较高的数值积分，特别是被积函数较为光滑的情况。【给分点 6】"
+        }
+    ]
+}
