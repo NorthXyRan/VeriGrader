@@ -92,7 +92,7 @@ import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 import { useGradingBusiness } from '../../composables/useGradingBusiness'
 import { useHighlightDataOperations } from '../../composables/useHighlightDataOperations'
 import { useFewShotManager } from '../../composables/useFewShotManager'
-import { logger } from '@/utils/logger'
+import { logger } from '../../utils/logger'
 
 // 数据存储
 const examDataStore = useExamDataStore()
