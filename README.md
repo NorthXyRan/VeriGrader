@@ -105,34 +105,34 @@ LLM 考试批改系统是一个基于 Vue 3 + TypeScript 的应用程序，使�
 ┌─────────────────────────────────────────────────────────┐
 │                     表现层                               │
 ├─────────────────────────────────────────────────────────┤
-│  Vue组件                                               │
-│  - Grading.vue (主协调器)                              │
-│  - ActionSection.vue (控制面板)                        │
-│  - FeedbackPanel.vue (理由显示)                        │
-│  - PaperPreview.vue (文本标注)                         │
-│  - GradingHeader.vue (导航栏)                          │
+│  Vue组件                              	                 │
+│  - Grading.vue (主协调器) 															 │
+│  - ActionSection.vue (控制面板)                          │
+│  - FeedbackPanel.vue (理由显示)                          │
+│  - PaperPreview.vue (文本标注)                           │
+│  - GradingHeader.vue (导航栏)                            │
 ├─────────────────────────────────────────────────────────┤
 │                    业务逻辑层                             │
 ├─────────────────────────────────────────────────────────┤
-│  组合式函数                                             │
-│  - useGradingBusiness.ts (核心批改逻辑)                │
-│  - useFewShotManager.ts (学习系统)                     │
-│  - useHighlightDataOperations.ts (标注操作)            │
-│  - useErrorHandler.ts (错误管理)                       │
+│  组合式函数                                               │
+│  - useGradingBusiness.ts (核心批改逻辑)                   │
+│  - useFewShotManager.ts (学习系统)                       │
+│  - useHighlightDataOperations.ts (标注操作)              │
+│  - useErrorHandler.ts (错误管理)                         │
 ├─────────────────────────────────────────────────────────┤
 │                     服务层                               │
 ├─────────────────────────────────────────────────────────┤
-│  LLM服务                                               │
-│  - gradingLLMService.ts (主批改API)                    │
-│  - reasonGenerationService.ts (理由生成)               │
-│  - gradingPrompts.ts (提示词构建器)                    │
+│  LLM服务                                                 │
+│  - gradingLLMService.ts (主批改API)                      │
+│  - reasonGenerationService.ts (理由生成)                 │
+│  - gradingPrompts.ts (提示词构建器)                       │
 ├─────────────────────────────────────────────────────────┤
 │                     数据层                               │
 ├─────────────────────────────────────────────────────────┤
-│  状态管理                                               │
-│  - useExamDataStore.ts (核心数据存储)                  │
-│  - useUploadStatusStore.ts (上传状态)                  │
-│  - localStorage (持久化)                               │
+│  状态管理                                                │
+│  - useExamDataStore.ts (核心数据存储)                     │
+│  - useUploadStatusStore.ts (上传状态)            				 │
+│  - localStorage (持久化)                                 │
 └─────────────────────────────────────────────────────────┘
 ```
 
