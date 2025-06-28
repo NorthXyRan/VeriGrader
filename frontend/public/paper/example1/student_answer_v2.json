@@ -1,0 +1,322 @@
+[
+  {
+    "student_id": 1,
+    "question_id": 1,
+    "answer": "1.Enables Faster Decision Making:Example: A hospital dashboard using color-coded metrics (red/yellow/green) helps administrators spot which departments need immediate staffing adjustments.\n2.Simplifies Complex Relationships:Example: A heatmap of website clicks shows which areas get most attention without requiring users to parse a table of coordinate data.\n3.Reveals Patterns and Trends:Example: A line chart showing monthly sales over 3 years immediately reveals seasonal patterns (holiday spikes, summer slumps) that would take much longer to identify in a spreadsheet."
+  },
+  {
+    "student_id": 1,
+    "question_id": 2,
+    "answer": "1.Tableau Public (for Public Health & Social Issues):Example:COVID-19 Dashboards – Governments and health organizations used Tableau to track infection rates, hospital capacity, and vaccination progress in real time.\n2.Power BI (for Smart Cities & Sustainability):Used In Energy Consumption Tracking – Utilities visualize electricity usage patterns to promote energy-saving initiatives and reduce carbon footprints."
+  },
+  {
+    "student_id": 2,
+    "question_id": 1,
+    "answer": "1.Enables Faster Decision Making:Example: A hospital dashboard using color-coded metrics (red/yellow/green) helps administrators spot which departments need immediate staffing adjustments.\n2.Simplifies Complex Relationships:Example: A heatmap of website clicks shows which areas get most attention without requiring users to parse a table of coordinate data.\n3.Reveals Patterns and Trends:Example: A line chart showing monthly sales over 3 years immediately reveals seasonal patterns (holiday spikes, summer slumps) that would take much longer to identify in a spreadsheet."
+  },
+  {
+    "student_id": 2,
+    "question_id": 2,
+    "answer": "1.Power BI (for Smart Cities & Sustainability):Used In Energy Consumption Tracking – Utilities visualize electricity usage patterns to promote energy-saving initiatives and reduce carbon footprints.\n2.Tableau Public (for Public Health & Social Issues):Used In COVID-19 Dashboards – Governments and health organizations used Tableau to track infection rates, hospital capacity, and vaccination progress in real time."
+  },
+  {
+    "student_id": 3,
+    "question_id": 1,
+    "answer": "1.Reveals Patterns & Trends\nVisuals highlight relationships (e.g., correlations, cycles) that raw numbers or tables obscure.\nExample: A line chart showing monthly sales over 3 years.\nRaw Data: A spreadsheet with 36 rows of sales figures.\nVisual Insight: A rising trend with seasonal peaks every December (e.g., holiday sales surge), instantly visible as repeated upward spikes.\n\nAnalysis Impact: Guides inventory planning for peak seasons.\n\n2. Identifies Anomalies & Outliers\nDeviations from patterns \"pop out\" visually, accelerating error detection or discovery.\nExample: A scatter plot comparing advertising spend vs. revenue.\nRaw Data: A table with 100 rows of spend/revenue pairs.\nVisual Insight: Most points cluster along a diagonal (indicating correlation), but one point far outside the cluster reveals an outlier (e.g., high spend with zero revenue).\n\nAnalysis Impact: Flags a failed campaign or data entry error for investigation.\n\n3. Simplifies Complex Multivariate Relationships\nEncodes multiple dimensions (e.g., time, categories, geography) into a single coherent view.\nExample: A choropleth map displaying COVID-19 vaccination rates by country.\nRaw Data: A spreadsheet listing 200 countries with % vaccinated.\nVisual Insight: Regional disparities become obvious (e.g., high vaccination in North America vs. low rates in Africa via color gradients).\n\nAnalysis Impact: Supports equitable resource allocation for global health initiatives."
+  },
+  {
+    "student_id": 3,
+    "question_id": 2,
+    "answer": "1. Public Health Crisis Dashboards\nApplication: Real-time tracking of disease outbreaks (e.g., COVID-19, influenza) via interactive dashboards.\nExample: Johns Hopkins COVID-19 Dashboard\nExplanation: Integrates millions of data points (cases, deaths, vaccinations) across geographic regions into maps, heatmaps, and time-series charts.\nSocietal Impact:\nEmpowers citizens to assess local risk levels (e.g., infection clusters on a map).\nGuides policymakers in resource allocation (e.g., ICU bed shortages highlighted on charts).\nCombats misinformation by providing transparent, authoritative data.\nOutcome: Enabled targeted lockdowns, accelerated vaccine distribution, and increased public compliance with health measures.\n\n2. Environmental Monitoring Systems\nApplication: Visualizing climate change indicators like air quality, deforestation, or carbon emissions.\nExample: Global Forest Watch's near-real-time deforestation tracker\nExplanation: Uses satellite imagery and AI-generated data layered on interactive global maps to show forest loss/gain.\nSocietal Impact:\nExposes illegal logging activities (e.g., sudden deforestation hotspots in protected areas).\nHolds governments/corporations accountable for sustainability commitments (e.g., overlaying data with concession boundaries).\nMobilizes conservation efforts by NGOs and local communities.\nOutcome: Reduced deforestation rates in Indonesia by 60% (2016–2020) through data-driven policy enforcement."
+  },
+  {
+    "student_id": 4,
+    "question_id": 1,
+    "answer": "1. Data visualization helps to simplify the understanding of complex data. Through graphical representation, data visualization transforms abstract numbers into visual elements, making it easier for people to extract information from data. For example, using a bar chart to display the sales contribution of different product categories can provide a clear understanding of the performance of each product.\n2. Data visualization can help discover hidden patterns or trends in data. For example, by drawing a line chart of sales revenue over time, seasonal fluctuations in sales can be clearly seen, which is difficult to detect if only looking at the original data table.\n3. Data visualization supports rapid decision-making and communication. For example, a pie chart displaying the sources of website traffic can quickly reveal which channels bring the most traffic, helping marketing teams optimize their advertising strategies."
+  },
+  {
+    "student_id": 4,
+    "question_id": 2,
+    "answer": "1. Population data visualization: Visualize population size, structure, migration, and other data to help the government understand population distribution and trends, and formulate reasonable population policies, urban planning, and social resource allocation plans.\n2. Climate data visualization: By collecting and analyzing global climate data, real-time status and future trends of climate elements such as temperature, precipitation, and wind speed can be displayed, and various extreme weather events can be monitored and predicted in a timely manner, providing scientific basis for national governments to formulate policies to address climate change and ensuring production guidance"
+  },
+  {
+    "student_id": 5,
+    "question_id": 1,
+    "answer": "Simplifying complex info；Showing relationships；Spotting outliers"
+  },
+  {
+    "student_id": 5,
+    "question_id": 2,
+    "answer": "Smart City Traffic Management; Public Health Surveillance"
+  },
+  {
+    "student_id": 6,
+    "question_id": 1,
+    "answer": "1.Line chart shows the trend of time sequence data. For example, to analyse the sell of online shop, the number itself is hard to demonstrate the increase or decrease of the sell, but line chart is easy to show this trend of data.\n2.Bar chart is easy to compare among different data. For example, different indexes of the same samples in image segmentation can be easily compared by bar chart.\n3.The box plot shows the distribution and outliers of most of the data, especially applied in stock industry."
+  },
+  {
+    "student_id": 6,
+    "question_id": 2,
+    "answer": "1.The urban traffic analysis center can help the public understand the traffic travel situation, facilitate the orderly guidance of traffic flow, and disperse the pressure of traffic congestion.\n2.Weather cloud maps can help grasp the weather changes and abnormal climate phenomena in different regions, such as predicting the advance path of typhoons."
+  },
+  {
+    "student_id": 7,
+    "question_id": 1,
+    "answer": "Data visualization is the process of communicating information about data visually to help people discover patterns, trends, and correlations, improve decision-making efficiency, enhance data accessibility, and support multidimensional analysis. Data visualization enables quick understanding of data, improves decision-making efficiency, enhances data accessibility, and supports multidimensional analysis. The purposes of data visualization include helping to understand data, discovering trends and patterns, supporting decision making, improving efficiency, and facilitating communication and sharing. Data visualization is implemented in the form of charts, maps, graphs, and dashboards. Examples:\n1. Recognize Patterns and Trends\nExample: A line graph of monthly sales over several years quickly shows seasonal trends or growth patterns, which can be difficult to detect from a raw spreadsheet.\n2. Detect Outliers and Anomalies\nExample: Scatter plots can reveal data points that are far outside of the expected pattern, indicating potential data entry errors or anomalous events (e.g., fraudulent transactions in a financial dataset).\n3. Aid Decision Making\nExample: Dashboards combining bar charts (for category comparisons), pie charts (for ratio analysis), and scales (for KPIs) can provide business leaders with a clear overview of strategic decisions."
+  },
+  {
+    "student_id": 7,
+    "question_id": 2,
+    "answer": "1. Public Health Surveillance Board\nCOVID-19 Data visualization tools such as dashboards or disease outbreak maps help governments and health agencies track infection rates, vaccination progress and hospital capacity in real time. By presenting this data in interactive charts and maps, citizens and policymakers can quickly understand health risks and make informed decisions to protect public health.\nImpact: Early detection of outbreaks, better allocation of resources, and increased public awareness.\n\n2. urban planning and traffic management\nTraffic heat maps, or maps of public transportation use, help urban planners design better road systems and public transportation routes. By visualizing traffic congestion patterns, planners can optimize infrastructure investments, reduce pollution and improve citizens' daily commutes.\nImpact: Reduced traffic congestion, lower carbon emissions and improved quality of life in urban areas."
+  },
+  {
+    "student_id": 8,
+    "question_id": 1,
+    "answer": "Data visualization can help data analysis because it can present complex data in graphical form, making info more easy to understanding, which can help to make decision.\nExample: in sales data, using a line chart to display monthly sales revenue allows for a clear understanding of sales peaks and valleys, thereby identifying seasonal trends."
+  },
+  {
+    "student_id": 8,
+    "question_id": 2,
+    "answer": "1. Visualized monitoring of the epidemic can display the number of confirmed cases and vaccination status in various regions, helping the government make quick decisions and prevent and control the epidemic.\n2. Traffic flow visualization can display real-time road congestion and assist in optimizing traffic management."
+  },
+  {
+    "student_id": 9,
+    "question_id": 1,
+    "answer": "1. Improve data understanding\nThe first advantage of data visualization is that it can significantly improve the ability to understand data. Traditional digital tables are often intimidating, while visual charts make the core information of the data clear at a glance by transforming complex data into a more understandable graphical form. Research shows that visual information is processed 60,000 times faster than text, which means that presenting data in graphical form can greatly accelerate the speed of information acquisition.\nVisual presentation of trends: line charts, bar charts, etc. can clearly demonstrate the changing trend of data.\nQuickly detect anomalies: Scatter charts and multi-dimensional charts can help you quickly identify anomalies in your data.\nCompare and contrast: Through pie charts and bar charts, data comparison can be carried out simply and clearly.\n\n2. Enhanced decision support\nVisual data tables not only improve understanding, but also greatly enhance decision support. Through visual analysis of data, decision makers can more accurately grasp market trends, user requests, and thus formulate more effective strategies. Take FineBI as an example, this tool not only provides intuitive visual analysis, but also supports diverse decision support functions, such as dynamic data filtering and interactive analysis, to help enterprises make fast and accurate decisions in dynamic environments.\nReal-time data monitoring: Keep abreast of business operation status through real-time monitoring tools such as dashboards.\nDeep data mining: Utilize multi-dimensional analysis to explore the deep-seated reasons behind the data.\nPredictive analysis: Through the chart analysis of historical data, predict future trends and take preventive measures.\n\n3. Facilitate cross-departmental communication\nIn an enterprise, communication and cooperation between departments is essential. Visual data tables facilitate cross-department communication. With clear, intuitive diagrams, data analytics results can be quickly shared between different departments, avoiding misunderstandings and delays in information. According to Effective Data Visualization: The Right Chart for the Right Data, visualization tools can transform complex business data into easy-to-understand visual effects, thus promoting team collaboration and innovation."
+  },
+  {
+    "student_id": 9,
+    "question_id": 2,
+    "answer": "1. Public Health Surveillance Dashboards\nGovernments can deploy interactive dashboards that visualize epidemiological data—new cases, vaccination rates, hospital capacity. Layers and filters help experts and citizens alike understand risk levels in different regions.\nSocietal Impact: During an epidemic or pandemic, timely insight into hotspots enables targeted interventions and transparent communication, which in turn builds public trust and compliance. Over time, these dashboards foster data-driven policymaking and accountability in health governance.\n\n2. Open Government Spending Portals\nBy visualizing budget allocations and actual expenditures through tree maps, Sankey diagrams, and time-series charts, citizens can explore how tax revenues are spent—across ministries, projects, and regions.\nSocietal Impact: When government finances are presented visually and made interactive, corruption is deterred, and civic engagement increases. Citizens, journalists, and watchdog organizations can more effectively monitor fiscal accountability, propose reallocation priorities, and participate in budgetary discussions. This transparency strengthens democratic governance and public trust."
+  },
+  {
+    "student_id": 10,
+    "question_id": 1,
+    "answer": "1. provide an overall overview of the data，e.g.,global weather satellite images can show which regions have high cloud cover;\n2. convenient for presentation and communication,e.g., a pie chart is convenient for presenting relative sizes during communication;\n3. facilitate the identification of data patterns，e.g., a line chart can display the relationship pattern between the dependent variable and the independent variable."
+  },
+  {
+    "student_id": 10,
+    "question_id": 2,
+    "answer": "1. baidu map，visual presentation of route；\n2. weather forecast app，visual representation of rain intensity."
+  },
+  {
+    "student_id": 11,
+    "question_id": 1,
+    "answer": "1. Facilitates Visual Information Reception\nThe human eye is a high-bandwidth, large-capacity visual signal input processor with strong pattern recognition abilities. It perceives visual symbols much faster than numbers or text—often by several orders of magnitude. A significant portion of visual information processing occurs at the subconscious level, known as pre-attentive processing. For example, the brain tends to break down complex visuals into simpler forms to reduce cognitive load.\n\nExample:\nThe well-known Gestalt principles in visual design—such as the principles of enclosure, proximity, similarity, and closure—leverage the natural tendencies of human visual perception.\n\n2. Supports Exploratory Data Analysis\nExploratory Data Analysis is a methodology and mindset that uses various techniques to discover patterns and structures within data. The goal is to understand the data and uncover insights or valuable information—essentially turning \"data\" into \"knowledge.\"\n\nExample:\nA data analyst might transform raw data into visualizations to simplify complexity and encourage deep thinking. Techniques such as searching, filtering, linking, drill-down, and roll-up further aid in discovering meaningful insights.\n\n3. Enhances Explanatory Analysis\nExplanatory analysis involves abstracting key insights and communicating them to others through visual presentations, descriptions, storytelling, or presentations. Visualization helps audiences “see the data,” highlighting trends, comparisons, and outliers—often revealing things they wouldn’t have thought to look for.\n\nExample:\nAncient pictographs, murals, historical maps of transportation or military campaigns, and population charts served to explain people, events, and cultures of the past through visual storytelling."
+  },
+  {
+    "student_id": 11,
+    "question_id": 2,
+    "answer": "1. The Visualization and Visual Analytics Lab at Peking University conducts behavioral analysis of national leaders through visualized tweets. Social media, as a platform for sharing, communication, and dissemination, generates a substantial volume of posts—especially from national leaders—which serves as valuable textual data for observation and research. By mining these texts, researchers can broadly outline the behavioral characteristics of users.\n\n2. Many regions in China have applied big data visualization to social governance.\nFor example, Zhejiang Province has developed a “Comprehensive Social Management Information System” that integrates massive data resources into a single visualization platform, improving the structure of social governance. Similarly, Wuhan City has implemented a “Social Service and Management Information System,” which combines data from various departments and presents it through rich visual formats for big data display."
+  },
+  {
+    "student_id": 12,
+    "question_id": 1,
+    "answer": "hight light important information\ncompare data differences\nabnormal values are found"
+  },
+  {
+    "student_id": 12,
+    "question_id": 2,
+    "answer": "urban planning ：analysis of traffic data ，help people know traffic jams…..\npublic health：display relevant information about the epidemic during the covid-19 pandemic，such as the number of deaths per day，cumulative cases，etc."
+  },
+  {
+    "student_id": 13,
+    "question_id": 1,
+    "answer": "Because it is difficult for humans to find the desired data from a large amount of structured or unstructured data, which exceeds their ability. For example, knowledge graph visualization and scientific computing visualization. Knowledge graph visualization links many entities and relationships together through point and edge graphs or adjacency matrices, making it easier for people to discover things that were previously impossible to find. And scientific and technological visualization integrates large amounts of scientific data and visualizes them through charts, making it easier for researchers to compare the differences in the data."
+  },
+  {
+    "student_id": 13,
+    "question_id": 2,
+    "answer": "I think storyline visualization and 3D visualization can enhance our society. With the development of VR and AR devices, virtual reality is getting closer and closer to us. Visualizing storylines through these virtual reality devices can make it easier for us to understand a certain story and improve our experience."
+  },
+  {
+    "student_id": 14,
+    "question_id": 1,
+    "answer": "1. Facilitating the exploration of potential information in data. Assist data analysts in understanding the trends and singular values of data changes, which can be used to uncover potential information in the data. For example, observing a line graph of a person's traffic over time, one can analyze the changes in traffic by analyzing the upward and downward trends of the line\n\n2. Simplify complex and large scale data. Assist data analysts in quickly mastering complex and large-scale data. The extraction of valuable data and information from massive transportation data can be discovered through visualization of the data.\n\n3. Support interactive exploration and hypothesis validation. Analysis of global and macro data can be completed by zooming in and out on the visualization graph can help analysts to understand the overview and detailed conditons of data. Besides, people can validate their hypothesis by make desired vidualization."
+  },
+  {
+    "student_id": 14,
+    "question_id": 2,
+    "answer": "1. Continuous visualization of longitudinal sections of the human body can help understand the internal structure of various parts of the body and promote medical research and the medical profession.\n\n2. Visualization of traffic fact data, forming a data dashboard, can help data analysts analyze the trend of urban traffic pressure changes, identify key locations of current urban traffic pressure, and provide practical suggestions for future urban transportation construction."
+  },
+  {
+    "student_id": 15,
+    "question_id": 1,
+    "answer": "1）Better understanding and mastering of data: Presenting data in a visual form can make it more intuitive and easier to understand. Through visualization, people can grasp the core information and characteristics of the data more quickly. For example, it is difficult to intuitively perceive the gap between two numbers just by looking at them, but visualizing them as distances or sizes makes it much easier to understand.\n2）Discovering the value of data: Data visualization can help people discover the value behind the data. Through the visual form, one can more clearly see the relationships and trends between the data. On this basis, people can better discover the value behind the data and thus better utilize the data for business decisions and innovation. For example, a line chart can help people clearly see the trend of data changes, and a pie chart can help people understand the proportion of the data.\n3）Better communication of data: Data visualization can help people better communicate data because people can more easily understand and accept graphical expressions. Through data visualization, people can better convey data to others and enable them to better understand the meaning and value of the data. For example, the time spent looking at a picture is definitely shorter than that spent reading a long paragraph of text."
+  },
+  {
+    "student_id": 15,
+    "question_id": 2,
+    "answer": "1）The public transportation system widely employs data visualization to enhance operational efficiency. Metro and bus companies analyze passenger flow data to optimize route and schedule arrangements, reducing waiting times and congestion for passengers. These data are typically presented in the form of charts and heat maps, helping operators quickly understand passenger flow patterns, facilitating peak-hour passenger flow analysis and optimizing bus routes and station passenger flow monitoring. Through data visualization, the public transportation system can better serve citizens and improve travel experiences.\n2）Social network relationship diagrams are another important visualization tool, showing the relationships and interactions among users. Through this chart, enterprises can identify key influencers and understand information dissemination paths. For example, identifying users with wide influence through social network diagrams can help enterprises formulate precise marketing strategies."
+  },
+  {
+    "student_id": 16,
+    "question_id": 1,
+    "answer": "Data visualization can present complex information in a simple and intuitive way, using graphics, computer vision, etc. to visually interpret data. When the amount of data is large or there are many variables, looking only at tables or text can be very confusing. Data visualization facilitates users to quickly understand the distribution of data and make efficient decisions based on the visualization results.\n1: Use color to distinguish categories\nFor example, when analyzing epidemic transmission data, different colors can be used to represent different patient groups. For example, in the scatter plot of regional epidemic distribution, patients with different diseases are marked with different colors. Alternatively, colors can be used to indicate severity, such as red or orange for congestion and green for smoothness in traffic flow maps.\n2: Use size to represent data scale\nIn a bubble chart, the size of bubbles can be used to represent the order of magnitude of a data point. For example, when analyzing sales, population, and other data, large bubbles can be used to represent cities with large populations, which can quickly compare their sizes.\n3: Multidimensional data visualization\nUsing machine learning methods such as PCA and t-SNE for dimensionality reduction can display multidimensional data in two-dimensional or three-dimensional images, allowing for a visual representation of the distribution of high-dimensional data in low dimensional spaces. For example, when reducing the dimensionality of two high-dimensional data points, if they are close in the low dimensional graph, it means that these two points are also relatively close in the high-dimensional space."
+  },
+  {
+    "student_id": 16,
+    "question_id": 2,
+    "answer": "1: Visualization of Epidemic Data\nVisualize real-time disease transmission through epidemiological data. For example, during the epidemic, using an epidemic data display board to show the number of confirmed cases, epidemic areas, and vaccination status can help the government understand the current situation and make correct decisions, and determine where management needs to be strengthened.\n2: Urban traffic flow map\nUsing a traffic heat map can quickly understand the traffic situation in a city, showing which roads are most congested during the day, the flow of vehicles in the city, and so on. Urban planners can use these charts to optimize road design, adjust bus routes, and adjust traffic light times to alleviate traffic pressure."
+  },
+  {
+    "student_id": 17,
+    "question_id": 1,
+    "answer": "①Because data visualization organizes and reproduces the original data according to the needs of the designer, readers can more clearly obtain the information that the designer wants to present. For example, in the map of Napoleon's Eastern Expedition, the direction of Napoleon's army's migration is marked on the map with arrows, so that readers can more easily see the direction of migration.\n\n②Because data visualization avoids the confusion caused by the original data as much as possible and supports interaction. For example, if there is a genealogy data, if the tree structure is used for visualization, the family relationship can be clearly seen, and it can be interacted to view information on demand. If the original nested list is used, it will be very confusing and it will be difficult to see the family relationship across multiple generations.\n\n③Because data visualization uses as many visual channels as possible, it can present more diverse information. For example, there is a taxi trajectory information, which includes the time, trajectory, and traffic conditions (congested or unobstructed) of four modes of transportation. If visualization technology is not used, it is difficult to see the distribution of the trajectory on the map, the traffic congestion in different areas, etc. from the original data. Visualization technology can present these diverse information on the map."
+  },
+  {
+    "student_id": 17,
+    "question_id": 2,
+    "answer": "① Navigation applications. For example, navigation software such as Amap visualizes the route to the destination, traffic congestion on the route, and the cost of the trip on the map, and supports interaction, which greatly facilitates users' travel, drives the development of the tourism industry, and promotes the prosperity of the tourism economy.\n\n② Use visualization technology to help athletes train. Existing technology can visually analyze the batting movements, footsteps, and trajectory of table tennis players, helping table tennis players correct movement errors and improve scores."
+  },
+  {
+    "student_id": 18,
+    "question_id": 1,
+    "answer": "1、The content expressed by a single data is limited.\n2、The features expressed in different data forms have different emphases.\n3、It can be observed more intuitively."
+  },
+  {
+    "student_id": 18,
+    "question_id": 2,
+    "answer": "1、Map navigation.when you are lost ，you need map navigation,but if you only look the map ,you cant clearly get the right direction ,and data visaulization can help you know the real scene.\n2、Weather forecast，The weather varies in different places and at different times,we need weather forecast to understand the weather changes intuitively."
+  },
+  {
+    "student_id": 19,
+    "question_id": 1,
+    "answer": "1.Data visualization can present data more intuitively to people and has the potential to make originally indistinct data features obvious.\n2.examples：\n(1) The large amount of data on shopping platforms cannot reveal their characteristics and trends before visualization. However, when the transaction amount and transaction volume are visualized as line graphs, the changing trends of the transaction amount and transaction volume over time can be observed.\n(2) When the median, average value, variance and other statistics of two batches of data are the same, people may not be able to see the characteristics of the data before data visualization. However, after plotting them as points in an image, perhaps the differences between them can be seen.\n(3) Data related to location information, such as precipitation data of each province, cannot show the difference between the south and the north before visualization. However, when displayed on a map, the difference in precipitation between the south and the north can be seen."
+  },
+  {
+    "student_id": 19,
+    "question_id": 2,
+    "answer": "1. Displaying a map of the population of each province in the country helps people understand the population distribution, know which areas are densely populated and which are sparsely populated, and facilitate the arrangement of policies for corresponding development.\n2. Meteorological maps, such as typhoon path maps and rainfall trend maps, are conducive to the country and the people's early response to possible natural disasters and economic losses."
+  },
+  {
+    "student_id": 20,
+    "question_id": 1,
+    "answer": "Data visualization aids analysis because it makes data more vivid and intuitive. Visualized data allows trends to be identified more easily than text-based presentations. For example, visualizing geographic data as a map and overlaying temperature or population flow data can quickly reveal connections between different regions."
+  },
+  {
+    "student_id": 20,
+    "question_id": 2,
+    "answer": "Visualization of nationwide infection cases during the pandemic clearly shows the number of infections in each province and city, facilitating preventive measures in nearby areas. The Tmall Double 11 transaction screen displays real-time purchase volumes of various products, revealing consumer demand patterns. Smart traffic systems help users understand real-time congestion conditions and recommend optimal routes."
+  },
+  {
+    "student_id": 21,
+    "question_id": 1,
+    "answer": "Data visualization can help users intuitively identify patterns and gain insights from raw data.\n1. Temporal trend: The line chart shows the trend of epidemic infection, which can clearly highlight seasonal peaks and identify periodic characteristics.\n2. Spatial distribution: The choropleth map can intuitively show the distribution of epidemic areas.\n3. Trend comparison: By comparing multiple lines, it can be identified whether there is a potential connection between the epidemics in different regions.\nVisualization facilitates intuitive pattern recognition, supporting users to explore and make decisions more effectively in complex analytical scenarios."
+  },
+  {
+    "student_id": 21,
+    "question_id": 2,
+    "answer": "1. Johns Hopkins University COVID-19 map: Visually displays epidemic hotspots and epidemic trends.\n2. Sales Dashboard: Displays total sales, product sales, profit margins and other indicators to help sales teams understand performance in real time."
+  },
+  {
+    "student_id": 22,
+    "question_id": 1,
+    "answer": "1.Data visualization transform data to visual graphics and tables,help us feel the changes in data more intuitively.For example，meteorological maps can intuitively tell us the temperature, precipitation, and even climate of different regions.\n2.Data visualization can clearly display the characteristics of the target object，and support us to make decision.For example,many basketball team coaches use visual analysis of opposing players' goal data to develop defensive plans.\n3.Data visualization can reveal hidden trends to predict future outcomes. For example, a global temperature change chart can illustrate the trend of global warming."
+  },
+  {
+    "student_id": 22,
+    "question_id": 2,
+    "answer": "1.We can consider creating a national health visualization system that can be used to observe the physical mass of people in a certain area, or to prevent the spread of diseases.\n2.A graduate visualization system can be developed to display the regions, numbers, and research directions of graduates, which can be used for national policy adjustments on employment."
+  },
+  {
+    "student_id": 23,
+    "question_id": 1,
+    "answer": "1.It can help revealing the latent relationship and tendency of data. For example, text table is hard to conclude in short time. Otherwise,if you draw points on paper, it's much easier to find a function.\n2.It can help people browse data quicker.For example，human can read a graph much quiker than texts when they contains same information. In other words, graph can condense data better.\n3.It can help people make dicision faster and better. When facing huge quantity of data, people are tend to be confused. Otherwise when given consise and refined visual data, making dicision is much easier."
+  },
+  {
+    "student_id": 23,
+    "question_id": 2,
+    "answer": "1.iChart can create graphs in website, extract data from database. It can help comsumers enjoy better contents.\n2.Baidu Map can guide people, help people find famous sites."
+  },
+  {
+    "student_id": 24,
+    "question_id": 1,
+    "answer": "1.Reveals Patterns and Trends\n\nData visualization can better reveal the patterns and trends of data changes, as humans are more sensitive to images than symbols. Therefore, visualizing data can make it easier for people to understand the patterns and trends of data changes. For example, a table containing sales of different clothing items over three months can be visualized as a line chart, making it easy to see the trend of sales changes. Clothing store owners can prepare for future purchasing strategies based on the trend reflected in the line chart\n\n2.Identifies Anomalies and Outliers\n\nIf there is a large amount of data, the small amount of abnormal data contained in it is difficult for people to capture, and visualizing it will make the abnormal data particularly obvious. In subsequent data analysis, abnormal data can be simply ignored to ensure the correctness of data analysis conclusions. For example, when studying the relationship between income and age in a certain industry, data visualization techniques can be used to eliminate abnormal income values to ensure the correctness of the conclusion.\n\n3.Simplifies Complex Multivariate Relationships\n\nThere are many complex relationships hidden in the data, and even some topology related information. Therefore, visualizing the data can make it easier for people to discover the complex relationships and topology information between the data. For example, during the epidemic, a data table containing the number of infected people in various regions of the country was marked with different colors from low to high, such as white to red, on a map. Through this visual map, experts can easily analyze the spread trend of the epidemic and provide corresponding measures"
+  },
+  {
+    "student_id": 24,
+    "question_id": 2,
+    "answer": "1. Public Health Crisis Dashboard\nIntegrate data points across geographic regions into maps, heat maps, and data sequence maps. It can provide residents with an assessment of the current regional risk level and guide policy makers in resource allocation.\n2. Environmental monitoring system\nInformation such as pollution levels and climate change indicators can be visualized on maps. It is possible to expose some illegal activities, such as a sudden increase in environmental pollution levels. At this time, the government can locate the polluted areas based on the pollution level, follow the illegal polluting enterprises, and promptly stop the illegal activities."
+  },
+  {
+    "student_id": 25,
+    "question_id": 1,
+    "answer": "1. Data visualization helps to understand complex data. The patterns or patterns hidden in the data are difficult to directly determine and require extensive data analysis to obtain. Visualization helps to present the data as graphical elements, such as the visualization of a supermarket's annual sales of a certain product, which helps to discover cyclical patterns.\n2. Data visualization helps to analyze data more quickly. Presenting patterns from graphical elements helps narrow down exploration plans in early analysis, using more appropriate methods and reducing unnecessary attempts. For example, visualizing various data of patients with infectious diseases, such as age, gender, recent activity location, etc., can help quickly determine whether disease induction is related to personal health or geographical location, and further research can be conducted.\n3. Data visualization helps with better communication and decision-making. Through the presentation of visualization tools, it is convenient for the analysis team to efficiently express information and help make reasonable decisions. For example, a website determines the location and frequency of its advertising placement by visualizing its traffic sources, page views, visit times, and other information."
+  },
+  {
+    "student_id": 25,
+    "question_id": 2,
+    "answer": "1. By visualizing data on economic development, population age structure, migration trends, and other factors in various regions, it helps the government customize different policies based on regional conditions, enabling more intelligent decision-making to promote development in different regions.\n2. By visualizing data such as rainfall and wind speed, it helps predict extreme weather conditions, enabling timely warning and ensuring normal production activities."
+  },
+  {
+    "student_id": 26,
+    "question_id": 1,
+    "answer": "1. Data visualization can present data in a more intuitive way and convey more information; at the same time, it can mine the rules hidden in many data for more in-depth exploration and analysis.\n2. Data visualization can improve decision-making efficiency and help decision makers understand and evaluate different options and outcomes more quickly and accurately.\n3. Data visualization can display multiple dimensions and variables of data and help people discover deep-seated rules and trends in the data.\nExamples: John Snow's Cholera Map；Global COVID-19 dashboard；Netflix's content procurement and recommendation"
+  },
+  {
+    "student_id": 26,
+    "question_id": 2,
+    "answer": "1. Pangu meteorological platform: weather forecast, typhoon track forecast, precipitation forecast, weather forecast\nKepler.gl： a very powerful geospatial visualization tool, the map is very beautiful, mainly used to design some cool spatial charts, such as aircraft route maps, etc., to analyze geographic information."
+  },
+  {
+    "student_id": 27,
+    "question_id": 1,
+    "answer": "Data visualization realizes a human-centered data exploration process by converting data into a more understandable and intuitive visual encoding, helping analysts explore patterns that are difficult to detect from the original data.\nFirst, data visualization help deal with large-scale data. Direct analysis is often unrealistic for large-scale data. Through visualization tools such as histograms and box plots, the distribution and concentration trend of data can be quickly summarized, and then the large-scale data can be grasped as a whole.\nSecond, data visualization help deal with complex relationships between data, the relationship between data points is often difficult to perceive directly. Through visualization tools such as node-link diagram, complex relationships between data can be quickly explored to discover key nodes, clusters and other relationships.\nThird, data visualization help deal with multi-dimensional data, in high-dimensional data, different dimensions of data are often correlated. With the help of scatter plot matrices and parallel coordinates diagrams, analysts can find hidden association patterns, abnormal behaviors or clustering structures."
+  },
+  {
+    "student_id": 27,
+    "question_id": 2,
+    "answer": "1. When using stress analysis software for stress analysis, the stress analysis results are often output in the form of node stress values ​​combined with node positions. If countour plot is used, it can help analysts quickly identify stress concentration areas and have a general understanding of the overall stress distribution of the model.\n2. Air pollution visualization tools now help us quickly identify the spread of air pollution through dynamic heat maps, which is beneficial to the prevention and control of social air pollution."
+  },
+  {
+    "student_id": 28,
+    "question_id": 1,
+    "answer": "1. Quickly identify data trends: For example, when analyzing the monthly sales data of e-commerce platforms in the past year, drawing a line chart can intuitively show the trend of sales over time.\n2. Compare data differences: When analyzing the sales of different products, use a bar chart to display the sales of each product, with the height of the bar representing the sales volume. Through this chart, the sales differences of different products can be clearly compared.\n3. Support decision-making: Taking user behavior on e-commerce platforms as an example, using heat maps to analyze user behavior data can help the platform optimize page layout."
+  },
+  {
+    "student_id": 28,
+    "question_id": 2,
+    "answer": "1. Navigation map software: Real time color annotation of road congestion levels helps users choose the optimal route, reduce commuting time, and alleviate urban traffic pressure. At the same time, long-term accumulated traffic flow data can help the government identify common congestion points, guide road expansion or optimize public transportation routes.\n2. Air quality data query platform: Visualize environmental data such as pollutant concentration and air quality index to promote public environmental awareness and policy formulation."
+  },
+  {
+    "student_id": 29,
+    "question_id": 1,
+    "answer": "1) Data visualization transforms abstract numerical data into intuitive visual representations, facilitating the rapid identification of patterns and trends.\n2) It can couple with interactive exploration, enabling the discovery of hidden relationships within the data.\n3) By presenting complex analytical results in an interpretable form, visualization accelerates informed decision-making."
+  },
+  {
+    "student_id": 29,
+    "question_id": 2,
+    "answer": "1) Liu et al. introduced a visual analytics system, SmartAdP, designed to assist billboard planners in selecting the most suitable billboard locations.\n2) Zhang et al. proposed the CSLens system, helping planners make informed decisions regarding the deployment of charging infrastructure within the context of coupled transportation and power networks."
+  },
+  {
+    "student_id": 30,
+    "question_id": 1,
+    "answer": "1. Data visualization can effectively reveal complex trends in data changes.\n   Complex data often contain deep, hard-to-detect relationships, and data visualization helps uncover them. For example, when analyzing the daily sales fluctuations of a product, visualizing the data as a line chart may reveal hidden patterns such as differences between weekend and weekday sales, seasonal sales variations, or changes during holidays that might not be obvious from raw data.\n\n2. Data visualization can effectively uncover complex relationships within high-dimensional data.\n   High-dimensional data may exhibit intricate dependencies among variables. Data visualization excels at revealing these connections. For instance, the stiffness of a material may be related to multiple material parameters. By using specific scatter plots, one can intuitively observe positive correlations, negative correlations, or even more complex relationships between a given parameter and the material's stiffness.\n\n3. Data visualization helps quickly identify anomalous data points.\n   Among large datasets collected from various sources, there are often some erroneous or abnormal data points that should not be included in analysis. For example, in temperature monitoring for a particular region, extreme high or low readings at certain checkpoints may indicate sensor malfunctions or external interference rather than actual temperatures. Data visualization makes it easier to quickly spot and exclude these anomalies."
+  },
+  {
+    "student_id": 30,
+    "question_id": 2,
+    "answer": "1. During the COVID-19 pandemic prevention and control period, visual heatmaps depicting the spread of the virus provided strong support for tasks such as medical resource allocation and lockdown policy decision-making, effectively reducing the social harm caused by the pandemic.\n\n2. In agriculture, various visualizations of crop yield distribution maps help in designing planning strategies for agricultural product distribution channels, water conservancy infrastructure construction, and crop type selection in different regions, which is beneficial for national agricultural development."
+  },
+  {
+    "student_id": 31,
+    "question_id": 1,
+    "answer": "1. Data visualization presents the results of data analysis in a more concise and intuitive way, so that even those without relevant background can understand the trends and relationships revealed. For example, when we try to persuade others with data, it is more likely to gain recognition by using charts than by using text.\n2. Using data visualization to assist in data analysis can help uncover hidden information or patterns within the data. For instance, when analyzing a city's passenger flow data, knowing only the passenger flow at a specific location during a certain time period may be limited. However, using a heat map for an overall analysis makes it easier to identify differences between regions.\n3. Data visualization can be used to compare with previous data more quickly, so as to find anomalies. For example, when monitoring the daily click rate of a website, scatter plot or line graph can be used for analysis. If there is a big difference between the average click rate, timely response can be made."
+  },
+  {
+    "student_id": 31,
+    "question_id": 2,
+    "answer": "1. Monitoring the traffic flow on expressways, visualizing the traffic flow data, and setting off early warning after reaching the critical value, so that relevant department personnel can be arranged to command and evacuate the traffic flow to avoid causing chaos or accidents and maintain social order.\n2. Government departments realize data openness and transparency, integrate government department data for disclosure, and make it more convenient for citizens to understand and put forward relevant suggestions after data visualization, so as to enhance trust and promote social harmony."
+  },
+  {
+    "student_id": 32,
+    "question_id": 1,
+    "answer": "1. simplify complex information for better understanding.\n2. easily identify the pattern, trend and feature of the data.\n3. a figure is worth than thousand words."
+  },
+  {
+    "student_id": 32,
+    "question_id": 2,
+    "answer": "1. Monitoring the traffic flow on expressways, visualizing the traffic flow data, and setting off early warning after reaching the critical value, so that relevant department personnel can be arranged to command and evacuate the traffic flow to avoid causing chaos or accidents and maintain social order.\n2. Government departments realize data openness and transparency, integrate government department data for disclosure, and make it more convenient for citizens to understand and put forward relevant suggestions after data visualization, so as to enhance trust and promote social harmony."
+  }
+]
