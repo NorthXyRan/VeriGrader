@@ -1,13 +1,16 @@
-# Upload组件
+# Upload组件架构文档
 
-## 架构设计
+## 概述
 
-### 核心设计原则
+Upload组件负责处理试卷、参考答案和学生答案的文件上传、解析和管理。采用配置化设计模式，统一了处理流程，并集成了统一的日志系统。
 
-1. **单向数据流**: 用户操作 → 父组件处理 → Store更新 → 子组件响应
-2. **单一数据源**: Store是唯一的状态来源，子组件完全无状态
-3. **统一处理**: 所有业务逻辑集中在父组件的`processFile`函数
+## 核心设计原则
+
+1. **配置化驱动**: 使用配置对象减少重复代码，统一处理逻辑
+2. **单向数据流**: 用户操作 → 父组件处理 → Store更新 → 子组件响应  
+3. **单一数据源**: Store是唯一的状态来源，子组件完全无状态
 4. **双Store架构**: 上传状态与业务数据分离管理
+5. **统一日志**: 使用logger系统进行结构化日志记录
 
 ## 组件结构
 
@@ -21,11 +24,96 @@ src/components/upload/
 └── Preview.vue                # 预览弹窗组件 (内容展示)
 ```
 
+## 核心架构
+
+### 1. 类型定义与配置
+
+```typescript
+type FileType = 'paper' | 'answer' | 'student'
+
+interface FileTypeConfig {
+  displayName: string
+  setUploading: (fileName: string, content: string) => void
+  setReady: (data: any, meta: any) => void
+  setError: (error: string) => void
+  updateStore: (data: any) => { count: number; message: string }
+}
+
+// 配置映射 - 消除重复代码
+const fileTypeConfigs: Record<FileType, FileTypeConfig> = {
+  paper: { /* 试卷配置 */ },
+  answer: { /* 答案配置 */ },
+  student: { /* 学生配置 */ }
+}
+```
+
+### 2. 统一处理函数
+
+```typescript
+const processFile = async (file: File, type: FileType) => {
+  const config = fileTypeConfigs[type]
+  
+  logger.group('文件处理', `${config.displayName}: ${file.name}`)
+  
+  try {
+    // 1. 读取文件内容
+    logger.info('读取文件内容', { 文件名: file.name, 文件大小: `${file.size} bytes` })
+    const content = await readFileContent(file)
+    
+    // 2. 设置上传状态
+    config.setUploading(file.name, content)
+    
+    // 3. 解析数据 (JSON直解析 / AI解析)
+    let parsedData = await parseFileContent(content, file.name, type)
+    
+    // 4. 更新数据和状态
+    const { count, message } = config.updateStore(parsedData)
+    config.setReady(parsedData, buildMeta(type, count, parsedData))
+    
+    // 5. 保存并反馈
+    saveToLocal()
+    ElMessage.success(message)
+    logger.success('数据更新完成', { 解析数量: count })
+    
+  } catch (error) {
+    handleError(config, error, file.name)
+  } finally {
+    logger.groupEnd()
+  }
+}
+```
+
+### 3. 配置化事件处理
+
+```typescript
+// 统一的文件选择处理
+const handleFileSelected = (file: File, type: FileType) => {
+  logger.info('文件选择', { 类型: fileTypeConfigs[type].displayName, 文件名: file.name })
+  processFile(file, type)
+}
+
+// 配置化的移除操作
+const removeConfigs: Record<FileType, RemoveConfig> = {
+  paper: { displayName: 'Paper', resetUpload: () => uploadStore.resetPaper(), ... },
+  answer: { displayName: 'Reference answer', resetUpload: () => uploadStore.resetAnswer(), ... },
+  student: { displayName: 'Student answer', resetUpload: () => uploadStore.resetStudent(), ... }
+}
+
+const handleRemove = (type: FileType) => {
+  const config = removeConfigs[type]
+  logger.info('移除文件', { 类型: config.displayName })
+  
+  config.resetUpload()
+  config.resetExam()
+  saveToLocal()
+  
+  ElMessage.success(`${config.displayName} removed successfully`)
+}
+```
+
 ## 状态管理
 
 ### useUploadStatusStore (上传状态管理)
-
-**职责**: 管理文件上传的状态、进度、错误信息
 
 ```typescript
 interface UploadItem {
@@ -48,322 +136,172 @@ const canUploadStudent: boolean    // 是否可以上传学生答案
 const canProceedToGrading: boolean // 是否可以进入评分页面
 ```
 
-**关键方法**:
-
-- `setPaperUploading(name, content)` - 设置试卷上传中状态
-- `setPaperReady(data, meta)` - 设置试卷就绪状态
-- `setPaperError(error)` - 设置试卷错误状态
-- `resetPaper()` - 重置试卷状态
-- `resetAll()` - 重置所有状态
-
-### useExamDataStore (核心数据管理)
-
-**职责**: 管理解析后的核心业务数据
+### useExamDataStore (业务数据管理)
 
 ```typescript
-// 核心数据
-const questions: Ref<Question[]>                    // 试卷题目
-const referenceAnswers: Ref<ReferenceAnswer[]>      // 参考答案
-const studentAnswers: Ref<StudentAnswer[]>          // 学生答案
-const studentList: Ref<StudentInfo[]>               // 学生列表
-const highlightDataList: Ref<HighlightData[]>       // AI评分结果
+const questions: Ref<Question[]>           // 试卷题目
+const referenceAnswers: Ref<Answer[]>      // 参考答案
+const studentAnswers: Ref<StudentAnswer[]> // 学生答案
 ```
 
-**关键方法**:
+## 日志系统
 
-- `setQuestions(questions)` - 设置试卷题目
-- `setReferenceAnswers(answers)` - 设置参考答案
-- `setStudentAnswers(answers)` - 设置学生答案
-- `getQuestionById(id)` - 根据ID获取题目
-- `getReferenceAnswer(questionId)` - 获取指定题目的参考答案
-- `getStudentAnswer(studentId, questionId)` - 获取指定学生的答案
-
-## 数据流详解
-
-### 1. 文件上传流程
-
-```mermaid
-graph LR
-    A[用户选择文件] --> B[子组件emit事件]
-    B --> C[父组件processFile]
-    C --> D[读取文件内容]
-    D --> E{文件类型判断}
-    E -->|JSON| F[直接解析]
-    E -->|其他| G[AI解析]
-    F --> H[数据验证]
-    G --> H
-    H --> I[更新Store]
-    I --> J[保存localStorage]
-    J --> K[UI自动更新]
-```
-
-### 2. 核心处理函数
+### 使用logger进行结构化日志
 
 ```typescript
-const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => {
-  try {
-    // 1. 读取文件内容
-    const content = await readFileContent(file)
-    
-    // 2. 设置上传状态
-    uploadStore.setXxxUploading(file.name, content)
-    
-    // 3. 解析数据
-    let parsedData
-    if (isJsonFile(file.name)) {
-      parsedData = JSON.parse(content)
-    } else {
-      parsedData = await uploadLLMService.Parse(content, type)
-    }
-    
-    // 4. 验证数据
-    validateJsonData(parsedData, type)
-    
-    // 5. 更新Store
-    examStore.setXxx(parsedData.xxx)
-    uploadStore.setXxxReady(parsedData, meta)
-    
-    // 6. 保存到本地
-    examStore.saveToLocal()
-    uploadStore.saveToLocal()
-    
-  } catch (error) {
-    uploadStore.setXxxError(error.message)
-  }
-}
+import { logger } from '../../utils/logger'
+
+// 分组日志
+logger.group('文件处理', `${config.displayName}: ${file.name}`)
+logger.groupEnd()
+
+// 不同级别的日志
+logger.info('读取文件内容', { 文件名: file.name, 文件大小: `${file.size} bytes` })
+logger.success('数据更新完成', { 解析数量: count })
+logger.error('文件处理失败', { 错误: errorMessage, 文件: file.name })
+logger.saved('数据已保存到本地存储')
 ```
 
-### 3. UI响应机制
+### 日志分类
 
-```typescript
-// 计算属性驱动UI更新
-const paperDisplayText = computed(() => {
-  const paper = uploadStore.examPaper
-  if (paper.status === 'error') return paper.error
-  if (paper.status === 'ready') return `当前试卷：${paper.name}（共${paper.meta?.questionCount}道题目）`
-  return ''
-})
+- **info**: 一般信息记录
+- **success**: 成功操作记录  
+- **error**: 错误信息记录
+- **saved**: 数据保存记录
+- **group/groupEnd**: 分组日志，便于调试追踪
 
-// 子组件通过props接收状态
-<PaperUpload
-  :status="uploadStore.examPaper.status"
-  :file-name="uploadStore.examPaper.name"
-  :display-text="paperDisplayText"
-  :error="uploadStore.examPaper.error"
-/>
-```
-
-
+## 组件职责
 
 ### Uploading.vue (主容器组件)
 
 **职责**: 统一的业务逻辑处理中心
 
 **核心功能**:
-
-- 文件处理 (`processFile`)
-- 事件处理 (`handleXxxSelected`, `handleXxxRemove`)
-- 预览管理 (`handleXxxPreview`)
+- 配置化文件处理 (`processFile`)
+- 统一事件处理 (`handleFileSelected`, `handleRemove`, `handlePreview`)
 - 重置操作 (`resetAll`)
+- 组件初始化和数据恢复
 
-**关键代码结构**:
-
-```vue
-<template>
-  <!-- 三个子组件 + 重置按钮 + 预览弹窗 -->
-</template>
-
-<script setup lang="ts">
-// Store
-const uploadStore = useUploadStatusStore()
-const examStore = useExamDataStore()
-
-// 计算属性
-const paperDisplayText = computed(...)
-const answerDisplayText = computed(...)
-const studentDisplayText = computed(...)
-
-// 核心处理函数
-const processFile = async (file, type) => { ... }
-
-// 事件处理
-const handlePaperSelected = (file) => processFile(file, 'paper')
-const handlePaperRemove = () => { ... }
-const handlePaperPreview = () => { ... }
-</script>
-```
+**关键特性**:
+- 配置驱动，减少重复代码
+- 统一的错误处理机制
+- 结构化日志记录
+- 响应式状态管理
 
 ### BaseUpload.vue (基础上传组件)
 
 **职责**: 通用的上传UI组件，完全无状态
 
 **核心功能**:
-
 - 文件拖拽上传界面
-- 状态显示 (idle/uploading/ready/error)
-- 操作按钮 (预览/移除)
-- 响应式布局
+- 状态指示器 (上传中、成功、错误)
+- 文件操作按钮 (移除、预览)
+- 响应式设计
 
-**Props接口**:
+**设计原则**: 纯UI组件，不包含任何业务逻辑
 
-```typescript
-interface Props {
-  title: string           // 卡片标题
-  uploadTitle: string     // 上传区域标题
-  icon: Component         // 显示图标
-  cardClass: string       // 卡片样式类
-  uploadClass: string     // 上传区域样式类
-  accept: string          // 接受的文件类型
-  uploadHint: string      // 上传提示文本
-  disabled: boolean       // 是否禁用
-  status: string          // 当前状态
-  fileName: string        // 文件名
-  displayText: string     // 显示文本
-  error: string           // 错误信息
-}
-```
+### PaperUpload/AnswerUpload/StudentUpload (特化组件)
 
-**关键特性**:
+**职责**: 特定类型的上传组件，负责事件转发
 
-- **状态驱动UI**: 根据status自动显示对应的状态标签和图标
-- **文件列表管理**: 监听状态变化自动清空文件列表
-- **响应式设计**: 支持移动端适配
-
-### 子组件 (PaperUpload, AnswerUpload, StudentUpload)
-
-**职责**: 纯事件转发，无业务逻辑
-
-**代码结构**:
-
-```vue
-<template>
-  <BaseUpload
-    title="Paper Management"
-    :status="status"
-    :file-name="fileName"
-    :display-text="displayText"
-    :error="error"
-    :disabled="disabled"
-    @file-selected="$emit('file-selected', $event)"
-    @remove="$emit('remove')"
-    @preview="$emit('preview')"
-  />
-</template>
-
-<script setup>
-// 只接收props和转发事件，无任何业务逻辑
-defineProps([...])
-defineEmits(['file-selected', 'remove', 'preview'])
-</script>
-```
+**核心功能**: 
+- 接收父组件状态props
+- 转发用户操作事件
+- 提供特定样式定制
 
 ### Preview.vue (预览组件)
 
 **职责**: 统一的文件内容预览
 
 **核心功能**:
-
 - 显示原始文件内容
 - 支持复制到剪贴板
 - 响应式弹窗布局
+- 统一的预览体验
 
-## 开发指南
+## 数据流
 
-### 添加新的文件类型
+```
+用户操作 → 子组件事件 → 父组件处理 → Store更新 → UI自动响应
 
-1. **扩展UploadItem类型**:
+1. 用户选择文件 → PaperUpload.emit('file-selected')
+2. Uploading接收事件 → handleFileSelected()
+3. 执行processFile() → 读取、解析、验证
+4. 更新Store状态 → uploadStore.setPaperReady()
+5. 计算属性更新 → paperDisplayText
+6. 子组件props更新 → UI自动刷新
+```
+
+## 错误处理
+
+### 统一错误处理流程
 
 ```typescript
-// 在useUploadStatusStore中添加新状态
-const newFileType: Ref<UploadItem> = ref({...})
-```
-
-1. **添加处理方法**:
-
-```typescript
-const setNewFileUploading = (name: string, content: string) => {...}
-const setNewFileReady = (data: any, meta: any) => {...}
-const setNewFileError = (error: string) => {...}
-```
-
-1. **创建子组件**:
-
-```vue
-<!-- NewFileUpload.vue -->
-<template>
-  <BaseUpload
-    title="New File Type"
-    :status="status"
-    @file-selected="$emit('file-selected', $event)"
-  />
-</template>
-```
-
-1. **在父组件中集成**:
-
-```vue
-<!-- Uploading.vue -->
-<NewFileUpload
-  :status="uploadStore.newFileType.status"
-  @file-selected="handleNewFileSelected"
-/>
-```
-
-### 修改文件处理逻辑
-
-所有文件处理逻辑都在`Uploading.vue`的`processFile`函数中：
-
-```typescript
-const processFile = async (file: File, type: 'paper' | 'answer' | 'student' | 'newType') => {
-  // 在这里添加新的处理逻辑
-  if (type === 'newType') {
-    // 新类型的特殊处理
-  }
+try {
+  // 文件处理逻辑
+} catch (error) {
+  const errorMessage = error.message || '未知错误'
+  logger.error(`${config.displayName}处理失败`, { 错误: errorMessage, 文件: file.name })
+  
+  config.setError(errorMessage)
+  ElMessage.error(`${config.displayName} processing failed: ${errorMessage}`)
+  uploadStore.saveToLocal()
 }
 ```
 
-### 添加新的验证规则
+### 错误类型
 
-在`fileReaders.ts`中的`validateJsonData`函数添加：
+- **文件读取失败**: 文件内容为空或格式不支持
+- **AI解析失败**: LLM服务不可用或解析超时
+- **数据验证失败**: JSON格式不符合预期结构
+- **网络错误**: 上传或API调用失败
 
-```typescript
-export function validateJsonData(jsonData: any, type: 'paper' | 'answer' | 'student' | 'newType') {
-  switch (type) {
-    case 'newType':
-      // 新类型的验证逻辑
-      if (!jsonData.requiredField) {
-        throw new Error('缺少必要字段')
-      }
-      break
-  }
-}
-```
+## 性能优化
 
-## 调试技巧
+### 配置化设计优势
+
+1. **代码复用**: 三种文件类型共享相同的处理逻辑
+2. **维护性**: 修改处理流程只需更新配置和核心函数
+3. **可扩展性**: 添加新文件类型只需增加配置项
+4. **类型安全**: TypeScript接口确保配置完整性
+
+### 响应式优化
+
+- 使用computed属性避免不必要的重计算
+- 组件懒加载和按需渲染
+- 本地存储缓存，避免重复处理
+
+## 调试指南
 
 ### 1. 状态追踪
 
 ```javascript
-// 在浏览器控制台查看Store状态
+// 浏览器控制台查看Store状态
 console.log('Upload状态:', uploadStore.$state)
 console.log('Exam数据:', examStore.$state)
 ```
 
-### 2. 数据流追踪
+### 2. 日志追踪
 
-在`processFile`函数中添加日志：
+开发环境下，所有操作都有详细的分组日志：
 
-```typescript
-console.log(`📁 开始处理${type}文件:`, file.name)
-console.log(`📄 文件内容:`, content.substring(0, 100))
-console.log(`✅ 解析结果:`, parsedData)
+```
+[文件处理] Paper: exam.txt
+  INFO: 读取文件内容 {文件名: "exam.txt", 文件大小: "1024 bytes"}
+  INFO: 检测到非JSON文件，使用AI解析
+  SUCCESS: 数据解析成功 {数据类型: "object"}
+  SUCCESS: 数据更新完成 {解析数量: 5}
+  SAVED: 数据已保存到本地存储
 ```
 
-### 3. localStorage检查
+### 3. 配置检查
 
-```javascript
-// 查看本地存储
-Object.keys(localStorage).filter(key => key.startsWith('exam_') || key.startsWith('upload_'))
+```typescript
+// 检查配置完整性
+Object.keys(fileTypeConfigs).forEach(type => {
+  const config = fileTypeConfigs[type]
+  console.log(`${type} 配置:`, config)
+})
 ```
 
 ## 注意事项
@@ -371,7 +309,7 @@ Object.keys(localStorage).filter(key => key.startsWith('exam_') || key.startsWit
 ### 1. 文件格式要求
 
 - **试卷**: 支持TXT, DOC, DOCX, JSON
-- **参考答案**: 支持TXT, DOC, DOCX, JSON
+- **参考答案**: 支持TXT, DOC, DOCX, JSON  
 - **学生答案**: 仅支持JSON格式
 
 ### 2. 数据依赖关系
@@ -380,14 +318,18 @@ Object.keys(localStorage).filter(key => key.startsWith('exam_') || key.startsWit
 - 学生答案上传需要先上传试卷
 - 参考答案是可选的
 
-### 3. 错误处理
+### 3. 配置更新指南
 
-- 所有错误都会保存到Store中
-- 错误状态下仍可预览原始文件内容
-- AI解析失败会提示用户上传JSON格式
+当需要修改处理逻辑时：
+
+1. 更新对应的`FileTypeConfig`配置
+2. 如需添加新的处理步骤，在`processFile`中统一添加
+3. 确保错误处理覆盖新的失败场景
+4. 更新相关的TypeScript接口定义
 
 ### 4. 性能考虑
 
-- 大文件会在读取时可能造成界面卡顿
+- 大文件上传可能造成界面卡顿
 - AI解析可能需要较长时间
 - localStorage有大小限制 (~5MB)
+- 建议对大文件进行分块处理或压缩

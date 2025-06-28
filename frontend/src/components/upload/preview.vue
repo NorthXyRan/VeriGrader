@@ -28,6 +28,7 @@
 <script setup>
 import { ElMessage } from 'element-plus'
 import { computed } from 'vue'
+import { logger } from '../../utils/logger'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -51,7 +52,7 @@ const copyContent = async () => {
     await navigator.clipboard.writeText(props.content)
     ElMessage.success('Content has been copied to the clipboard')
   } catch (error) {
-    console.error('Copy failed:', error)
+    logger.error('复制失败', error)
     ElMessage.error('Copy failed, please manually select copy')
   }
 }

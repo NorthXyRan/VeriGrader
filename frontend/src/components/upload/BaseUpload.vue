@@ -109,6 +109,7 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, ref, watch } from 'vue'
+import { logger } from '../../utils/logger'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -141,7 +142,7 @@ watch(() => props.status, (newStatus, oldStatus) => {
     if (uploadRef.value) {
       uploadRef.value.clearFiles()
     }
-    console.log('文件列表已清空，可以重新上传')
+    logger.info('文件列表已清空，可以重新上传')
   }
 })
 
@@ -152,7 +153,7 @@ watch(() => props.fileName, (newFileName) => {
     if (uploadRef.value) {
       uploadRef.value.clearFiles()
     }
-    console.log('📝 文件名已清空，清理文件列表')
+    logger.info('文件名已清空，清理文件列表')
   }
 })
 
@@ -211,7 +212,7 @@ const uploadHintText = computed(() =>
 const handleFileChange = (uploadFile) => {
   const file = uploadFile.raw || uploadFile
   if (file && file instanceof File) {
-    console.log('文件已选择:', file.name)
+    logger.info('文件已选择', { 文件名: file.name })
     emit('file-selected', file)
   } else {
     ElMessage.error('Invalid file')
