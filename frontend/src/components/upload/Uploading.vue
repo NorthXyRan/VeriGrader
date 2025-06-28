@@ -61,7 +61,7 @@ import {
   isJsonFile,
   readFileContent,
   validateJsonData,
-} from '../../services/file/fileReaders.ts'
+} from '../../services/file/fileReaders'
 import { uploadLLMService } from '../../services/llm'
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
