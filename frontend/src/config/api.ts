@@ -26,7 +26,7 @@ export const API_CONFIG = {
     // 理由生成配置
     REASON_GENERATION: {
       MODEL: 'o3-mini',
-      MAX_TOKENS: 150,
+      MAX_TOKENS: 512,
       TEMPERATURE: 0.3,
     },
   },
