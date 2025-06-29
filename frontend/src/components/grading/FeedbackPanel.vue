@@ -27,21 +27,21 @@
     <!-- 操作按钮 -->
     <div class="action-buttons">
       <el-button @click="modifyReason">
-        修改
+        modify
       </el-button>
       <el-button
         type="success"
         @click="saveReason"
         :disabled="!editableReason.trim()"
       >
-        保存
+        save
       </el-button>
       <el-button
         type="primary"
         @click="submitReason"
         :disabled="!editableReason.trim()"
       >
-        提交
+        submit
       </el-button>
     </div>
   </div>
