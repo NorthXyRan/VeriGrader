@@ -52,7 +52,11 @@
         <div class="card-header">
           <h3>Reference Answer</h3>
         </div>
-        <reference-answer class="card-content" :reference-answer="currentReferenceAnswer" />
+        <reference-answer
+          class="card-content"
+          :reference-answer="currentReferenceAnswer"
+          :current-highlight="currentReferenceHighlight"
+        />
       </div>
 
       <!-- 反馈区域 -->
@@ -83,6 +87,7 @@ import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
 import ReferenceAnswer from './ReferenceAnswer.vue'
 import ScoringSection from './ScoringSection.vue'
+import { type HighlightType } from '@/utils/highlightUtils'
 
 // Store
 import { useExamDataStore } from '../../stores/useExamDataStore'
@@ -99,7 +104,7 @@ const examDataStore = useExamDataStore()
 const uploadStatusStore = useUploadStatusStore()
 
 // 批改业务逻辑
-const { 
+const {
   executeSingleGrading,
   executeBatchGrading,
   generateReasonWithFeedback,
@@ -129,9 +134,16 @@ const currentReferenceAnswer = computed(() => {
   if (!referenceAnswer) {
     return 'There is no answer available. Please check if you have uploaded the reference answer.'
   }
-  
+
   return referenceAnswer.answer
 })
+
+// 当前高亮状态 - 用于Reference Answer联动
+const currentReferenceHighlight = ref<{
+  text: string
+  type: HighlightType
+  reason: string
+} | null>(null)
 
 // 学生答案
 const currentStudentAnswer = computed(() => {
@@ -180,6 +192,9 @@ const handleStudentChange = (studentId: number) => {
     return
   }
 
+  // 清除Reference Answer高亮
+  currentReferenceHighlight.value = null
+
   currentStudentId.value = studentId
   logger.info('切换学生', { studentId })
 }
@@ -194,6 +209,9 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
     return
   }
 
+  // 清除Reference Answer高亮
+  currentReferenceHighlight.value = null
+
   currentQuestionId.value = question.id
   logger.info('切换题目', { questionId: question.id })
 }
@@ -205,6 +223,12 @@ const handleHighlightClicked = (data: { text: string; type: string; reason: stri
     type: data.type,
     hasReason: !!data.reason
   })
+  // 更新Reference Answer的高亮状态
+  currentReferenceHighlight.value = {
+    text: data.text,
+    type: data.type as HighlightType,
+    reason: data.reason
+  }
   feedbackPanelRef.value?.handleHighlightClicked(data)
 }
 
@@ -221,17 +245,17 @@ const handleUpdateHighlightData = async (data: {
     text: data.text ? data.text.substring(0, 30) + '...' : undefined,
     type: data.type
   })
-  
+
   // 处理添加操作的特殊逻辑
   if (data.operation === 'add' && data.text && data.type) {
     const targetType = data.type
-    
+
     if (isInModifyMode.value && data.reason) {
       // 修改模式：直接保存理由
       saveReasonDirectly(
-        data.text, 
-        targetType, 
-        data.reason, 
+        data.text,
+        targetType,
+        data.reason,
         data.scoringPoint || 0,
         currentStudentId.value,
         currentQuestionId.value,
@@ -246,7 +270,7 @@ const handleUpdateHighlightData = async (data: {
         reason: '当前LLM正在生成理由...',
         scoringPoint: data.scoringPoint || 0
       })
-      
+
       generateReasonWithFeedback(
         data.text,
         targetType,
@@ -258,7 +282,7 @@ const handleUpdateHighlightData = async (data: {
     }
     return
   }
-  
+
   // 处理其他操作（删除和重置）
   if (data.operation === 'remove' && data.text && data.type) {
     removeAnnotation(data.text, data.type, currentStudentId.value, currentQuestionId.value)
@@ -291,7 +315,7 @@ const handleSaveReason = (data: { highlight: any, reason: string }) => {
     type: data.highlight.type,
     newReason: data.reason
   })
-  
+
   // 更新HighlightData中的理由
   handleUpdateHighlightData({
     operation: 'add',
@@ -300,7 +324,7 @@ const handleSaveReason = (data: { highlight: any, reason: string }) => {
     reason: data.reason,
     scoringPoint: data.highlight.scoringPoint || 0
   })
-  
+
   ElMessage.success('Reason saved')
 }
 
@@ -323,7 +347,7 @@ const handleSubmitReasonExample = (data: {
 // 设置金标试卷
 const handleSaveAsGoldenExample = () => {
   const success = setGoldPaper(currentStudentId.value, currentQuestionId.value)
-  
+
   if (success) {
     ElMessage.success('Paper set as golden standard, all reasons extracted to example library')
   } else {

@@ -55,13 +55,18 @@ export async function callLLMAPI(prompt: string, config: LLMConfig): Promise<LLM
     }
 
     const data = await response.json()
-    
+    // ========== 添加详细的API响应日志 ==========
+    console.log('=== 完整API响应数据 ===')
+    console.log(JSON.stringify(data, null, 2))
+    console.log('=== API响应数据结束 ===')
+    // ========== 调试代码结束 ==========
+
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
       throw new Error('API response format error: missing required fields')
     }
 
     const content = data.choices[0].message.content
-    
+
     if (!content || !content.trim()) {
       throw new Error('LLM returned empty content')
     }

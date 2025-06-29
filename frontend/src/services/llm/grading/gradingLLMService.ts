@@ -31,10 +31,10 @@ export interface GradingResponse {
 export async function gradeSingleStudentAnswer(request: SingleGradingRequest): Promise<GradingResponse> {
   try {
     console.log('开始批改：学生', request.studentAnswer.student_id, '问题', request.question.question_id)
-    
+
     // 加载静态提示词模板
     const staticPrompt = await loadStaticPromptTemplate()
-    
+
     // 构建完整的prompt
     const prompt = buildGradingPrompt(
       request.question,
@@ -42,23 +42,23 @@ export async function gradeSingleStudentAnswer(request: SingleGradingRequest): P
       request.studentAnswer,
       staticPrompt
     )
-    
+
     console.log('=== 批改Prompt ===')
     console.log('长度:', prompt.length)
     console.log('内容:', prompt)
     console.log('=== Prompt结束 ===')
-    
+
     // 调用统一的LLM API
     const llmResponse = await callLLMAPI(prompt, getGradingConfig())
-    
+
     if (!llmResponse.success) {
       throw new Error(llmResponse.error || 'LLM API call failed')
     }
 
     const gradingResult = JSON.parse(llmResponse.content!)
-    
+
     console.log('批改完成：学生', gradingResult.student_id)
-    
+
     // 转换为HighlightData格式
     const highlightData: HighlightData = {
       student_id: gradingResult.student_id,
@@ -74,7 +74,7 @@ export async function gradeSingleStudentAnswer(request: SingleGradingRequest): P
     }
   } catch (error) {
     console.error('打分失败：', error)
-    
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -90,11 +90,11 @@ export const checkGradingServiceStatus = checkLLMServiceStatus
 // Few-Shot学生批改
 export async function gradeSingleStudentAnswerWithFewShot(request: FewShotGradingRequest): Promise<GradingResponse> {
   try {
-    console.log('开始Few-Shot批改：学生', request.studentAnswer.student_id, '问题', request.question.question_id)
-    
+    console.log('开始Few-Shot批改:学生', request.studentAnswer.student_id, '问题', request.question.question_id)
+
     // 加载静态提示词模板
     const staticPrompt = await loadStaticPromptTemplate()
-    
+
     // 构建带Few-Shot的完整prompt
     const prompt = buildGradingPromptWithFewShot(
       request.question,
@@ -103,23 +103,23 @@ export async function gradeSingleStudentAnswerWithFewShot(request: FewShotGradin
       staticPrompt,
       request.fewShotPrompt
     )
-    
+
     console.log('=== Few-Shot批改Prompt ===')
     console.log('长度:', prompt.length)
     console.log('内容:', prompt)
     console.log('=== Prompt结束 ===')
-    
+
     // 调用统一的LLM API
     const llmResponse = await callLLMAPI(prompt, getGradingConfig())
-    
+
     if (!llmResponse.success) {
       throw new Error(llmResponse.error || 'LLM API call failed')
     }
 
     const gradingResult = JSON.parse(llmResponse.content!)
-    
-    console.log('Few-Shot批改完成：学生', gradingResult.student_id)
-    
+
+    console.log('Few-Shot批改完成:学生', gradingResult.student_id)
+
     return {
       success: true,
       data: [gradingResult],
@@ -128,7 +128,7 @@ export async function gradeSingleStudentAnswerWithFewShot(request: FewShotGradin
 
   } catch (error) {
     console.error('Few-Shot批改失败:', error)
-    
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

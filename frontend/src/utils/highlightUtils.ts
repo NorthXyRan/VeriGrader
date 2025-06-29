@@ -157,15 +157,15 @@ export function generateHighlightedHTML(
     const uniqueId = `HL_${index}_`
     const config = HIGHLIGHT_CONFIG[highlight.type]
 
-    const startTag = `<span 
-          class="text-highlight ${config.className}" 
+    const startTag = `<span
+          class="text-highlight ${config.className}"
           data-type="${highlight.type}"
           data-text="${escapeHtml(highlight.text)}"
           data-reason="${escapeHtml(highlight.reason)}"
           data-scoring-point="${highlight.scoringPoint}"
           style="
-            background-color: ${config.backgroundColor}; 
-            border-left: 3px solid ${config.borderColor}; 
+            background-color: ${config.backgroundColor};
+            border-left: 3px solid ${config.borderColor};
             padding: 2px 4px;
             border-radius: 3px;
             cursor: pointer;
@@ -188,6 +188,58 @@ export function generateHighlightedHTML(
   return finalResult
 }
 
+// 从reason中提取参考答案单个片段高亮
+export function extractReferenceSegmentFromReason(reason: string): string | null{
+  if (!reason) return null
+  const matchPatterns = [
+    /match[""]([^"""]+)[""]/, // 中文引号
+    /match"([^"]+)"/, // 英文引号
+    /match'([^']+)'/, // 单引号
+    /match[""]([^"""]+)[""]/ // 其他可能的引号格式
+  ]
+  for (const pattern of matchPatterns){
+    const match = reason.match(pattern)
+    if (match && match[1]){
+      return match[1]
+    }
+  }
+  return null
+}
+
+// 在参考答案中高亮指定文本
+export function highlightReferenceText(
+  referenceAnswer: string,
+  targetText: string,
+  hightightType: HighlightType
+): string {
+  if (!referenceAnswer || !targetText) {
+    return escapeHtml(referenceAnswer || '')
+  }
+  const config = HIGHLIGHT_CONFIG[hightightType]
+  const escapedTarget = escapeHtml(targetText)
+  const escapedContent = escapeHtml(referenceAnswer)
+
+  // 查找目标文本
+  const regex = new RegExp(escapedTarget.replace(/[.*+?^${}|[\]\\]/g,'\\$&'),'gi')
+
+  const hightlightedContent = escapedContent.replace(regex, (match) =>{
+    return `<span
+    class="reference-highlight ${config.className}"
+    style="
+      background-color: ${config.backgroundColor};
+      border-left: 3px solid ${config.borderColor};
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin: 0 1px;
+      transition: all 0.2s ease;
+    "
+    title="对应学生答案的${config.label}部分"
+  >${match}</span>`
+  })
+
+  return hightlightedContent
+}
+
 /**
  * 解析高亮元素  把HTML还原成数据
  */
@@ -205,7 +257,7 @@ export function parseHighlightElement(element: HTMLElement, highlightData?: High
   const text = element.getAttribute('data-text') || ''
   const scoringPointStr = element.getAttribute('data-scoring-point') || '0'
   const scoringPoint = parseInt(scoringPointStr) || 0
-  
+
   // 从原始数据中查找完整理由，避免HTML属性截断问题
   let reason = ''
   if (highlightData && type && text) {
@@ -215,12 +267,12 @@ export function parseHighlightElement(element: HTMLElement, highlightData?: High
       reason = foundItem.reason || ''
     }
   }
-  
+
   // 如果没有找到，回退到HTML属性（虽然可能被截断）
   if (!reason) {
     reason = element.getAttribute('data-reason') || ''
   }
-  
+
   logger.info('解析高亮元素', {
     text: text.substring(0, 20) + '...',
     type: type,

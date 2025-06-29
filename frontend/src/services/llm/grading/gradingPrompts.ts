@@ -57,6 +57,7 @@ IMPORTANT: Replace the null values in the output format with:
 - question_id: ${question.question_id}
 - Student answer: 100% identical to the student's original text.
 - Scoring Point: actual matched the scoring point from the reference answer(must be a number). If a student's answer matches multiple scoring points, break it down and write it separately, with each scoring point being only one digit.
+- reason: Must follow the format "reason:(scoring point X).match\"the corresponding text in the reference answer\"". The text in quotes must be an exact excerpt from the reference answer.
 - total_score: actual calculated score (must be a number)
 Please evaluate the student answer and return the JSON response according to the format above.`
 }
@@ -85,6 +86,9 @@ ${studentAnswer.answer}
 HIGHLIGHTED TEXT: "${highlightedText}"
 
 CLASSIFICATION: ${highlightType}
+
+REASON FORMAT:
+"reason:(scoring point X).match\"the corresponding text in the reference answer\""
 
 Please provide a clear and specific reason explaining why this text segment is classified as "${highlightType}".
 
@@ -140,6 +144,7 @@ IMPORTANT: Replace the null values in the output format with:
 - question_id: ${question.question_id}
 - Student answer: 100% identical to the student's original text.
 - Scoring Point: actual matched the scoring point from the reference answer(must be a number). If a student's answer matches multiple scoring points, break it down and write it separately, with each scoring point being only one digit.
+- reason: Must follow the format "reason:(scoring point X).match\"the corresponding text in the reference answer\"". The text in quotes must be an exact excerpt from the reference answer.
 - total_score: actual calculated score (must be a number)
 Please evaluate the student answer and return the JSON response according to the format above.`
 }

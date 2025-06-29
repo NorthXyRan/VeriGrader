@@ -51,6 +51,33 @@ export interface ReasonExample {
   reason: string
 }
 
+export interface GoldStandardExample {
+  student_id: number
+  question_id: number
+  answer: {
+    correct: Array<{
+      'Student answer': string
+      'Scoring point': number | null
+      reason: string
+    }>
+    wrong: Array<{
+      'Student answer': string
+      'Scoring point': number | null
+      reason: string
+    }>
+    unclear: Array<{
+      'Student answer': string
+      'Scoring point': number | null
+      reason: string
+    }>
+    redundant: Array<{
+      'Student answer': string
+      reason: string
+    }>
+  }
+  total_score: number | null
+}
+
 // ===== 核心数据存储 =====
 export const useExamDataStore = defineStore('examData', () => {
   // ===== 状态 =====
@@ -60,6 +87,7 @@ export const useExamDataStore = defineStore('examData', () => {
   const studentList = ref<StudentInfo[]>([])             // 学生列表
   const highlightDataList = ref<HighlightData[]>([])     // 评分结果
   const reasonExamples = ref<ReasonExample[]>([])        // Few-Shot 理由示例
+  const goldStandardExamples = ref<GoldStandardExample[]>([]) // 金标试卷示例
 
   // ===== 计算属性 =====
   const questionCount = computed(() => questions.value.length)
@@ -127,16 +155,16 @@ export const useExamDataStore = defineStore('examData', () => {
       (data) =>
         data.student_id === highlight.student_id && data.question_id === highlight.question_id,
     )
-    
+
     const existing = existingIndex >= 0 ? highlightDataList.value[existingIndex] : null
     const operation = existing ? '更新' : '新增'
-    
+
     if (existingIndex >= 0) {
       highlightDataList.value[existingIndex] = highlight
     } else {
       highlightDataList.value.push(highlight)
     }
-    
+
     console.log(`STORE: [数据存储] ${operation}批改结果:`, {
       学生ID: highlight.student_id,
       题目ID: highlight.question_id,
@@ -152,11 +180,17 @@ export const useExamDataStore = defineStore('examData', () => {
   }
 
   // ===== Few-Shot 相关方法 =====
-  
+
   // 添加单个理由示例
   const addReasonExample = (example: ReasonExample) => {
     reasonExamples.value.push(example)
-    console.log('添加理由示例到题目', example.questionId, '，当前示例总数:', reasonExamples.value.length)
+    console.log('添加理由示例到题目', example.questionId, '，当前示例总数:', getTotalExampleCountByQuestion(example.questionId))
+  }
+
+  // 添加金标试卷示例
+  const addGoldStandardExample = (example : GoldStandardExample) => {
+    goldStandardExamples.value.push(example)
+    console.log('添加金标试卷few-shot示例', example.question_id, '，当前示例总数:', getTotalExampleCountByQuestion(example.question_id))
   }
 
   // 设置金标试卷并批量提取理由
@@ -169,11 +203,15 @@ export const useExamDataStore = defineStore('examData', () => {
 
     // 设置金标标记
     highlightData.isGold = true
-    
-    // 批量提取理由示例
-    const extractCount = batchExtractReasons(highlightData)
-    
-    console.log(`设置金标试卷 学生${studentId}-题目${questionId}，提取${extractCount}条理由示例`)
+
+
+    // 把金标试卷提取为json格式的few-shot
+    const goldExample = extractGoldStandardExample(highlightData)
+    if (goldExample) {
+      addGoldStandardExample(goldExample)
+    }
+    //TODO(hyl): 这个log应该也要改
+    console.log(`设置金标试卷 学生${studentId}-题目${questionId}`)
     return true
   }
 
@@ -181,7 +219,7 @@ export const useExamDataStore = defineStore('examData', () => {
   const batchExtractReasons = (highlightData: HighlightData): number => {
     const types = ['correct', 'wrong', 'unclear', 'redundant'] as const
     let extractCount = 0
-    
+
     types.forEach(type => {
       const items = highlightData.answer[type]
       items.forEach(item => {
@@ -196,10 +234,39 @@ export const useExamDataStore = defineStore('examData', () => {
         }
       })
     })
-    
+
     console.log('批量提取理由完成，提取', extractCount, '条，总计', reasonExamples.value.length, '条')
-    
+
     return extractCount
+  }
+  //提取金标示例为json
+  const extractGoldStandardExample = (highlightData: HighlightData): GoldStandardExample => {
+    return {
+      student_id: highlightData.student_id,
+      question_id: highlightData.question_id,
+      answer: {
+        correct: highlightData.answer.correct.map(item => ({
+          'Student answer': item['Student answer'],
+          'Scoring point': item['Scoring point'],
+          reason: item.reason
+        })),
+        wrong: highlightData.answer.wrong.map(item => ({
+          'Student answer': item['Student answer'],
+          'Scoring point': item['Scoring point'],
+          reason: item.reason
+        })),
+        unclear: highlightData.answer.unclear.map(item => ({
+          'Student answer': item['Student answer'],
+          'Scoring point': item['Scoring point'],
+          reason: item.reason
+        })),
+        redundant: highlightData.answer.redundant.map(item => ({
+          'Student answer': item['Student answer'],
+          reason: item.reason
+        }))
+      },
+      total_score: highlightData.total_score
+    }
   }
 
   // 检查是否为金标试卷
@@ -208,9 +275,17 @@ export const useExamDataStore = defineStore('examData', () => {
     return highlightData?.isGold === true
   }
 
-  // 获取指定题目的理由示例
+  // 获取指定题目的示例的数量
   const getReasonExamplesByQuestion = (questionId: number): ReasonExample[] => {
     return reasonExamples.value.filter(example => example.questionId === questionId)
+  }
+  // 获取指定题目的金标试卷示例的数量
+  const getGoldStandardExamplesByQuestion = (questionId: number): GoldStandardExample[] => {
+    return goldStandardExamples.value.filter(example => example.question_id === questionId)
+  }
+  // 获取指定题目的示例总数
+  const getTotalExampleCountByQuestion = (questionId: number): number => {
+    return getReasonExamplesByQuestion(questionId).length + getGoldStandardExamplesByQuestion(questionId).length
   }
 
   // ===== 数据重置 =====
@@ -227,6 +302,7 @@ export const useExamDataStore = defineStore('examData', () => {
     studentList.value = []
     highlightDataList.value = []
     reasonExamples.value = []
+    goldStandardExamples.value = []
   }
 
   const resetAllData = () => {
@@ -246,6 +322,7 @@ export const useExamDataStore = defineStore('examData', () => {
       localStorage.setItem('exam_student_list', JSON.stringify(studentList.value))
       localStorage.setItem('exam_highlight_data', JSON.stringify(highlightDataList.value))
       localStorage.setItem('exam_reason_examples', JSON.stringify(reasonExamples.value))
+      localStorage.setItem('exam_gold_standard_examples', JSON.stringify(goldStandardExamples.value))
     } catch (error) {
       console.error('保存数据失败:', error)
     }
@@ -259,6 +336,7 @@ export const useExamDataStore = defineStore('examData', () => {
       const savedStudentList = localStorage.getItem('exam_student_list')
       const savedHighlightData = localStorage.getItem('exam_highlight_data')
       const savedReasonExamples = localStorage.getItem('exam_reason_examples')
+      const savedGoldStandardExamples = localStorage.getItem('exam_gold_standard_examples')
 
       if (savedQuestions) questions.value = JSON.parse(savedQuestions)
       if (savedReferenceAnswers) referenceAnswers.value = JSON.parse(savedReferenceAnswers)
@@ -266,6 +344,7 @@ export const useExamDataStore = defineStore('examData', () => {
       if (savedStudentList) studentList.value = JSON.parse(savedStudentList)
       if (savedHighlightData) highlightDataList.value = JSON.parse(savedHighlightData)
       if (savedReasonExamples) reasonExamples.value = JSON.parse(savedReasonExamples)
+      if (savedGoldStandardExamples) goldStandardExamples.value = JSON.parse(savedGoldStandardExamples)
     } catch (error) {
       console.error('加载数据失败:', error)
     }
@@ -279,6 +358,7 @@ export const useExamDataStore = defineStore('examData', () => {
     studentList,
     highlightDataList,
     reasonExamples,
+    goldStandardExamples,
 
     // 计算属性
     questionCount,
@@ -297,13 +377,15 @@ export const useExamDataStore = defineStore('examData', () => {
     setStudentAnswers,
     setHighlightData,
     addHighlightData,
-    
+    addGoldStandardExample,
+
     // Few-Shot 方法
     addReasonExample,
     setGoldPaper,
     isGoldPaper,
     getReasonExamplesByQuestion,
-    
+    getGoldStandardExamplesByQuestion,
+    getTotalExampleCountByQuestion,
     // 重置方法
     resetQuestions,
     resetReferenceAnswers,
