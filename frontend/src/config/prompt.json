@@ -27,27 +27,27 @@
           {
             "Student answer": "...",
             "Scoring point": null,
-            "reason": "reason:...(scoring point X).match\"the corresponding text in the reference answer\""
+            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
           }
         ],
         "wrong": [
           {
             "Student answer": "...",
             "Scoring point": null,
-            "reason": "reason:...(scoring point X).match\"the corresponding text in the reference answer\""
+            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
           }
         ],
         "unclear": [
           {
             "Student answer": "...",
             "Scoring point": null,
-            "reason": "reason:...(scoring point X).match\"the corresponding text in the reference answer\""
+            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
           }
         ],
         "redundant": [
           {
             "Student answer": "...",
-            "reason": "reason:...(scoring point X).match\"the corresponding text in the reference answer\""
+            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
           }
         ]
       },
