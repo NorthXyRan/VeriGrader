@@ -128,7 +128,6 @@ export function useFewShotManager() {
       example.answer.redundant.forEach((item, index) => {
         prompt += `      {\n`
         prompt += `        "Student answer": "${item['Student answer']}",\n`
-        prompt += `        "matched reference answer": "${item['matched reference answer']}",\n` 
         prompt += `        "reason": "${item.reason}"\n`
         prompt += `      }${index < example.answer.redundant.length - 1 ? ',' : ''}\n`
       })

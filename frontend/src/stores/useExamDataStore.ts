@@ -76,7 +76,6 @@ export interface GoldStandardExample {
     }>
     redundant: Array<{
       'Student answer': string
-      'matched reference answer': string
       reason: string
     }>
   }
