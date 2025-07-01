@@ -9,7 +9,7 @@
           v-if="isEditing"
           v-model="editableReason"
           type="textarea"
-          placeholder="请输入给分理由..."
+          placeholder="Please enter the scoring reason..."
           :rows="6"
           resize="none"
           class="reason-textarea"
