@@ -92,6 +92,7 @@ export function useFewShotManager() {
       example.answer.correct.forEach((item, index) => {
         prompt += `      {\n`
         prompt += `        "Student answer": "${item['Student answer']}",\n`
+        prompt += `        "matched reference answer": "${item['matched reference answer']}",\n`
         prompt += `        "Scoring point": ${item['Scoring point']},\n`
         prompt += `        "reason": "${item.reason}"\n`
         prompt += `      }${index < example.answer.correct.length - 1 ? ',' : ''}\n`
@@ -103,6 +104,7 @@ export function useFewShotManager() {
       example.answer.wrong.forEach((item, index) => {
         prompt += `      {\n`
         prompt += `        "Student answer": "${item['Student answer']}",\n`
+        prompt += `        "matched reference answer": "${item['matched reference answer']}",\n`
         prompt += `        "Scoring point": ${item['Scoring point']},\n`
         prompt += `        "reason": "${item.reason}"\n`
         prompt += `      }${index < example.answer.wrong.length - 1 ? ',' : ''}\n`
@@ -114,6 +116,7 @@ export function useFewShotManager() {
       example.answer.unclear.forEach((item, index) => {
         prompt += `      {\n`
         prompt += `        "Student answer": "${item['Student answer']}",\n`
+        prompt += `        "matched reference answer": "${item['matched reference answer']}",\n`
         prompt += `        "Scoring point": ${item['Scoring point']},\n`
         prompt += `        "reason": "${item.reason}"\n`
         prompt += `      }${index < example.answer.unclear.length - 1 ? ',' : ''}\n`
@@ -125,6 +128,7 @@ export function useFewShotManager() {
       example.answer.redundant.forEach((item, index) => {
         prompt += `      {\n`
         prompt += `        "Student answer": "${item['Student answer']}",\n`
+        prompt += `        "matched reference answer": "${item['matched reference answer']}",\n` 
         prompt += `        "reason": "${item.reason}"\n`
         prompt += `      }${index < example.answer.redundant.length - 1 ? ',' : ''}\n`
       })
