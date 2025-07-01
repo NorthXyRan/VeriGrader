@@ -1,0 +1,13 @@
+{
+  "answerCount": 2,
+  "answers": [
+    {
+      "question_id": 1,
+      "answer": "1. It Makes Data More Engaging\nCharts and graphs are often more interesting and easier to understand than raw numbers.\nExample: Instead of reading a table of values, a student may find it more enjoyable and intuitive to look at a bar chart comparing test scores across subjects.\n\n2. It Provides Powerful Analytical Capabilities\nVisualization helps users spot trends, make comparisons, and detect anomalies—things that raw data alone can't easily reveal.\nExample: A line graph of monthly temperatures can clearly show a warming trend over time, while a table of numbers may hide that pattern. Similarly, a scatter plot can reveal outliers that might indicate data entry errors.\n\n3. It Builds Trust by Showing the Actual Data\nVisualizations allow people to see where conclusions come from, which increases confidence in the results.\nExample: If an AI system claims that sales are increasing, users may be skeptical. But if a chart shows sales steadily rising month by month, the trend becomes more trustworthy and easier to verify.\n\nOther reasonable answers may also receive credit; each point is worth 4 marks."
+    },
+    {
+      "question_id": 2,
+      "answer": "1. Medical Analysis\nVisualizing patient data such as lab results, imaging scans, or disease progression can support doctors in making faster, more accurate diagnoses and monitoring treatment effectiveness.\nExample: A time-series chart of blood sugar levels helps track a diabetic patient's response to treatment.\n\n2. Urban Planning and Smart Cities\nVisualizing traffic flow, population density, or public transportation usage enables planners to design better infrastructure and improve city life.\nExample: A heatmap of traffic congestion guides where to build new roads or expand public transport routes.\n\n3. Environmental Monitoring\nData visualization helps track pollution levels, weather patterns, and natural resource usage to support sustainable policies.\nExample: A dashboard displaying air quality index (AQI) across regions can alert the public and inform environmental action plans.\n\n4. Education and Learning Analytics\nVisualizing student performance, attendance, and engagement data helps teachers and policymakers improve learning outcomes.\nExample: A dashboard showing students’ test scores over time helps identify those needing extra support.\n\nEach application: 2 marks; each example: 2 marks. Other reasonable answers are also acceptable."
+    }
+  ]
+}
