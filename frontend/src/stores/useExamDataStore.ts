@@ -27,6 +27,7 @@ export interface StudentInfo {
 
 export interface HighlightItem {
   'Student answer': string
+  'matched reference answer': string
   'Scoring point': number
   reason: string
 }
@@ -57,16 +58,19 @@ export interface GoldStandardExample {
   answer: {
     correct: Array<{
       'Student answer': string
-      'Scoring point': number | null
+      'matched reference answer': string
+      'Scoring point': number | null  
       reason: string
     }>
     wrong: Array<{
       'Student answer': string
+      'matched reference answer': string
       'Scoring point': number | null
       reason: string
     }>
     unclear: Array<{
       'Student answer': string
+      'matched reference answer': string
       'Scoring point': number | null
       reason: string
     }>
@@ -247,21 +251,25 @@ export const useExamDataStore = defineStore('examData', () => {
       answer: {
         correct: highlightData.answer.correct.map(item => ({
           'Student answer': item['Student answer'],
+          'matched reference answer': item['matched reference answer'],
           'Scoring point': item['Scoring point'],
           reason: item.reason
         })),
         wrong: highlightData.answer.wrong.map(item => ({
           'Student answer': item['Student answer'],
+          'matched reference answer': item['matched reference answer'],
           'Scoring point': item['Scoring point'],
           reason: item.reason
         })),
         unclear: highlightData.answer.unclear.map(item => ({
           'Student answer': item['Student answer'],
+          'matched reference answer': item['matched reference answer'],
           'Scoring point': item['Scoring point'],
           reason: item.reason
         })),
         redundant: highlightData.answer.redundant.map(item => ({
           'Student answer': item['Student answer'],
+          'matched reference answer': item['matched reference answer'],
           reason: item.reason
         }))
       },

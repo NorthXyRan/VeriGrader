@@ -26,28 +26,32 @@
         "correct": [
           {
             "Student answer": "...",
+            "matched reference answer": "...",
             "Scoring point": null,
-            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
+            "reason": "Reason(scoring point X):..."
           }
         ],
         "wrong": [
           {
             "Student answer": "...",
+            "matched reference answer": "...",
             "Scoring point": null,
-            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
+            "reason": "Reason(scoring point X):..."
           }
         ],
         "unclear": [
           {
             "Student answer": "...",
+            "matched reference answer": "...",
             "Scoring point": null,
-            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
+            "reason": "Reason(scoring point X):..."
           }
         ],
         "redundant": [
           {
             "Student answer": "...",
-            "reason": "reason:...match\"the corresponding text in the reference answer\".(scoring point X)"
+            "matched reference answer": "...",
+            "reason": "Reason(scoring point X):..."
           }
         ]
       },

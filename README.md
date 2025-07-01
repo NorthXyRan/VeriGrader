@@ -174,6 +174,7 @@ interface ReferenceAnswer {
 // 高亮标注项
 interface HighlightItem {
   "Student answer": string;
+  "matched reference answer": string;
   "Scoring point": number;
   reason: string;
 }
