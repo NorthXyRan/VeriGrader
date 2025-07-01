@@ -78,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { type HighlightType } from '@/utils/highlightUtils'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import ActionSection from './ActionSection.vue'
@@ -87,16 +88,15 @@ import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
 import ReferenceAnswer from './ReferenceAnswer.vue'
 import ScoringSection from './ScoringSection.vue'
-import { type HighlightType } from '@/utils/highlightUtils'
 
 // Store
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 
 // Composables
+import { useFewShotManager } from '../../composables/useFewShotManager'
 import { useGradingBusiness } from '../../composables/useGradingBusiness'
 import { useHighlightDataOperations } from '../../composables/useHighlightDataOperations'
-import { useFewShotManager } from '../../composables/useFewShotManager'
 import { logger } from '../../utils/logger'
 
 // 数据存储
@@ -267,7 +267,7 @@ const handleUpdateHighlightData = async (data: {
       feedbackPanelRef.value?.handleHighlightClicked({
         text: data.text,
         type: targetType,
-        reason: '当前LLM正在生成理由...',
+        reason: 'LLM is generating reason now...Please wait...',
         scoringPoint: data.scoringPoint || 0
       })
 
