@@ -78,7 +78,7 @@ export function useErrorHandler() {
     // 不在重试过程中显示错误消息，只有最终失败才显示
     if (!attempt || !maxAttempts || attempt >= maxAttempts) {
       const userMessage = formatErrorMessage(error, 'reason_generation')
-      ElMessage.error(`理由生成失败: ${userMessage}`)
+      ElMessage.error(`Reason generation failed: ${userMessage}`)
     }
   }
 
@@ -88,7 +88,7 @@ export function useErrorHandler() {
     value: any,
     requirement: string
   ): void => {
-    const message = `数据验证失败: ${field} ${requirement}`
+    const message = `Data validation failed: ${field} ${requirement}`
     console.warn('[validation]', { field, value, requirement })
     ElMessage.warning(message)
   }
@@ -98,7 +98,7 @@ export function useErrorHandler() {
     serviceName: string,
     details?: string
   ): void => {
-    const message = `${serviceName}服务暂不可用${details ? ': ' + details : ''}`
+    const message = `${serviceName} is temporarily unavailable${details ? ': ' + details : ''}`
     console.error('[service]', { serviceName, details })
     ElMessage.error(message)
   }
@@ -109,7 +109,7 @@ export function useErrorHandler() {
     error: Error | string
   ): void => {
     const errorMsg = error instanceof Error ? error.message : error
-    const message = `网络请求失败 (${operation}): 请检查网络连接`
+    const message = `Network request failed (${operation}): Please check your network connection`
     
     console.error('[network]', { operation, error: errorMsg })
     ElMessage.error(message)
