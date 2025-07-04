@@ -3,6 +3,7 @@
 
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
+import { watch } from 'vue'
 
 // ===== 统一的上传项状态结构 =====
 export interface UploadItem {
@@ -20,11 +21,20 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   const examPaper: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
   const referenceAnswer: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
   const studentAnswers: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
+  // ===== 自动批改相关状态 =====
+  const autoGradingStatus = ref<'idle' | 'grading' | 'done' | 'error'>('idle')
+  const autoGradingProgress = ref({ current: 0, total: 0 })
+  const autoGradingErrors = ref<Array<{ studentId: number, questionId: number, error: string }>>([])
+  const autoGradingMessage = ref('')
 
   // ===== 计算属性 =====     是否可以上传...
   const canUploadAnswer = computed(() => examPaper.value.status === 'ready')
   const canUploadStudent = computed(() => examPaper.value.status === 'ready')
-  const canProceedToGrading = computed(() => examPaper.value.status === 'ready' && studentAnswers.value.status === 'ready',)
+  const canProceedToGrading = computed(() => 
+  examPaper.value.status === 'ready' && 
+  referenceAnswer.value.status === 'ready' &&
+  studentAnswers.value.status === 'ready'
+)
 
   // ===== 核心方法：统一的状态更新函数 =====
   const updateItemStatus = (
@@ -235,6 +245,98 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     }
   }
 
+  // ===== watch逻辑：检查是否已有批改结果 =====
+watch(
+  () => canProceedToGrading.value,
+  async (val) => {
+    console.log('[watch] 触发检测:', val, 'autoGradingStatus:', autoGradingStatus.value)
+    
+    if (val && autoGradingStatus.value === 'idle') {
+      console.log('[watch] 触发自动批改检测')
+      const { useExamDataStore } = await import('./useExamDataStore')
+      const examStore = useExamDataStore()
+      
+      // 只检查当前内存中的数据
+      
+      if (examStore.highlightDataList.length > 0) {
+        console.log('当前会话已有批改结果，跳过')
+        autoGradingStatus.value = 'done'
+        autoGradingMessage.value = `已有 ${examStore.highlightDataList.length} 份批改结果`
+        return
+      }
+      console.log('没有批改结果，执行自动批改')
+      startAutoGrading()
+    }
+  },
+  { immediate: true } 
+)
+
+  // ===== 自动批改主流程 =====
+  async function startAutoGrading() {
+    const { useExamDataStore } = await import('./useExamDataStore')
+    const { gradeSingleStudentAnswer } = await import('../services/llm/grading/gradingLLMService')
+    const examStore = useExamDataStore()
+    autoGradingStatus.value = 'grading'
+    autoGradingErrors.value = []
+    autoGradingMessage.value = '自动批改已开始'
+    // 获取所有题目、学生、答案
+    const questions = examStore.questions
+    const students = examStore.studentList
+    const studentAnswers = examStore.studentAnswers
+    // 统计总数
+    const total = students.length * questions.length
+    autoGradingProgress.value = { current: 0, total }
+    let finished = 0
+    for (const student of students) {
+      for (const question of questions) {
+        // 查找该学生该题答案
+        const answer = studentAnswers.find(
+          (a) => a.student_id === student.id && a.question_id === question.question_id
+        )
+        if (!answer) {
+          autoGradingErrors.value.push({ studentId: student.id, questionId: question.question_id, error: '无学生答案' })
+          finished++
+          autoGradingProgress.value = { current: finished, total }
+          continue
+        }
+        // 查找参考答案
+        const refAnswer = examStore.referenceAnswers.find(
+          (a) => a.question_id === question.question_id
+        )
+        if (!refAnswer) {
+          autoGradingErrors.value.push({ studentId: student.id, questionId: question.question_id, error: '无参考答案' })
+          finished++
+          autoGradingProgress.value = { current: finished, total }
+          continue
+        }
+        // 调用批改
+      try {
+        const res = await gradeSingleStudentAnswer({
+          question,
+          referenceAnswer: refAnswer,
+          studentAnswer: answer
+         })
+      if (res.success && res.data && res.data[0]) {
+        examStore.addHighlightData(res.data[0])
+      } else {
+        console.log('批改失败详情:', res)
+        autoGradingErrors.value.push({ studentId: student.id, questionId: question.question_id, error: res.error || '批改失败' })
+      }
+    } catch (e: any) {
+        console.log('批改异常详情:', e)
+        autoGradingErrors.value.push({ studentId: student.id, questionId: question.question_id, error: `JSON解析错误: ${e?.message || '异常'}` })
+}
+        finished++
+        autoGradingProgress.value = { current: finished, total }
+      }
+    }
+    autoGradingStatus.value = 'done'
+    autoGradingMessage.value = `自动批改完成（${finished}/${total}）`
+    // 自动保存到localStorage
+    examStore.saveToLocal()
+    console.log('自动批改完成并已保存到localStorage')
+  }
+
   return {
     // 状态 - 直接暴露 ref
     examPaper,
@@ -272,5 +374,12 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     saveToLocal,
     loadFromLocal,
     clearLocalStorage,
+
+    // 自动批改相关
+    autoGradingStatus,
+    autoGradingProgress,
+    autoGradingErrors,
+    autoGradingMessage,
+    startAutoGrading,
   }
 })

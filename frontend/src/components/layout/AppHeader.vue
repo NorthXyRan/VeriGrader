@@ -3,17 +3,26 @@
     <div class="header-card">
       <span>Human-AI Collaborative Intelligent Grading with Visual Interaction</span>
       <div class="header-controls">
+        
+        <!-- 新增：加载自动批改按钮 -->
+        <button
+          class="control-button"
+          @click="loadAutoGraded"
+        >
+          Load Auto-Grading
+        </button>
+
         <!-- 主题选择器 -->
         <div class="theme-dropdown" ref="dropdownRef">
-          <button 
-            class="control-button" 
+          <button
+            class="control-button"
             @click="toggleDropdown"
             :class="{ 'dropdown-open': isDropdownOpen }"
           >
             <Brush class="icon" />
             Theme
           </button>
-          
+
           <!-- 下拉菜单 -->
           <div v-show="isDropdownOpen" class="dropdown-menu">
             <button
@@ -28,7 +37,7 @@
             </button>
           </div>
         </div>
-        
+
         <!-- 折叠按钮 -->
         <button class="control-button" @click="$emit('toggleCollapse')">
           <component :is="isCollapse ? Expand : Fold" class="icon" />
@@ -40,7 +49,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'      // 新增
 import { Brush, Expand, Fold } from '@element-plus/icons-vue'
+import { useExamDataStore } from '../../stores/useExamDataStore'
+import { ElMessage } from 'element-plus'
 
 // 接收参数
 interface Props {
@@ -53,18 +65,22 @@ defineEmits<{
   toggleCollapse: []
 }>()
 
-// 配置数据
+// 配置
 const themeOptions = ['default', 'nature', 'vibrant']
 const themeBackgrounds: Record<string, string> = {
   default: '/src/assets/background_image/BlueLandscapeLight.png',
-  nature: '/src/assets/background_image/MojaveDesert.png', 
+  nature: '/src/assets/background_image/MojaveDesert.png',
   vibrant: '/src/assets/background_image/BigSur.png'
 }
 
-// 响应式状态
+// 状态
 const selectedTheme = ref<string>('default')
 const isDropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement>()
+
+// router
+const router = useRouter()       // 新增
+const examStore = useExamDataStore()
 
 // 应用背景
 const applyBackground = (background: string) => {
@@ -85,12 +101,12 @@ const changeTheme = (theme: string) => {
   isDropdownOpen.value = false
 }
 
-// 切换下拉菜单
+// 切换下拉
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-// 点击外部关闭下拉菜单
+// 点击外部关闭
 const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     isDropdownOpen.value = false
@@ -104,21 +120,48 @@ onMounted(() => {
   changeTheme(theme)
   document.addEventListener('click', handleClickOutside)
 })
-
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+// 新增：自动批改加载
+function loadAutoGraded() {
+  console.log('🔍 检查批改数据...', {
+    storeData: examStore.highlightDataList?.length || 0,
+    localStorage: localStorage.getItem('exam_highlight_data') ? '有数据' : '无数据'
+  })
+  
+  // 先尝试从 localStorage 加载
+  examStore.loadFromLocal()
+  
+  const hasData = examStore.highlightDataList && examStore.highlightDataList.length > 0
+  const hasLocalData = localStorage.getItem('exam_highlight_data')
+  
+  if (!hasData && !hasLocalData) {
+    ElMessage.warning('没有检测到自动批改结果，请先上传文件并等待自动批改完成')
+    return
+  }
+  
+  if (!hasData && hasLocalData) {
+    ElMessage.error('检测到批改数据但加载失败，请刷新页面后重试')
+    return
+  }
+  
+  router.push('/grading').then(() => {
+    ElMessage.success(`已加载 ${examStore.highlightDataList.length} 份批改结果，您可以查看和修改`)
+  }).catch(err => {
+    console.error('页面跳转失败:', err)
+    ElMessage.error('页面跳转失败')
+  })
+}
 </script>
 
 <style scoped>
-
-/* 头部容器 */
+/* 样式同上，不变 */
 .header-container {
   height: 70px;
   padding: 10px 20px;
 }
-
-/* 头部卡片 */
 .header-card {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
@@ -135,27 +178,20 @@ onUnmounted(() => {
   color: #333;
   transition: all 0.3s ease;
 }
-
 .header-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
-
-/* 头部控制区域 */
 .header-controls {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
-/* 通用图标样式 */
 .icon {
   width: 16px;
   height: 16px;
   fill: currentColor;
 }
-
-/* 通用控制按钮样式 */
 .control-button {
   background: rgba(255, 255, 255, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -171,27 +207,20 @@ onUnmounted(() => {
   font-weight: 500;
   text-transform: capitalize;
 }
-
 .control-button:hover {
   background: rgba(255, 255, 255, 0.5);
   transform: scale(1.05);
 }
-
-/* 主题下拉组件 */
 .theme-dropdown {
   position: relative;
 }
-
 .theme-dropdown .control-button {
   padding: 8px 16px;
 }
-
 .control-button.dropdown-open {
   border-radius: 8px 8px 0 0;
   border-bottom: 1px solid transparent;
 }
-
-/* 下拉菜单 */
 .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -205,8 +234,6 @@ onUnmounted(() => {
   z-index: 1000;
   margin-top: -1px;
 }
-
-/* 下拉菜单项 */
 .dropdown-item {
   width: 100%;
   padding: 12px 16px;
@@ -221,28 +248,22 @@ onUnmounted(() => {
   text-transform: capitalize;
   font-size: 14px;
 }
-
 .dropdown-item:first-child {
   padding-top: 16px;
 }
-
 .dropdown-item:last-child {
   padding-bottom: 16px;
   border-radius: 0 0 12px 12px;
 }
-
 .dropdown-item:hover {
   background: rgba(74, 144, 226, 0.1);
   color: #4a90e2;
 }
-
 .dropdown-item.active {
   background: rgba(74, 144, 226, 0.15);
   color: #4a90e2;
   font-weight: 600;
 }
-
-/* 选中标记 */
 .check-mark {
   color: #4a90e2;
   font-weight: bold;

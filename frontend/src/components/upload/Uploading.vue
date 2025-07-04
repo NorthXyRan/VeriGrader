@@ -1,7 +1,7 @@
 <template>
   <div class="uploading-container">
     <!-- 试卷上传组件 -->
-    <PaperUpload
+    <component :is="PaperUpload.default"
       :status="uploadStore.examPaper.status"
       :file-name="uploadStore.examPaper.name"
       :display-text="paperDisplayText"
@@ -12,7 +12,7 @@
     />
 
     <!-- 参考答案上传组件 -->
-    <AnswerUpload
+    <component :is="AnswerUpload.default"
       :disabled="!uploadStore.canUploadAnswer"
       :status="uploadStore.referenceAnswer.status"
       :file-name="uploadStore.referenceAnswer.name"
@@ -24,7 +24,7 @@
     />
 
     <!-- 学生答案上传组件 -->
-    <StudentUpload
+    <component :is="StudentUpload.default"
       :disabled="!uploadStore.canUploadStudent"
       :status="uploadStore.studentAnswers.status"
       :file-name="uploadStore.studentAnswers.name"
@@ -44,11 +44,30 @@
     </div>
 
     <!-- 统一预览弹窗 -->
-    <Preview
-      v-model:visible="previewDialog.visible"
+    <component
+      :is="Preview.default"
+      v-model="previewDialog.visible"
       :title="previewDialog.title"
       :content="previewDialog.content"
     />
+
+    <!-- 自动批改进度与错误展示 -->
+    <div v-if="gradingStatus !== 'idle'" class="auto-grading-status">
+      <div>{{ gradingMessage }}</div>
+      <div v-if="gradingStatus === 'grading'">
+        <el-progress :percentage="Math.round((gradingProgress.current / gradingProgress.total) * 100)" :text-inside="true" :stroke-width="18" status="active" />
+        <div>{{ gradingProgress.current }}/{{ gradingProgress.total }}</div>
+      </div>
+      <div v-if="gradingErrors.length > 0" class="auto-grading-errors">
+        <el-alert title="批改出错（不影响整体进度）" type="error" show-icon :closable="false">
+          <ul>
+            <li v-for="err in gradingErrors" :key="err.studentId + '-' + err.questionId">
+              学生ID: {{ err.studentId }}，题目ID: {{ err.questionId }}，错误: {{ err.error }}
+            </li>
+          </ul>
+        </el-alert>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,10 +85,10 @@ import { uploadLLMService } from '../../services/llm'
 import { useExamDataStore } from '../../stores/useExamDataStore'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 import { logger } from '../../utils/logger'
-import AnswerUpload from './AnswerUpload.vue'
-import PaperUpload from './PaperUpload.vue'
-import Preview from './preview.vue'
-import StudentUpload from './StudentUpload.vue'
+import * as AnswerUpload from './AnswerUpload.vue'
+import * as PaperUpload from './PaperUpload.vue'
+import * as Preview from './preview.vue'
+import * as StudentUpload from './StudentUpload.vue'
 
 // 使用 Store
 const uploadStore = useUploadStatusStore()
@@ -113,6 +132,12 @@ const studentDisplayText = computed(() => {
   }
   return ''
 })
+
+// ===== 自动批改进度与错误展示 =====
+const gradingStatus = computed(() => uploadStore.autoGradingStatus)
+const gradingProgress = computed(() => uploadStore.autoGradingProgress)
+const gradingMessage = computed(() => uploadStore.autoGradingMessage)
+const gradingErrors = computed(() => uploadStore.autoGradingErrors)
 
 // ===== 类型定义 =====
 type FileType = 'paper' | 'answer' | 'student'
