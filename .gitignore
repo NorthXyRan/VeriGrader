@@ -1,0 +1,31 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local editor and agent settings
+.idea/
+.vscode/
+.claude/
+.codex/
+
+# Environment files and credentials
+.env
+.env.*
+!.env.example
+
+# Dependencies and virtual environments
+node_modules/
+.venv/
+venv/
+
+# Build, test, and log output
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+frontend/src/assets/background_image/
+frontend/public/icon/
+frontend/public/paper/
+
+# Local scratch files
+tmp/

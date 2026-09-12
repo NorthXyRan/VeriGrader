@@ -1,0 +1,14 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "question": "Explain why plants need sunlight for photosynthesis.",
+      "score": 4
+    },
+    {
+      "question_id": 2,
+      "question": "Describe two ways a city can reduce household water consumption.",
+      "score": 4
+    }
+  ]
+}

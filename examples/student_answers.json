@@ -1,0 +1,22 @@
+[
+  {
+    "student_id": 1,
+    "question_id": 1,
+    "answer": "Plants absorb sunlight with chlorophyll and use its energy to make glucose from water and carbon dioxide. Oxygen is released."
+  },
+  {
+    "student_id": 1,
+    "question_id": 2,
+    "answer": "The city could replace old taps with low-flow fixtures and ask households to fix leaking pipes."
+  },
+  {
+    "student_id": 2,
+    "question_id": 1,
+    "answer": "Sunlight keeps plants warm so their roots can absorb oxygen."
+  },
+  {
+    "student_id": 2,
+    "question_id": 2,
+    "answer": "Charge households according to measured water use and provide rebates for efficient appliances."
+  }
+]

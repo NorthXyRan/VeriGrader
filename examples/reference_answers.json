@@ -1,0 +1,14 @@
+{
+  "answers": [
+    {
+      "question_id": 1,
+      "answer": "Sunlight provides the energy that drives photosynthesis. Chlorophyll absorbs light energy, which the plant uses to convert carbon dioxide and water into glucose and oxygen.",
+      "eachScoringPoint": 2
+    },
+    {
+      "question_id": 2,
+      "answer": "A city can install water-efficient fixtures in homes and encourage residents to repair leaks. It can also use metering or conservation pricing to reduce unnecessary consumption.",
+      "eachScoringPoint": 2
+    }
+  ]
+}
