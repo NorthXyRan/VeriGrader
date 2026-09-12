@@ -1,9 +1,10 @@
 # VeriGrader: Open-ended Structured Question Assessment with Human-LLM Collaboration (CHI '26)
 
-<p align="left">
-  <a href="https://doi.org/10.1145/3772318.3791034"><img alt="ACM CHI '26" src="https://img.shields.io/badge/ACM_CHI-'26-6f42c1"></a>
-  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-f4c430"></a>
+<p align="center">
+  <a href="https://doi.org/10.1145/3772318.3791034"><img alt="ACM CHI '26" src="https://img.shields.io/badge/ACM_CHI-'26-FF6B5E?labelColor=493657"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-00B8A9?labelColor=493657"></a>
 </p>
+
 
 Official implementation of **“Open-ended Structured Question Assessment with Human-LLM Collaboration”**, accepted at [ACM CHI 2026](https://doi.org/10.1145/3772318.3791034).
 
