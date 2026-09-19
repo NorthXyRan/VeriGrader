@@ -6,7 +6,7 @@
 </p>
 
 
-Official implementation of **“Open-ended Structured Question Assessment with Human-LLM Collaboration”**, accepted at [ACM CHI 2026](https://doi.org/10.1145/3772318.3791034).
+Official implementation of **“Open-ended Structured Question Assessment with Human-LLM Collaboration”**, accepted at [ACM CHI 2026](https://doi.org/10.1145/3772318.3791034). [[Video](https://youtu.be/cE8lAvIZVAQ)]
 
 ## Overview
 
