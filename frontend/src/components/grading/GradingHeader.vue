@@ -1,80 +1,87 @@
 <template>
   <div class="page-header" :class="`page-header--${layout}`">
-    <div class="selector-panel">
-      <div class="select-section select-section--question">
-        <h1>Select Question</h1>
-        <div class="select-list">
-          <button
-            type="button"
-            v-for="(question, index) in questions"
-            :key="question.question_id"
-            :class="['select-item', { active: currentQuestion === question.question_id }]"
-            @click="handleQuestionChange(index + 1, question)"
-            :title="`${question.question.substring(0, 50)}... (${question.score} points)`"
-          >
-            Question {{ index + 1 }}
-          </button>
-        </div>
-      </div>
+    <div class="header-blocks">
+      <section class="header-block selector-block">
+        <div class="selectors">
+          <div class="select-section select-section--question">
+            <h1>Select Question</h1>
+            <div class="select-list">
+              <button
+                type="button"
+                v-for="(question, index) in questions"
+                :key="question.question_id"
+                :class="['select-item', { active: currentQuestion === question.question_id }]"
+                @click="handleQuestionChange(index + 1, question)"
+                :title="`${question.question.substring(0, 50)}... (${question.score} points)`"
+              >
+                Question {{ index + 1 }}
+              </button>
+            </div>
+          </div>
 
-      <div class="select-section select-section--student">
-        <h1>Select Student</h1>
-        <div class="select-list student-list">
-          <button
-            type="button"
-            v-for="student in displayStudentList"
-            :key="student.id"
-            :class="[
-              'select-item circle',
-              {
-                active: currentStudentId === student.id,
-                graded: gradedPapers.includes(student.id),
-                golden: isStudentGolden(student.id),
-                confirmed: isStudentConfirmed(student.id),
-              },
-            ]"
-            @click="handleStudentChange(student.id)"
-            :title="`Student ID: ${student.id}${getStudentStatusText(student.id)}`"
-          >
-            {{ student.id }}
+          <div class="select-section select-section--student">
+            <h1>Select Student</h1>
+            <div class="select-list student-list">
+              <button
+                type="button"
+                v-for="student in displayStudentList"
+                :key="student.id"
+                :class="[
+                  'select-item circle',
+                  {
+                    active: currentStudentId === student.id,
+                    graded: gradedPapers.includes(student.id),
+                    golden: isStudentGolden(student.id),
+                    confirmed: isStudentConfirmed(student.id),
+                  },
+                ]"
+                @click="handleStudentChange(student.id)"
+                :title="`Student ID: ${student.id}${getStudentStatusText(student.id)}`"
+              >
+                {{ student.id }}
 
-            <span v-if="dotMap[student.id]" :class="['quality-dot', dotMap[student.id]]" />
-          </button>
-        </div>
-      </div>
-
-      <div class="quality-legend">
-        <div class="legend-item">
-          <span class="legend-dot red-dot"></span>
-          <span class="legend-text">High priority</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-dot orange-dot"></span>
-          <span class="legend-text">Medium priority</span>
+                <span v-if="dotMap[student.id]" :class="['quality-dot', dotMap[student.id]]" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="legend-item sort-toggle">
-          <el-switch
-            v-model="isSorted"
-            size="small"
-            :active-icon="Sort"
-            :inactive-icon="Sort"
-            aria-label="Sort students by priority"
-          />
-          <span class="legend-text">Sort by priority</span>
-        </div>
-      </div>
+        <div class="quality-legend">
+          <div class="legend-item">
+            <span class="legend-dot red-dot"></span>
+            <span class="legend-text">High priority</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot orange-dot"></span>
+            <span class="legend-text">Medium priority</span>
+          </div>
 
-      <ActionSection
-        ref="actionSectionRef"
-        :can-proceed="props.canProceed"
-        :is-confirmed="props.isConfirmed"
-        variant="inline"
-        :current-student-id="props.currentStudentId"
-        @start-grading="handleStartGrading"
-        @batch-grading="handleBatchGrading"
-        class="header-action-section"
-      />
+          <div class="legend-item sort-toggle">
+            <el-switch
+              v-model="isSorted"
+              size="small"
+              :active-icon="Sort"
+              :inactive-icon="Sort"
+              aria-label="Sort students by priority"
+            />
+            <span class="legend-text">Sort by priority</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="header-block action-block">
+        <h1 class="block-label">Grade</h1>
+        <ActionSection
+          ref="actionSectionRef"
+          :can-proceed="props.canProceed"
+          :is-confirmed="props.isConfirmed"
+          variant="inline"
+          :current-student-id="props.currentStudentId"
+          @start-grading="handleStartGrading"
+          @batch-grading="handleBatchGrading"
+          class="header-action-section"
+        />
+      </section>
     </div>
 
     <div class="statistics-overview">
@@ -347,64 +354,79 @@ defineExpose({
 </script>
 
 <style scoped>
+/* Outer card holding two blocks (selectors, grading actions) above a row of stat tiles. */
 .page-header {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 14px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
 }
 
-/* Selectors, legend and grading actions share one grid that reflows per layout. */
-.selector-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    'question actions'
-    'student legend';
-  align-items: center;
-  gap: 10px 24px;
+.header-blocks {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
 }
 
-.select-section--question {
-  grid-area: question;
+.header-block {
+  min-width: 0;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, #f5f6f8 0%, #f1f2f5 100%);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-lg);
 }
 
-.select-section--student {
-  grid-area: student;
-}
-
-.quality-legend {
-  grid-area: legend;
-}
-
-.header-action-section {
-  grid-area: actions;
-}
-
-.select-section {
+.selector-block {
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.selectors {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   min-width: 0;
 }
 
+.action-block {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.block-label,
 .select-section h1 {
-  flex: 0 0 112px;
   margin: 0;
-  color: rgba(0, 0, 0, 0.82);
+  color: rgba(0, 0, 0, 0.78);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
 }
 
+.select-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.select-section h1 {
+  flex: 0 0 98px;
+}
+
 .select-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
   padding: 3px;
 }
@@ -450,8 +472,8 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   min-height: 0;
   padding: 0;
   border-radius: 50%;
@@ -520,27 +542,45 @@ defineExpose({
   background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
 }
 
+/* Inside the grey blocks, idle chips are white so they read as buttons. */
+.select-item:not(.active):not(.graded):not(.golden):not(.confirmed) {
+  background-color: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.select-item:not(.active):not(.graded):not(.golden):not(.confirmed):hover {
+  background-color: #f7f8fa;
+  border-color: rgba(15, 23, 42, 0.16);
+}
+
+/* Priority legend: a small white card inside the selector block. */
 .quality-legend {
+  flex: 0 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   color: rgba(0, 0, 0, 0.62);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .legend-dot {
   flex-shrink: 0;
   width: 9px;
   height: 9px;
+  margin-inline: 2px;
   border-radius: 50%;
 }
 
@@ -559,18 +599,16 @@ defineExpose({
 
 .legend-item.sort-toggle {
   gap: 8px;
-  padding: 2px 12px 2px 6px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  background-color: #f6f7f8;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
 }
 
+/* Stat tiles */
 .statistics-overview {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-subtle);
+  gap: 12px;
 }
 
 .stat-item {
@@ -579,18 +617,19 @@ defineExpose({
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
-  min-height: 40px;
-  padding: 6px 16px;
-  border: 1px solid transparent;
+  min-height: 46px;
+  padding: 8px 18px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: var(--radius-md);
-  background: #f6f7f8;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   color: inherit;
   font: inherit;
   text-align: left;
   transition:
-    background-color 0.2s ease,
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .stat-item.clickable {
@@ -598,9 +637,9 @@ defineExpose({
 }
 
 .stat-item.clickable:hover {
-  background: #ffffff;
   border-color: rgba(0, 122, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.12);
+  box-shadow: 0 6px 16px rgba(0, 122, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .stat-item.clickable:focus-visible {
@@ -610,7 +649,7 @@ defineExpose({
 
 .stat-item .label {
   overflow: hidden;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.58);
   font-size: 13px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -620,7 +659,7 @@ defineExpose({
 .stat-item .value {
   flex-shrink: 0;
   color: #007aff;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -634,32 +673,40 @@ defineExpose({
   color: #ff3b30;
 }
 
-/* Compact: selectors take the full width; legend and actions share the last row. */
-.page-header--compact .selector-panel {
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    'question question'
-    'student student'
-    'legend actions';
+/* Compact: the action block becomes a full-width strip under the selectors. */
+.page-header--compact .header-blocks,
+.page-header--narrow .header-blocks {
+  flex-direction: column;
 }
 
-.page-header--compact .quality-legend {
-  justify-content: flex-start;
+.page-header--compact .action-block {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 10px;
 }
 
-/* Narrow: one column, labels above their chips, touch-sized targets. */
+.page-header--compact .action-block .header-action-section {
+  width: auto;
+}
+
+/* Narrow: one column, labels above their chips, legend as a row, touch-sized targets. */
 .page-header--narrow {
-  gap: 12px;
+  gap: 10px;
+  padding: 10px;
+}
+
+.page-header--narrow .header-block {
   padding: 14px;
 }
 
-.page-header--narrow .selector-panel {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    'question'
-    'student'
-    'legend'
-    'actions';
+.page-header--narrow .selector-block {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.page-header--narrow .selectors {
   gap: 14px;
 }
 
@@ -669,12 +716,13 @@ defineExpose({
   gap: 6px;
 }
 
-.page-header--narrow .select-section h1 {
+.page-header--narrow .select-section h1,
+.page-header--narrow .block-label {
   flex-basis: auto;
-  font-size: 13px;
   color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 /* Every question stays visible: four across on tablets, a balanced 2 x 2 on phones. */
@@ -700,17 +748,25 @@ defineExpose({
 }
 
 .page-header--narrow .quality-legend {
-  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
 }
 
 .page-header--narrow .legend-item.sort-toggle {
-  margin-left: auto;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+}
+
+.page-header--narrow .action-block {
+  gap: 8px;
 }
 
 .page-header--narrow .statistics-overview {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  padding-top: 12px;
 }
 
 /* Label above value so neither has to be truncated in a half-width tile. */

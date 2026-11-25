@@ -305,7 +305,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -418,9 +418,9 @@ defineExpose({
   align-items: center;
   justify-content: center;
   height: 34px;
-  min-width: 84px;
+  min-width: 0;
   margin: 0;
-  padding: 0 16px;
+  padding: 0 14px;
   border-radius: var(--radius-pill);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   font-family: inherit;
