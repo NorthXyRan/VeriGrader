@@ -10,6 +10,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { MessageContainer } from './components/Message'
+import { isPagesDemo } from './config/deployment'
+import { loadDemo } from './demo/loadDemo'
 import { useExamDataStore } from './stores/useExamDataStore'
 import { useUploadStatusStore } from './stores/useUploadStatusStore'
 import { initResponsive } from './utils/responsive'
@@ -23,6 +25,7 @@ onMounted(() => {
   cleanupResponsive = initResponsive()
   examDataStore.loadFromLocal()
   uploadStatusStore.loadFromLocal()
+  if (isPagesDemo && !examDataStore.isDataComplete) loadDemo()
 })
 
 onUnmounted(() => cleanupResponsive?.())

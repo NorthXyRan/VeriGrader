@@ -38,6 +38,8 @@ The main workflow is:
 
 A fully synthetic upload example and the accepted JSON schemas are available in [`examples/`](examples/README.md).
 
+The [interactive demo](https://northxyran.github.io/VeriGrader/) includes pre-graded synthetic responses. Review highlights and rationales, make corrections, and export results from the score report. The demo runs in the browser without an API key.
+
 To run the prototype locally:
 
 ```bash
@@ -55,6 +57,17 @@ VITE_API_URL=https://your-openai-compatible-endpoint/v1/chat/completions
 ```
 
 Model names and generation settings can be changed in `frontend/src/config/api.ts`. Because this research prototype calls the LLM endpoint from the browser, use it locally and do not deploy it publicly with a real API key.
+
+### Build the GitHub Pages demo
+
+```bash
+cd frontend
+npm ci
+npm run type-check
+npm run build-only -- --mode pages --base /VeriGrader/
+```
+
+The Pages build excludes the local `VITE_` environment variables. Publish the contents of `frontend/dist/` to the root of the `gh-pages` branch with a `.nojekyll` file.
 
 ## Citation
 

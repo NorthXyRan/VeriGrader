@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <div class="header-a2">
+      <div v-if="!isPagesDemo" class="header-a2">
         <ActionSection
           ref="actionSectionRef"
           :can-proceed="props.canProceed"
@@ -113,6 +113,7 @@
 import { Message } from '@/components/Message'
 import { useGradingStatistics } from '@/composables/useGradingStatistics'
 import { useQualityFlag } from '@/composables/useQualityFlag'
+import { isPagesDemo } from '@/config/deployment'
 import { useExamDataStore } from '@/stores/useExamDataStore'
 import type { HighlightData, Question } from '@/types/exam'
 import { calcHighlightMissingRate, calcHighlightOverlapRate } from '@/utils/highlightMetrics'

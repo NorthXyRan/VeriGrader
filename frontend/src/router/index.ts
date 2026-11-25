@@ -1,9 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 import MainLayout from '@/components/layout/MainLayout.vue'
+import { isPagesDemo } from '@/config/deployment'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: isPagesDemo
+    ? createWebHashHistory(import.meta.env.BASE_URL)
+    : createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -18,6 +21,7 @@ const router = createRouter({
           path: 'uploading',
           name: 'Uploading',
           component: () => import('@/components/upload/Uploading.vue'),
+          beforeEnter: isPagesDemo ? () => ({ name: 'Home' }) : undefined,
         },
         {
           path: 'grading',

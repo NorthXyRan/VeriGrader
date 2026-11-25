@@ -1,8 +1,8 @@
 <template>
-  <div class="sidebar" :class="{ collapsed: isCollapse }">
+  <div class="sidebar" :class="{ collapsed: isCollapse, 'sidebar--demo': isPagesDemo }">
     <div class="sidebar-card hover">
       <el-menu v-if="!isCollapse" :default-active="activeMenu" class="nav-menu" :router="true">
-        <template v-for="item in menuItems" :key="item.index">
+        <template v-for="item in visibleMenuItems" :key="item.index">
           <el-menu-item v-if="!item.children" :index="item.index" :route="item.route">
             <el-icon><component :is="item.icon" /></el-icon>
             <span>{{ item.title }}</span>
@@ -26,7 +26,7 @@
       </el-menu>
 
       <div v-else class="nav-menu collapsed-menu">
-        <template v-for="item in menuItems" :key="item.index">
+        <template v-for="item in visibleMenuItems" :key="item.index">
           <el-tooltip v-if="!item.children && item.route" :content="item.title" placement="right">
             <div
               class="menu-item"
@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPagesDemo } from '@/config/deployment'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createRouteToIndexMap, isMenuActive, menuItems, type MenuItem } from './menuConfig'
@@ -82,6 +83,9 @@ defineProps<Props>()
 const router = useRouter()
 const route = useRoute()
 
+const visibleMenuItems = isPagesDemo
+  ? menuItems.filter((item) => item.route !== '/uploading' && !item.children)
+  : menuItems
 const routeToIndexMap = createRouteToIndexMap()
 
 const activeMenu = computed(() => {
@@ -106,6 +110,34 @@ const navigateToRoute = (routePath: string) => {
 
 .sidebar.collapsed {
   width: 100px;
+}
+
+@media (max-width: 640px) {
+  .sidebar.sidebar--demo {
+    width: 100%;
+    padding: 4px 20px;
+  }
+
+  .sidebar--demo .nav-menu {
+    display: flex;
+    justify-content: space-around;
+    padding-inline: 6px;
+  }
+
+  .sidebar--demo .nav-menu :deep(.el-menu-item) {
+    height: 44px;
+    margin: 4px 0;
+    padding-inline: 10px;
+  }
+
+  .sidebar--demo .nav-menu :deep(.el-menu-item i) {
+    margin-right: 6px;
+  }
+
+  .sidebar--demo .collapsed-menu .menu-item {
+    margin: 4px 0;
+    padding: 10px 14px;
+  }
 }
 
 .sidebar-card {

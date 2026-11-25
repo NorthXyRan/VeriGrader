@@ -3,7 +3,7 @@
     <div class="container">
       <AppHeader :is-collapse="isCollapse" @toggle-collapse="toggleCollapse" />
 
-      <div class="body-container">
+      <div class="body-container" :class="{ 'body-container--demo': isPagesDemo }">
         <AppSidebar :is-collapse="isCollapse" />
 
         <div
@@ -22,6 +22,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPagesDemo } from '@/config/deployment'
 import { getContentLayout, type ContentLayout } from '@/utils/responsive'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -73,6 +74,12 @@ onUnmounted(() => contentResizeObserver?.disconnect())
   flex: 1 0 auto;
   display: flex;
   min-height: 0;
+}
+
+@media (max-width: 640px) {
+  .body-container--demo {
+    flex-direction: column;
+  }
 }
 
 .main-content {
