@@ -198,11 +198,11 @@ watch(
 .reference-content {
   flex: 1;
   min-height: 0;
-  padding: 20px 24px;
+  padding: 18px 20px;
   white-space: pre-wrap;
   line-height: 1.7;
   color: rgba(0, 0, 0, 0.87);
-  font-size: 20px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -293,9 +293,9 @@ watch(
   font-size: 14px !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .reference-content {
-    padding: 24px;
+    padding: 16px;
     font-size: 16px;
   }
 
@@ -312,8 +312,8 @@ watch(
 
 @media (max-width: 480px) {
   .reference-content {
-    padding: 16px;
-    font-size: 15px;
+    padding: 14px 16px;
+    font-size: 16px;
   }
 
   .action-button-container {

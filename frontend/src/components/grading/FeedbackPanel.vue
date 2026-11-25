@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import { Message } from '@/components/Message'
+import { useContentLayout } from '@/composables/useContentLayout'
 import type { HighlightType } from '@/utils/highlightUtils'
 import { Star } from '@element-plus/icons-vue'
 import { computed, ref, watch } from 'vue'
@@ -89,13 +90,17 @@ const emits = defineEmits<{
   (e: 'cancelReasonExample', data: ReasonExampleData): void
 }>()
 
+const layout = useContentLayout()
 const selectedHighlight = ref<SelectedHighlight | null>(null)
 const editableReason = ref('')
 const isEditing = ref(false)
 
 const displayReason = computed(() => {
   if (!selectedHighlight.value) {
-    return 'Select text on the left to view its scoring rationale, or click here to enter one.'
+    // Below the wide layout the student response sits above this panel, not to its left.
+    return layout.value === 'wide'
+      ? 'Select text on the left to view its scoring rationale, or click here to enter one.'
+      : 'Select text in the student response to view its scoring rationale, or click here to enter one.'
   }
 
   if (isEditing.value) {
@@ -232,7 +237,7 @@ defineExpose({
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 20px 24px;
+  padding: 18px 20px;
   background: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
@@ -273,10 +278,15 @@ defineExpose({
 
 .reason-content-text {
   flex: 1;
-  padding: 16px 0;
+  margin: -6px -10px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
   line-height: 1.7;
   color: rgba(0, 0, 0, 0.6);
-  font-size: 20px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -290,10 +300,6 @@ defineExpose({
 .reason-content-text:hover {
   color: rgba(0, 0, 0, 0.8);
   background: rgba(0, 122, 255, 0.05);
-  border-radius: 8px;
-  padding: 16px 12px;
-  margin: 0 -12px;
-  transition: all 0.2s ease;
 }
 
 .reason-textarea {
@@ -315,7 +321,7 @@ defineExpose({
   background: #ffffff;
   transition: all 0.2s ease;
   line-height: 1.7;
-  font-size: 17px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   flex: 1;
@@ -337,7 +343,7 @@ defineExpose({
   display: flex;
   justify-content: center;
   gap: 16px;
-  padding: 20px 24px;
+  padding: 14px 20px;
   background: #ffffff;
   flex-shrink: 0;
   border-top: 1px solid #f0f0f0;
@@ -348,10 +354,10 @@ defineExpose({
   border-radius: 24px;
   font-weight: 500;
   transition: all 0.2s ease;
-  font-size: 16px;
+  font-size: 15px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .action-buttons .el-button--primary {
@@ -437,14 +443,18 @@ defineExpose({
   color: rgba(0, 0, 0, 0.6);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .feedback-content {
     padding: 16px;
   }
 
+  .reason-content-text {
+    font-size: 16px;
+  }
+
   .action-buttons {
     flex-direction: column;
-    padding: 16px 24px;
+    padding: 12px 16px;
     gap: 12px;
   }
 
