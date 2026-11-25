@@ -485,10 +485,14 @@ const demoCase: DemoCase = {
             sp[0],
             'Continuity and a sign change, and “smoothness is irrelevant” correctly says no derivative is needed; satisfies the point.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'correct',
+              'Newton needs a smooth f and an x_0 that is ‘reasonably’ close, where ‘reasonably’ depends on the curvature.',
+              sp[1],
+              'On review: smoothness gives differentiability, and closeness that depends on the curvature is the precise form of the local condition (the basin scales like |f′/f″|). Credited, although f′(x_k) ≠ 0 is not stated separately.',
+            ),
             'unclear',
-            'Newton needs a smooth f and an x_0 that is ‘reasonably’ close, where ‘reasonably’ depends on the curvature.',
-            sp[1],
             "Smoothness implies differentiability and the curvature remark hints at the f''/f' constant, but f'(x_k) ≠ 0 is never mentioned; the instructor must judge whether the closeness condition alone earns the point.",
           ),
         ],
@@ -500,10 +504,14 @@ const demoCase: DemoCase = {
             sp[2],
             'One binary digit per step is exactly linear convergence with ratio 1/2, i.e. the bound halves every iteration, regardless of f; credited despite no use of the word “linear”.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'correct',
+              'Newton is often said to be quadratic, though I think this is more of an asymptotic statement and depends on the root.',
+              sp[3],
+              'On review the hedge is accurate rather than evasive: quadratic convergence is an asymptotic property, and "depends on the root" is the simple-versus-multiple-root condition. Credited.',
+            ),
             'unclear',
-            'Newton is often said to be quadratic, though I think this is more of an asymptotic statement and depends on the root.',
-            sp[3],
             'The student reports the quadratic rate without committing to it, and “depends on the root” may or may not refer to the simple-root condition; the instructor should check whether this hedge shows understanding.',
           ),
         ],
@@ -515,10 +523,14 @@ const demoCase: DemoCase = {
             sp[4],
             'Uses the exact term “globally convergent” with the valid-bracket condition; matches the reference.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'wrong',
+              'Newton is less forgiving: the iteration can wander, although for most functions met in practice it settles down.',
+              sp[5],
+              '"Settles down for most functions" turns the warning into a claim of practical convergence. The key requires saying that convergence is not guaranteed (divergence, cycling, f′ = 0), and the student retracts exactly that.',
+            ),
             'unclear',
-            'Newton is less forgiving: the iteration can wander, although for most functions met in practice it settles down.',
-            sp[5],
             '“Can wander” may mean divergence or cycling, but the student immediately softens it and never says convergence can fail; the instructor must decide whether this conveys that Newton is only locally convergent.',
           ),
         ],
@@ -658,19 +670,27 @@ const demoCase: DemoCase = {
             sp[1],
             "Computes f' and verifies f' ≠ 0 on the interval, plus a starting point close to the root; the prerequisites are demonstrated on the example rather than stated abstractly.",
           ),
-          annotation(
-            'correct',
-            'From x_0 = 1: x_1 = 0.750364, x_2 = 0.739113, x_3 = 0.739085; the errors 1.1e-2, 2.8e-5, 1.7e-10 are each about 0.22 times the square of the previous one, so this is quadratic.',
-            sp[3],
-            "The iterates and errors are correct, and the ratio 0.22 matches |f''(x*)/(2f'(x*))| = cos(x*)/(2(1 + sin x*)) ≈ 0.221; a numerical demonstration of quadratic convergence.",
+          flagged(
+            annotation(
+              'correct',
+              'From x_0 = 1: x_1 = 0.750364, x_2 = 0.739113, x_3 = 0.739085; the errors 1.1e-2, 2.8e-5, 1.7e-10 are each about 0.22 times the square of the previous one, so this is quadratic.',
+              sp[3],
+              "The iterates and errors are correct, and the ratio 0.22 matches |f''(x*)/(2f'(x*))| = cos(x*)/(2(1 + sin x*)) ≈ 0.221; a numerical demonstration of quadratic convergence.",
+            ),
+            'unclear',
+            'The quadratic claim rests on the stated iterates and the ratio 0.22. Verify that e_{k+1}/e_k² approaches |f″/(2f′)| at the root before crediting.',
           ),
         ],
         [
-          annotation(
-            'correct',
-            'Bisection would have reached the root from any bracket, even [−10, 10], just more slowly.',
-            sp[4],
-            'Guaranteed convergence regardless of bracket width; [−10, 10] is a valid bracket here since f(−10) > 0 > f(10).',
+          flagged(
+            annotation(
+              'correct',
+              'Bisection would have reached the root from any bracket, even [−10, 10], just more slowly.',
+              sp[4],
+              'Guaranteed convergence regardless of bracket width; [−10, 10] is a valid bracket here since f(−10) > 0 > f(10).',
+            ),
+            'unclear',
+            '"Any bracket, even [−10, 10]" is only true if [−10, 10] is a valid bracket for cos x − x. Check the signs at both ends before crediting.',
           ),
           annotation(
             'correct',
@@ -678,10 +698,14 @@ const demoCase: DemoCase = {
             sp[5],
             "Correct: −sin(−π/2) − 1 = 0, so the method breaks down at that x_0; a concrete instance of the f'(x_k) = 0 failure, showing convergence is not guaranteed.",
           ),
-          annotation(
+          flagged(
+            annotation(
+              'wrong',
+              'Per iteration they cost almost the same here, since sin and cos are equally cheap.',
+              sp[7],
+              'A Newton step still evaluates cos x − x and −sin x − 1, about two function evaluations against one for bisection. That f and f′ are equally cheap does not make the steps equally cheap, so no credit.',
+            ),
             'unclear',
-            'Per iteration they cost almost the same here, since sin and cos are equally cheap.',
-            sp[7],
             "The student implicitly counts the extra sin evaluation for f' but concludes the costs are “almost the same”; true for this f, but the instructor should decide whether it shows the general f + f' cost per Newton step.",
           ),
           'So 3 Newton steps beat 20 bisection steps easily.',

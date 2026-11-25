@@ -4,9 +4,16 @@ import { gradingThresholds } from '@/config/gradingThresholds'
 import type { HighlightData } from '@/types/exam'
 
 import { demoCases } from './cases'
-import { getDemoGradingResult, initiallyUngradedStudents, responseAnnotations } from './loadDemo'
+import { getDemoGradingResult, responseAnnotations } from './loadDemo'
 
 const studentIds = Array.from({ length: 12 }, (_, index) => index + 1)
+/** Papers the first pass flags for review, per question. Regrading settles them. */
+const flaggedStudents: Record<number, number[]> = {
+  1: [4, 6, 8],
+  2: [4, 8, 11],
+  3: [4, 6],
+  4: [2, 4, 6, 10],
+}
 
 function unclearShare(result: HighlightData): number {
   const { correct, wrong, unclear } = result.answer
@@ -66,26 +73,28 @@ describe('Pages demo cases', () => {
       expect(new Set(scores).size).toBeGreaterThanOrEqual(5)
     })
 
-    it('flags a paper on the first pass that the regrade resolves', () => {
-      const resolved = studentIds.filter((id) => {
-        if (initiallyUngradedStudents.has(id)) return false
-        const initial = getDemoGradingResult(id, question.question_id, { initialPass: true })!
-        const final = getDemoGradingResult(id, question.question_id)!
-        return isFlagged(initial) && !isFlagged(final)
-      })
-      expect(resolved.length).toBeGreaterThan(0)
+    it('flags a few papers on the first pass and resolves them on regrade', () => {
+      const expected = flaggedStudents[question.question_id]!
+      const flagged = studentIds.filter((id) =>
+        isFlagged(getDemoGradingResult(id, question.question_id, { initialPass: true })!),
+      )
+      expect(flagged).toEqual(expected)
+      for (const id of expected) {
+        expect(getDemoGradingResult(id, question.question_id)!.answer.unclear).toHaveLength(0)
+      }
+    })
+
+    it('regrades every other paper to the same result', () => {
+      const expected = flaggedStudents[question.question_id]!
+      for (const id of studentIds.filter((id) => !expected.includes(id))) {
+        expect(getDemoGradingResult(id, question.question_id)).toEqual(
+          getDemoGradingResult(id, question.question_id, { initialPass: true }),
+        )
+      }
     })
   })
 
-  it('opens question 1 with one flagged paper and an unclear point for student 1', () => {
-    const flagged = studentIds.filter(
-      (id) =>
-        !initiallyUngradedStudents.has(id) &&
-        isFlagged(getDemoGradingResult(id, 1, { initialPass: true })!),
-    )
-    expect(flagged).toEqual([4])
-    expect(getDemoGradingResult(4, 1)!.answer.unclear).toHaveLength(0)
-
+  it('opens question 1 with an unclear point for student 1', () => {
     const first = getDemoGradingResult(1, 1)!
     expect(first.answer.unclear.length).toBeGreaterThan(0)
     expect(first.answer.correct.length).toBeGreaterThan(0)

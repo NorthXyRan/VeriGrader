@@ -111,19 +111,27 @@ const demoCase: DemoCase = {
             sp[2],
             '"It just ends" is the no-convergence-question point, and "small unless nearly singular (big cond(A))" correctly ties the remaining error to κ(A).',
           ),
-          annotation(
-            'correct',
-            'For the repeating method write e^{(k+1)} = T e^{(k)}; the error dies for every start exactly when all eigenvalues of T are inside the unit circle. Here 4 > 1 and 3 > 1, so each row is dominated by its diagonal and both Jacobi and G–S will work. I stop when ||b - Ax^{(k)}|| < 10^{-6}.',
-            sp[3],
-            '"All eigenvalues inside the unit circle" is ρ(T) < 1 without the term; 4 > |1| and 3 > |1| is a correct check of strict diagonal dominance; the residual stop completes the point.',
+          flagged(
+            annotation(
+              'correct',
+              'For the repeating method write e^{(k+1)} = T e^{(k)}; the error dies for every start exactly when all eigenvalues of T are inside the unit circle. Here 4 > 1 and 3 > 1, so each row is dominated by its diagonal and both Jacobi and G–S will work. I stop when ||b - Ax^{(k)}|| < 10^{-6}.',
+              sp[3],
+              '"All eigenvalues inside the unit circle" is ρ(T) < 1 without the term; 4 > |1| and 3 > |1| is a correct check of strict diagonal dominance; the residual stop completes the point.',
+            ),
+            'unclear',
+            '"All eigenvalues of T inside the unit circle" is not the textbook ρ(T) < 1 wording, and diagonal dominance is argued only from 4 > 1 and 3 > 1. Check the equivalence before crediting.',
           ),
         ],
         [
-          annotation(
-            'correct',
-            'Cost: elimination is roughly n^3 operations, and the zeros of a sparse A get filled with nonzeros during elimination, so you may need to store an almost full matrix.',
-            sp[4],
-            '"Zeros get filled with nonzeros" is fill-in described without the word, with the right consequence for storage; order n^3 suffices without the 2/3 constant.',
+          flagged(
+            annotation(
+              'correct',
+              'Cost: elimination is roughly n^3 operations, and the zeros of a sparse A get filled with nonzeros during elimination, so you may need to store an almost full matrix.',
+              sp[4],
+              '"Zeros get filled with nonzeros" is fill-in described without the word, with the right consequence for storage; order n^3 suffices without the 2/3 constant.',
+            ),
+            'unclear',
+            'Fill-in is described informally ("the zeros get filled") and the n³ count has no 2/3 constant. Check whether this meets the cost-and-memory point for direct methods.',
           ),
           annotation(
             'correct',
@@ -133,11 +141,15 @@ const demoCase: DemoCase = {
           ),
         ],
         [
-          annotation(
-            'correct',
-            'If I need x for 100 different b with the same A, I factor once and each new b is just two triangular solves.',
-            sp[6],
-            'The many-right-hand-sides scenario, with the reason (factor once, two triangular solves per b) made concrete.',
+          flagged(
+            annotation(
+              'correct',
+              'If I need x for 100 different b with the same A, I factor once and each new b is just two triangular solves.',
+              sp[6],
+              'The many-right-hand-sides scenario, with the reason (factor once, two triangular solves per b) made concrete.',
+            ),
+            'unclear',
+            'The scenario is a single concrete case (100 right-hand sides). Check whether it states the general criterion of reusing one factorization.',
           ),
           annotation(
             'correct',
@@ -354,17 +366,25 @@ const demoCase: DemoCase = {
             sp[0],
             'Pivoted elimination to upper-triangular form followed by back substitution, the first clause of a run-on sentence, is the direct principle.',
           ),
-          annotation(
-            'correct',
-            'but Jacobi and Gauss–Seidel start from a guess and update x using the diagonal of A each time until it stops changing,',
-            sp[1],
-            '"Start from a guess and update x by dividing by the diagonal" is the Jacobi/Gauss–Seidel splitting with M built from D, described without formulas.',
+          flagged(
+            annotation(
+              'correct',
+              'but Jacobi and Gauss–Seidel start from a guess and update x using the diagonal of A each time until it stops changing,',
+              sp[1],
+              '"Start from a guess and update x by dividing by the diagonal" is the Jacobi/Gauss–Seidel splitting with M built from D, described without formulas.',
+            ),
+            'unclear',
+            '"Update x using the diagonal of A" fits Jacobi but describes Gauss–Seidel’s use of new values only loosely. Check whether this counts as the iterative principle.',
           ),
-          annotation(
-            'correct',
-            'the direct one costs n^3 and fill in makes the sparse matrix full so memory is big',
-            sp[4],
-            'O(n^3) work and fill-in destroying sparsity, extracted from the middle of a sentence that is mostly about the iterative methods.',
+          flagged(
+            annotation(
+              'correct',
+              'the direct one costs n^3 and fill in makes the sparse matrix full so memory is big',
+              sp[4],
+              'O(n^3) work and fill-in destroying sparsity, extracted from the middle of a sentence that is mostly about the iterative methods.',
+            ),
+            'unclear',
+            'In this run-on paragraph "the direct one" could refer to Gaussian elimination or to the clause before it. Confirm the referent before crediting the n³ and fill-in claims.',
           ),
           annotation(
             'correct',
@@ -374,11 +394,15 @@ const demoCase: DemoCase = {
           ),
         ],
         [
-          annotation(
-            'wrong',
-            'Gauss–Seidel converges for any matrix because it always uses the newest values, Jacobi sometimes not,',
-            sp[3],
-            'Using the newest values does not guarantee convergence: Gauss–Seidel needs ρ((D+L)^{-1}U) < 1, and for A = [[1,2],[2,1]] that radius is 4, so it diverges.',
+          flagged(
+            annotation(
+              'wrong',
+              'Gauss–Seidel converges for any matrix because it always uses the newest values, Jacobi sometimes not,',
+              sp[3],
+              'Using the newest values does not guarantee convergence: Gauss–Seidel needs ρ((D+L)^{-1}U) < 1, and for A = [[1,2],[2,1]] that radius is 4, so it diverges.',
+            ),
+            'unclear',
+            'This may be a loose paraphrase of "converges for SPD or strictly diagonally dominant matrices", or a genuine claim of universal convergence. Needs a second look.',
           ),
           annotation(
             'correct',
@@ -471,16 +495,16 @@ const demoCase: DemoCase = {
             'PA = LU, two triangular solves and a predictable step count: the direct principle, stated without hedging.',
           ),
           annotation(
-            'unclear',
+            'correct',
             'Accuracy is essentially as good as the data allows, since GEPP is backward stable, although strictly speaking the growth factor can be 2^{n-1}.',
             sp[2],
-            'Backward stability and the 2^{n−1} worst-case growth factor are both correct, but the student never says the forward error is rounding amplified by κ(A), and the caveat undercuts "as good as the data allows". The instructor must decide whether this earns the point.',
+            'Backward stability is the right accuracy statement for GEPP. The computed x solves a nearby system, so the error is set by the data and κ(A), and the 2^{n−1} caveat is accurate. Credited.',
           ),
           annotation(
-            'unclear',
+            'wrong',
             'Jacobi and Gauss–Seidel converge under the usual conditions, and Gauss–Seidel is typically about twice as fast.',
             sp[3],
-            '"The usual conditions" is never specified (ρ < 1, strict diagonal dominance, SPD), and ρ_GS = ρ_J^2 holds only for consistently ordered matrices; "typically" may or may not acknowledge that. Needs instructor judgment.',
+            '"The usual conditions" never says ρ(B) < 1, strict diagonal dominance or SPD, and "typically twice as fast" holds only for consistently ordered matrices. Nothing examinable is stated, so no credit.',
           ),
         ],
         [
@@ -491,16 +515,16 @@ const demoCase: DemoCase = {
             'Identifies fill-in as the dominant cost, and the nested-dissection remark is a correct advanced refinement (O(n log n) fill for 2D grids).',
           ),
           annotation(
-            'unclear',
+            'correct',
             'An iterative sweep is cheap, but the total cost depends on how many sweeps are needed, which can be large.',
             sp[5],
-            'The total = per-sweep × number-of-sweeps relation is right, but "cheap" is never quantified as O(nnz) and memory is not mentioned; the instructor should decide whether half the point is enough.',
+            'Cost per sweep × number of sweeps is exactly the right comparison, and a sweep over a sparse A is O(nnz). Credited, although memory is not mentioned.',
           ),
           annotation(
-            'unclear',
+            'wrong',
             'Which one wins depends on the problem size, the conditioning and how many right-hand sides there are.',
             sp[6],
-            'Names exactly the right deciding factors (size, conditioning, number of right-hand sides) but never says which way each one points for direct methods; listing factors may or may not count as answering the scenario.',
+            'Lists the right deciding factors but never says which way any of them points, for example that many right-hand sides favour reusing an LU factorization. A list of factors does not describe a scenario, so no credit.',
           ),
           annotation(
             'correct',
@@ -581,11 +605,15 @@ const demoCase: DemoCase = {
       paragraphs: [
         [
           'Principle',
-          annotation(
-            'correct',
-            'Direct: at step k pick the row with largest |a_ik| (i ≥ k), swap, and eliminate below the pivot with multipliers l_ik = a_ik/a_kk; after n − 1 steps PA = LU, and x comes from Ly = Pb, Ux = y. The number of operations is known in advance.',
-            sp[0],
-            'Goes beyond the point: the pivot rule, the multiplier formula, n − 1 elimination steps producing PA = LU, both triangular solves and a predetermined operation count.',
+          flagged(
+            annotation(
+              'correct',
+              'Direct: at step k pick the row with largest |a_ik| (i ≥ k), swap, and eliminate below the pivot with multipliers l_ik = a_ik/a_kk; after n − 1 steps PA = LU, and x comes from Ly = Pb, Ux = y. The number of operations is known in advance.',
+              sp[0],
+              'Goes beyond the point: the pivot rule, the multiplier formula, n − 1 elimination steps producing PA = LU, both triangular solves and a predetermined operation count.',
+            ),
+            'unclear',
+            'A long procedural description. Check that it states the principle (finite steps, PA = LU, two triangular solves) and not only the mechanics of pivoting.',
           ),
           annotation(
             'correct',
@@ -596,11 +624,15 @@ const demoCase: DemoCase = {
         ],
         [
           'Cost and Memory',
-          annotation(
-            'correct',
-            'Direct: 2n^3/3 flops + 2n^2 per right-hand side. The danger for sparse A is fill-in: for an "arrow" matrix with full first row and column, eliminating x_1 first fills the whole matrix, while ordering that row last gives no fill-in at all, so the ordering decides the memory.',
-            sp[4],
-            'The arrow-matrix example is exactly right: eliminating the dense row first creates a full (n−1)×(n−1) update, while ordering it last creates no fill. A sharp illustration of fill-in beyond the reference.',
+          flagged(
+            annotation(
+              'correct',
+              'Direct: 2n^3/3 flops + 2n^2 per right-hand side. The danger for sparse A is fill-in: for an "arrow" matrix with full first row and column, eliminating x_1 first fills the whole matrix, while ordering that row last gives no fill-in at all, so the ordering decides the memory.',
+              sp[4],
+              'The arrow-matrix example is exactly right: eliminating the dense row first creates a full (n−1)×(n−1) update, while ordering it last creates no fill. A sharp illustration of fill-in beyond the reference.',
+            ),
+            'unclear',
+            'The arrow-matrix argument about elimination order goes beyond the key. Check that the fill-in behaviour it claims is right before crediting.',
           ),
           annotation(
             'correct',

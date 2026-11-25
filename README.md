@@ -38,7 +38,7 @@ The main workflow is:
 
 A fully synthetic upload example and the accepted JSON schemas are available in [`examples/`](examples/README.md).
 
-The [interactive demo](https://northxyran.github.io/VeriGrader/) opens in the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. Inspect and correct pre-graded responses, regrade flagged papers, use the single or batch grading controls on the two ungraded students, and export the score report. The demo replays prepared model results in the browser and needs no API key.
+The [interactive demo](https://northxyran.github.io/VeriGrader/) opens in the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. Inspect and correct pre-graded responses, regrade the papers the first pass flagged for review to see their settled results, rerun single or batch grading, and export the score report. The demo replays prepared model results in the browser and needs no API key.
 
 To run the prototype locally:
 

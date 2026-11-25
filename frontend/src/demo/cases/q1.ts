@@ -358,11 +358,15 @@ const demoCase: DemoCase = {
             sp[2],
             '"The first one" refers back to interpolation; Lagrange, Newton and cubic splines are the key’s methods.',
           ),
-          annotation(
-            'correct',
-            'and for the second one least squares or a Bézier-type smooth curve,',
-            sp[3],
-            '"The second one" is approximation; least squares and Bézier fitting are both in the key.',
+          flagged(
+            annotation(
+              'correct',
+              'and for the second one least squares or a Bézier-type smooth curve,',
+              sp[3],
+              '"The second one" is approximation; least squares and Bézier fitting are both in the key.',
+            ),
+            'unclear',
+            '"The second one" refers back across a long run-on sentence. Confirm that it denotes approximation, not interpolation, before crediting least squares and Bézier fitting.',
           ),
           'and both give a continuous function you can evaluate anywhere.',
           annotation(
@@ -371,11 +375,15 @@ const demoCase: DemoCase = {
             sp[6],
             'Edge oscillation at high degree (Runge) and fitting the noise are both halves of the interpolation disadvantage.',
           ),
-          annotation(
-            'wrong',
-            'while approximation is always more accurate than interpolation at new points,',
-            sp[5],
-            '"Always" is false: for exact, smooth data an interpolant is usually more accurate between the nodes. The real advantage, robustness to noise, appears nowhere in this clause.',
+          flagged(
+            annotation(
+              'wrong',
+              'while approximation is always more accurate than interpolation at new points,',
+              sp[5],
+              '"Always" is false: for exact, smooth data an interpolant is usually more accurate between the nodes. The real advantage, robustness to noise, appears nowhere in this clause.',
+            ),
+            'unclear',
+            'The scope of this clause is ambiguous: it may continue the previous clause about noisy data, or claim that approximation always beats interpolation. Needs a second look.',
           ),
           annotation(
             'correct',
@@ -383,10 +391,14 @@ const demoCase: DemoCase = {
             sp[4],
             'Exact data as the setting where interpolation should be preferred is the interpolation advantage.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'wrong',
+              'and approximation sometimes loses details.',
+              sp[7],
+              '"Loses details" names neither the non-zero residuals nor the dependence on model form or degree. On re-reading it is too vague to meet the approximation disadvantage, so no credit.',
+            ),
             'unclear',
-            'and approximation sometimes loses details.',
-            sp[7],
             '"Loses details" gestures at underfitting, but it does not say that the loss comes from the choice of model or degree, nor mention the residuals. The instructor should decide whether this counts.',
           ),
         ],
@@ -461,10 +473,14 @@ const demoCase: DemoCase = {
             sp[0],
             'Going through the points exactly is the interpolation problem.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'correct',
+              'Approximation is more like a model of the data, which may or may not go through them depending on the method.',
+              sp[1],
+              'On review the core distinction is present: the curve is not required to pass through the points, and "a model of the data" is a fit to the data as a whole. Enough for the one-mark point.',
+            ),
             'unclear',
-            'Approximation is more like a model of the data, which may or may not go through them depending on the method.',
-            sp[1],
             '"May or may not go through" captures that passing through is not required, but "a model of the data" leaves out the closeness criterion (minimising an error). Borderline; the instructor should decide.',
           ),
         ],
@@ -475,19 +491,27 @@ const demoCase: DemoCase = {
             sp[2],
             'Lagrange, Newton and spline interpolation match the key.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'correct',
+              'Approximation can be done with regression or other fitting methods.',
+              sp[3],
+              'Regression on discrete data is least-squares fitting, the method in the key. The vague "other fitting methods" adds nothing, but it does not undo the credit.',
+            ),
             'unclear',
-            'Approximation can be done with regression or other fitting methods.',
-            sp[3],
             '"Regression" usually means least squares, but "other fitting methods" is unspecified. Decide whether naming regression alone meets the point.',
           ),
         ],
         [
-          annotation(
-            'wrong',
-            'Interpolation is generally more accurate overall.',
-            sp[4],
-            'Exactness at the nodes does not make interpolation "more accurate overall"; between nodes, and with noisy data, it can be far less accurate. This is not the advantage in the key.',
+          flagged(
+            annotation(
+              'wrong',
+              'Interpolation is generally more accurate overall.',
+              sp[4],
+              'Exactness at the nodes does not make interpolation "more accurate overall"; between nodes, and with noisy data, it can be far less accurate. This is not the advantage in the key.',
+            ),
+            'unclear',
+            '"More accurate overall" may be loose wording for exact at the nodes (the advantage in the key) or a broader, false claim about accuracy everywhere. Check which is meant.',
           ),
           annotation(
             'correct',

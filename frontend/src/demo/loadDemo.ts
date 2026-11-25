@@ -6,9 +6,6 @@ import { computeScoreFromReferences, sanitizeHighlightData } from '@/utils/highl
 import { demoCases as cases } from './cases'
 import type { DemoAnnotation, DemoResponse } from './caseTypes'
 
-/** Students 11 and 12 start ungraded so visitors can run the grading controls on fresh papers. */
-export const initiallyUngradedStudents = new Set([11, 12])
-
 function renderResponse(response: DemoResponse): string {
   return response.paragraphs
     .map((paragraph) =>
@@ -77,7 +74,6 @@ export function loadDemo(): void {
   examStore.setStudentAnswers(studentAnswers)
 
   for (const { student_id, question_id } of studentAnswers) {
-    if (initiallyUngradedStudents.has(student_id)) continue
     const result = getDemoGradingResult(student_id, question_id, { initialPass: true })
     if (result) examStore.addHighlightData(result)
   }

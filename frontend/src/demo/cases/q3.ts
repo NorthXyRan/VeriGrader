@@ -375,11 +375,15 @@ const demoCase: DemoCase = {
             sp[4],
             'A clause of the run-on sentence that states the explicit per-step cost exactly: one evaluation of f.',
           ),
-          annotation(
-            'correct',
-            'while implicit needs Newton iteration with I − hJ every step,',
-            sp[5],
-            'Names the per-step Newton solve with I − hJ, which is the source of the higher implicit cost.',
+          flagged(
+            annotation(
+              'correct',
+              'while implicit needs Newton iteration with I − hJ every step,',
+              sp[5],
+              'Names the per-step Newton solve with I − hJ, which is the source of the higher implicit cost.',
+            ),
+            'unclear',
+            'This linear test problem needs no Newton iteration. Check whether the general statement about the cost of an implicit step is what the point asks for.',
           ),
           annotation(
             'correct',
@@ -387,11 +391,15 @@ const demoCase: DemoCase = {
             sp[2],
             'Correct factor 1 + hλ, condition |1 + hλ| ≤ 1 and bound h ≤ 2/|λ|, all inside one clause.',
           ),
-          annotation(
-            'wrong',
-            'and implicit multiplies by 1/(1 + hλ) which is always below 1, so no restriction.',
-            sp[3],
-            'Sign error: the implicit factor is 1/(1 − hλ). The stated 1/(1 + hλ) has modulus above 1 for −2 < hλ < 0 and is unbounded at hλ = −1, so it does not support "no restriction".',
+          flagged(
+            annotation(
+              'wrong',
+              'and implicit multiplies by 1/(1 + hλ) which is always below 1, so no restriction.',
+              sp[3],
+              'Sign error: the implicit factor is 1/(1 − hλ). The stated 1/(1 + hλ) has modulus above 1 for −2 < hλ < 0 and is unbounded at hλ = −1, so it does not support "no restriction".',
+            ),
+            'unclear',
+            'The factor 1/(1 + hλ) has the opposite sign to 1/(1 − hλ). It could be a slip or a different sign convention for λ; check before marking.',
           ),
           annotation(
             'correct',
@@ -399,10 +407,14 @@ const demoCase: DemoCase = {
             sp[6],
             'Correct bound h ≤ 2/1000 = 0.002, and the student notes it applies even after the transient, when the solution is just ≈ cos t.',
           ),
-          annotation(
+          flagged(
+            annotation(
+              'correct',
+              'so implicit is the better choice since it is more stable and the bigger step makes up for the solve.',
+              sp[7],
+              'On review the reasoning holds: stability caps explicit Euler at h ≤ 0.002 but not implicit Euler, and the larger steps more than pay for the solve. That is the argument in the key, in compressed form.',
+            ),
             'unclear',
-            'so implicit is the better choice since it is more stable and the bigger step makes up for the solve.',
-            sp[7],
             'Right choice, but "more stable" never says h is limited only by accuracy, and the student’s own factor 1/(1 + hλ) would blow up near hλ = −1. The instructor should decide whether the justification is sound.',
           ),
         ],
@@ -490,16 +502,16 @@ const demoCase: DemoCase = {
         ],
         [
           annotation(
-            'unclear',
+            'correct',
             'Explicit Euler is stable as long as h is small compared to the fastest time scale of the problem.',
             sp[2],
-            '"h small compared to the fastest time scale" is h ≲ 1/|λ_max|, the right idea up to a constant, but no condition |1 + hλ| ≤ 1 or bound 2/|λ| is given. The instructor must decide whether the qualitative form earns the point.',
+            '"h small compared to the fastest time scale" means h·|λ_max| = O(1), the correct stability criterion up to the constant 2. Credited for the idea, though no numeric bound is given.',
           ),
           annotation(
-            'unclear',
+            'correct',
             'Implicit Euler is, roughly speaking, stable for any h on dissipative problems.',
             sp[3],
-            '"Dissipative" is close to Re(λ) ≤ 0, which would make this A-stability, but "roughly speaking" and the missing factor 1/(1 − hλ) leave it open. The instructor should judge whether this counts.',
+            '"stable for any h on dissipative problems" is A-stability in words, since dissipative means Re(λ) ≤ 0. The hedge does not change the content, so it is credited.',
           ),
           annotation(
             'correct',
@@ -510,16 +522,16 @@ const demoCase: DemoCase = {
         ],
         [
           annotation(
-            'unclear',
+            'wrong',
             'Explicit Euler would also do the job here, just with noticeably smaller steps than the solution itself would suggest.',
             sp[6],
-            'Qualitatively right (stability, not the smooth solution, limits h), but the bound h ≤ 0.002 is never given and "noticeably smaller" understates a 50× restriction. The instructor should decide whether this is enough.',
+            '"Would also do the job" with "noticeably smaller steps" hides a 50× restriction (h ≤ 0.002, 5000 steps on [0, 10]). The key needs the stability bound and why it rules explicit Euler out; neither is given.',
           ),
           annotation(
-            'unclear',
+            'wrong',
             'For the stiff problem I would lean towards implicit Euler, solving each step with a few fixed-point iterations, which should be cheap.',
             sp[7],
-            'Right choice, but fixed-point iteration y ← y_n + h f(t_{n+1}, y) converges only if 1000h < 1, i.e. h < 0.001, stricter than explicit Euler’s own limit. The instructor must decide whether this defeats the justification.',
+            'Fixed-point iteration y ← y_n + h f(t_{n+1}, y) converges only when 1000h < 1, i.e. h < 0.001, which is stricter than explicit Euler’s own limit. The stability advantage is thrown away, so the justification fails.',
           ),
         ],
       ],
