@@ -673,14 +673,14 @@ onMounted(async () => {
 }
 
 .preview-card {
-  flex: 4 1 0;
+  flex: 9 1 0;
   container-type: inline-size;
   container-name: response-panel;
 }
 
 .reference-card,
 .feedback-card {
-  flex: 3 1 0;
+  flex: 6 1 0;
 }
 
 .preview-card.hover:hover,

@@ -285,71 +285,48 @@ async function resetAll(): Promise<void> {
 
 <style scoped>
 .uploading-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 960px;
   margin: 0 auto;
-  gap: 24px;
+  gap: 20px;
 }
 
 .reset-button-container {
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 8px;
 }
 
 .reset-button-container .el-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 14px 32px;
-  border-color: #f97069;
-  border-radius: 12px;
-  background-color: #f97069;
-  font-size: 16px;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 22px;
+  border: 1px solid rgba(255, 59, 48, 0.35);
+  border-radius: var(--radius-pill);
+  background-color: #ffffff;
+  color: #e0352b;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .reset-button-container .el-button:hover {
-  border-color: #ff2d20;
-  background-color: #ff2d20;
-  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
-  transform: translateY(-1px);
+  border-color: #ff3b30;
+  background-color: #fff1f0;
+  color: #d62f26;
 }
 
-.reset-button-container .el-button:active {
-  transform: translateY(0);
-}
-
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .uploading-container {
-    max-width: 100%;
-    gap: 20px;
-  }
-
-  .reset-button-container {
-    margin-top: 24px;
+    gap: 14px;
   }
 
   .reset-button-container .el-button {
     min-height: 44px;
-    padding: 12px 24px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .uploading-container {
-    gap: 16px;
-  }
-
-  .reset-button-container {
-    margin-top: 20px;
-  }
-
-  .reset-button-container .el-button {
-    min-height: 40px;
-    padding: 10px 20px;
   }
 }
 </style>

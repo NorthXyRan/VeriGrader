@@ -1,7 +1,7 @@
 <template>
   <div class="prompt-card">
     <div class="card-content">
-      <div class="card-badge">SYSTEM SETTINGS</div>
+      <div class="card-badge">System Settings</div>
 
       <div class="apple-features">
         <div class="apple-feature">

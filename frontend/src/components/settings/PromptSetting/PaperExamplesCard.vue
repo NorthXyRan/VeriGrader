@@ -1,6 +1,6 @@
 <template>
   <BaseExamplesCard
-    title="PAPER EXAMPLES"
+    title="Paper Examples"
     :examples="goldPaperExamples"
     :empty-image-src="manIcon"
     empty-image-alt="No gold-standard paper examples"

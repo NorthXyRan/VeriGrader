@@ -270,10 +270,10 @@ defineExpose({
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: 8px 10px;
   width: 100%;
   min-height: 50px;
-  padding: 9px 18px;
+  padding: 9px 16px;
 }
 
 .tool-group {
@@ -339,7 +339,7 @@ defineExpose({
   flex-shrink: 0;
   height: 30px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0 11px;
   border-radius: var(--radius-pill);
   font-family: inherit;
   font-size: 13px;
@@ -430,7 +430,7 @@ defineExpose({
  * Narrower response panels: the marking buttons and the score share the first row and the
  * editing tools move to a second row, instead of overflowing behind a scrollbar.
  */
-@container response-panel (max-width: 46rem) {
+@container response-panel (max-width: 42rem) {
   .highlight-toolbar :deep(.el-divider--vertical) {
     display: none;
   }

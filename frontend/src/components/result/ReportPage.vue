@@ -1008,12 +1008,13 @@ onMounted(() => {
 }
 
 .action-btn--primary {
-  background: #007aff;
-  color: white;
+  background: rgba(0, 122, 255, 0.1);
+  color: #0066d6;
 }
 
 .action-btn--primary:hover {
-  background: #0062d6;
+  background: #007aff;
+  color: #ffffff;
 }
 
 /* Compact */

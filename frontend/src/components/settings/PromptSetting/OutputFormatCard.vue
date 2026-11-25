@@ -1,7 +1,7 @@
 <template>
   <div class="prompt-card">
     <div class="card-content">
-      <div class="card-badge">OUTPUT FORMAT</div>
+      <div class="card-badge">Output Format</div>
       <div class="apple-structure-body">
         <div class="apple-json-container">
           <pre class="apple-json-display">{{ formatJsonStructure(promptData.output_format) }}</pre>
