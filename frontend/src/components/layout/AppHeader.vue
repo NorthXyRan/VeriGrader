@@ -1,5 +1,5 @@
 <template>
-  <div class="header-container">
+  <header class="header-container">
     <div class="header-card">
       <div class="header-title">
         <span>VeriGrader</span>
@@ -8,7 +8,10 @@
       <div class="header-controls">
         <div class="theme-dropdown" ref="dropdownRef">
           <button
+            type="button"
             class="control-button"
+            aria-haspopup="true"
+            :aria-expanded="isDropdownOpen"
             @click="toggleDropdown"
             :class="{ 'dropdown-open': isDropdownOpen }"
           >
@@ -18,6 +21,7 @@
 
           <div v-show="isDropdownOpen" class="dropdown-menu">
             <button
+              type="button"
               v-for="theme in themeOptions"
               :key="theme"
               class="dropdown-item"
@@ -30,12 +34,18 @@
           </div>
         </div>
 
-        <button class="control-button" @click="$emit('toggleCollapse')">
+        <button
+          v-if="showCollapseToggle"
+          type="button"
+          class="control-button control-button--icon"
+          :aria-label="isCollapse ? 'Expand sidebar' : 'Collapse sidebar'"
+          @click="$emit('toggleCollapse')"
+        >
           <component :is="isCollapse ? Expand : Fold" class="icon" />
         </button>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script setup lang="ts">
@@ -45,8 +55,9 @@ import { onMounted, onUnmounted, ref } from 'vue'
 
 interface Props {
   isCollapse: boolean
+  showCollapseToggle?: boolean
 }
-defineProps<Props>()
+withDefaults(defineProps<Props>(), { showCollapseToggle: true })
 
 defineEmits<{
   toggleCollapse: []
@@ -121,46 +132,49 @@ onUnmounted(() => {
 
 <style scoped>
 .header-container {
-  height: 70px;
-  padding: 10px 20px;
+  height: var(--app-header-height);
+  padding: 10px var(--shell-gutter) 0;
   position: relative;
   z-index: 2000;
 }
 
 .header-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 25px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  transition: all 0.3s ease;
+  gap: 16px;
+  padding: 0 12px 0 24px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  color: var(--text-strong);
 }
 
-.header-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+.header-title {
+  min-width: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.header-title small {
+  display: block;
+  margin-top: 2px;
+  color: #52637a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.header-title small {
-  display: block;
-  color: #52637a;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
+  gap: 8px;
 }
 
 .icon {
@@ -170,90 +184,104 @@ onUnmounted(() => {
 }
 
 .control-button {
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #333;
-  padding: 8px 12px;
-  border-radius: 24px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-strong);
+  cursor: pointer;
+  font: inherit;
   font-size: 14px;
   font-weight: 500;
   text-transform: capitalize;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.control-button--icon {
+  width: 40px;
+  padding: 0;
 }
 
 .control-button:hover {
-  background: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+.control-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .theme-dropdown {
   position: relative;
 }
 
-.theme-dropdown .control-button {
-  padding: 8px 16px;
-}
-
-.control-button.dropdown-open {
-  border-radius: 24px 24px 0 0;
-  border-bottom: 1px solid transparent;
-}
-
 .dropdown-menu {
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: calc(100% + 6px);
   right: 0;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-top: none;
-  border-radius: 0 0 24px 24px;
+  min-width: 160px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lifted);
   z-index: 1000;
-  margin-top: -1px;
 }
 
 .dropdown-item {
   width: 100%;
-  padding: 12px 16px;
+  min-height: 40px;
+  padding: 0 12px;
   background: transparent;
   border: none;
-  color: #333;
+  border-radius: var(--radius-sm);
+  color: var(--text-strong);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
+  transition: background-color 0.15s ease;
   text-transform: capitalize;
+  font: inherit;
   font-size: 14px;
-}
-
-.dropdown-item:first-child {
-  padding-top: 16px;
-}
-
-.dropdown-item:last-child {
-  padding-bottom: 16px;
-  border-radius: 0 0 24px 24px;
 }
 
 .dropdown-item:hover {
   background: rgba(74, 144, 226, 0.1);
-  color: #4a90e2;
+  color: #3870a8;
 }
 
 .dropdown-item.active {
   background: rgba(74, 144, 226, 0.15);
-  color: #4a90e2;
+  color: #3870a8;
   font-weight: 600;
 }
 
 .check-mark {
   color: #4a90e2;
   font-weight: bold;
+}
+
+@media (max-width: 760px) {
+  .header-card {
+    padding: 0 8px 0 16px;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .control-button {
+    min-height: 44px;
+  }
 }
 </style>

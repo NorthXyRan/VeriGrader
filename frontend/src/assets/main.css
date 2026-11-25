@@ -59,10 +59,46 @@ code {
 }
 
 :root {
-  --page-padding: 16px;
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* App shell */
+  --shell-gutter: 16px;
+  --app-header-height: 64px;
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Surfaces */
+  --surface-glass: rgba(255, 255, 255, 0.78);
+  --surface-muted: #f4f5f7;
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 6px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lifted: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --text-strong: #1d1d1f;
+  --text-soft: #5b6472;
+  --accent: #007aff;
+
+  --page-padding: var(--shell-gutter);
   --page-gap-large: 16px;
   --page-gap-medium: 12px;
   --page-gap-small: 8px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --shell-gutter: 12px;
+    --app-header-height: 60px;
+  }
 }
 
 .page-container {
