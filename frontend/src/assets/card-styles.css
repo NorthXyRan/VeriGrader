@@ -183,9 +183,11 @@
   border-radius: var(--border-radius-card-large);
 }
 
-.grading-card.hover:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--card-shadow-dark);
+@media (hover: hover) {
+  .grading-card.hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lifted);
+  }
 }
 
 .custom-dialog-overlay {
@@ -341,5 +343,26 @@
   .card-badge {
     font-size: 24px;
     margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .custom-paper-dialog-content {
+    width: calc(100vw - 24px);
+    max-width: none;
+    height: calc(100dvh - 48px);
+    max-height: none;
+    border-radius: 20px;
+  }
+
+  .paper-dialog-body .paper-viewer {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .paper-dialog-body .question-content,
+  .paper-dialog-body .student-answer,
+  .paper-dialog-body .reference-answer {
+    font-size: 16px;
   }
 }

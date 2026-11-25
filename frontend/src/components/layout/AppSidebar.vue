@@ -254,6 +254,7 @@ const navigateToRoute = (routePath: string) => {
 .sidebar--bar.collapsed {
   width: 100%;
   padding: var(--shell-gutter) var(--shell-gutter) 0;
+  transition: none;
 }
 
 .sidebar--bar .sidebar-card {
