@@ -11,13 +11,22 @@
         {{ isConfirmed ? 'Cancel Confirm' : 'Confirm Result' }}
       </el-button>
 
+      <!-- A compact toggle: the full action stays in the accessible name and tooltip. -->
       <el-button
-        :type="isGoldPaper ? 'warning' : 'primary'"
+        class="gold-toggle"
+        :class="{ 'gold-toggle--on': isGoldPaper }"
         size="default"
         :disabled="!canProceed || !hasGradingResult"
+        :aria-label="goldLabel"
+        :aria-pressed="isGoldPaper"
+        :title="goldLabel"
         @click="toggleGoldenStandard"
       >
-        {{ isGoldPaper ? 'Remove Gold Standard' : 'Save as Gold Standard' }}
+        <el-icon class="gold-toggle__icon">
+          <StarFilled v-if="isGoldPaper" />
+          <Star v-else />
+        </el-icon>
+        <span>Gold Standard</span>
       </el-button>
     </div>
   </div>
@@ -25,6 +34,8 @@
 
 <script setup lang="ts">
 import { useContentLayout } from '@/composables/useContentLayout'
+import { Star, StarFilled } from '@element-plus/icons-vue'
+import { computed } from 'vue'
 
 const layout = useContentLayout()
 
@@ -41,6 +52,10 @@ const props = withDefaults(defineProps<Props>(), {
   isConfirmed: false,
   hasGradingResult: false,
 })
+
+const goldLabel = computed(() =>
+  props.isGoldPaper ? 'Remove Gold Standard' : 'Save as Gold Standard',
+)
 
 const emits = defineEmits<{
   (e: 'saveAsGoldenExample'): void
@@ -133,6 +148,39 @@ const toggleConfirm = () => {
   transform: translateY(-1px);
 }
 
+/* Secondary to Confirm Result: outlined in gold, filled once the response is a gold standard. */
+.scoring-section :deep(.gold-toggle) {
+  gap: 6px;
+  padding: 0 16px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1.5px rgba(214, 158, 0, 0.55);
+  color: #8a6100;
+}
+
+.scoring-section :deep(.gold-toggle .gold-toggle__icon) {
+  margin-right: 6px;
+  color: #e0a800;
+  font-size: 16px;
+}
+
+.scoring-section :deep(.gold-toggle:hover:not(.is-disabled)) {
+  background: #fff8e1;
+  box-shadow: inset 0 0 0 1.5px #e0a800;
+  color: #6b4b00;
+  transform: translateY(-1px);
+}
+
+.scoring-section :deep(.gold-toggle--on),
+.scoring-section :deep(.gold-toggle--on:hover:not(.is-disabled)) {
+  background: linear-gradient(135deg, #ffd84d 0%, #ffc300 100%);
+  box-shadow: 0 2px 8px rgba(255, 195, 0, 0.35);
+  color: #3d2f00;
+}
+
+.scoring-section :deep(.gold-toggle--on .gold-toggle__icon) {
+  color: #8a6100;
+}
+
 .scoring-section :deep(.el-button:disabled) {
   opacity: 0.4;
   transform: none;
@@ -149,7 +197,7 @@ const toggleConfirm = () => {
 /* Narrow: two full-width, touch-sized buttons side by side or stacked as space allows. */
 .scoring-section--narrow .action-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   width: 100%;
   gap: 8px;
 }
