@@ -3,17 +3,24 @@ import { useUploadStatusStore } from '@/stores/useUploadStatusStore'
 import type { HighlightData } from '@/types/exam'
 import { computeScoreFromReferences, sanitizeHighlightData } from '@/utils/highlightMetrics'
 
-import { advancedCases } from './advancedCases'
-import { coreCases } from './caseStudy'
-import type { DemoResponse } from './caseTypes'
+import { demoCases as cases } from './cases'
+import type { DemoAnnotation, DemoResponse } from './caseTypes'
 
-const cases = [...coreCases, ...advancedCases]
-const initiallyGradedStudents = new Set([101, 102, 103])
+/** Students 11 and 12 start ungraded so visitors can run the grading controls on fresh papers. */
+export const initiallyUngradedStudents = new Set([11, 12])
 
 function renderResponse(response: DemoResponse): string {
   return response.paragraphs
-    .map((paragraph) => paragraph.map(({ text }) => text).join(' '))
+    .map((paragraph) =>
+      paragraph.map((segment) => (typeof segment === 'string' ? segment : segment.text)).join(' '),
+    )
     .join('\n\n')
+}
+
+export function responseAnnotations(response: DemoResponse): DemoAnnotation[] {
+  return response.paragraphs
+    .flat()
+    .filter((segment): segment is DemoAnnotation => typeof segment !== 'string')
 }
 
 export function getDemoGradingResult(
@@ -26,7 +33,7 @@ export function getDemoGradingResult(
   if (!demoCase || !response) return undefined
 
   const answer: HighlightData['answer'] = { correct: [], wrong: [], unclear: [] }
-  for (const annotation of response.paragraphs.flat()) {
+  for (const annotation of responseAnnotations(response)) {
     const { type, reason } = (initialPass && annotation.initialClassification) || annotation
     answer[type].push({
       'Student answer': annotation.text,
@@ -70,7 +77,7 @@ export function loadDemo(): void {
   examStore.setStudentAnswers(studentAnswers)
 
   for (const { student_id, question_id } of studentAnswers) {
-    if (!initiallyGradedStudents.has(student_id)) continue
+    if (initiallyUngradedStudents.has(student_id)) continue
     const result = getDemoGradingResult(student_id, question_id, { initialPass: true })
     if (result) examStore.addHighlightData(result)
   }
