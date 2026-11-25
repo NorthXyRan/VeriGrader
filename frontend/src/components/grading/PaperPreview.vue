@@ -501,9 +501,9 @@ defineExpose({
   min-height: 0;
   padding: 20px 24px;
   white-space: pre-wrap;
-  line-height: 1.7;
+  line-height: 1.65;
   color: rgba(0, 0, 0, 0.87);
-  font-size: 20px;
+  font-size: 18px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -527,17 +527,17 @@ defineExpose({
   color: #2c3e50;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .preview-content {
-    padding: 24px;
-    font-size: 16px;
+    padding: 16px;
+    font-size: 17px;
   }
 }
 
 @media (max-width: 480px) {
   .preview-content {
-    padding: 16px;
-    font-size: 15px;
+    padding: 14px 16px;
+    font-size: 17px;
   }
 }
 

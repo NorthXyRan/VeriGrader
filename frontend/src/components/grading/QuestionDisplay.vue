@@ -1,5 +1,5 @@
 <template>
-  <div class="question-display">
+  <div class="question-display" :class="`question-display--${layout}`">
     <div class="question-container">
       <div class="question-row">
         <el-icon class="question-icon"><Document /></el-icon>
@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { useContentLayout } from '@/composables/useContentLayout'
 import { isPagesDemo } from '@/config/deployment'
 import { Document } from '@element-plus/icons-vue'
 import { computed } from 'vue'
@@ -44,6 +45,8 @@ interface Props {
     score: number
   }>
 }
+
+const layout = useContentLayout()
 
 const props = withDefaults(defineProps<Props>(), {
   currentQuestion: 1,
@@ -69,92 +72,53 @@ const questionScore = computed(() => {
 <style scoped>
 .question-display {
   background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-}
-
-.question-display:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+  border: 1px solid #e9e9ec;
 }
 
 .question-container {
-  padding: 16px 20px;
   display: flex;
   align-items: center;
   height: 100%;
+  padding: 12px 20px;
 }
 
 .question-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
-  min-height: 0;
+  min-width: 0;
 }
 
 .question-icon {
-  width: 24px;
-  height: 24px;
-  color: #007aff;
-  font-size: 20px;
   flex-shrink: 0;
+  font-size: 18px;
+  color: #007aff;
 }
 
 .question-label {
-  font-size: 18px;
+  flex-shrink: 0;
+  font-size: 16px;
   font-weight: 600;
   color: #1d1d1f;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.question-score {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  padding: 8px 16px;
-  background: #ffffff;
-  border: 2px solid #30d158;
-  border-radius: 16px;
-  color: #000000;
-  flex-shrink: 0;
-}
-
-.score-value {
-  font-size: 14px;
-  font-weight: 700;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-}
-
-.score-unit {
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.9;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .question-text {
-  font-size: 18px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.4;
-  color: rgba(0, 0, 0, 0.87);
-  margin: 0;
-  letter-spacing: -0.01em;
-  font-weight: 500;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.8);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .question-text--expandable {
@@ -166,83 +130,56 @@ const questionScore = computed(() => {
 
 .question-text--expandable:hover {
   text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.3);
+  text-underline-offset: 3px;
 }
 
-:global(.main-content--narrow .question-container) {
-  padding: 12px 16px;
+.question-score {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1.5px solid #30d158;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: #000000;
+  white-space: nowrap;
 }
 
-:global(.main-content--narrow .question-row) {
-  gap: 12px;
+.score-value {
+  font-size: 14px;
+  font-weight: 700;
 }
 
-:global(.main-content--narrow .question-label) {
-  font-size: 16px;
-}
-
-:global(.main-content--narrow .question-text) {
+.score-unit {
   font-size: 13px;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
-:global(.main-content--narrow .score-value) {
-  font-size: 12px;
+/* Narrow: the prompt wraps onto a second row and shows up to three lines. */
+.question-display--narrow .question-container {
+  padding: 14px 16px;
 }
 
-:global(.main-content--narrow .question-icon) {
-  width: 20px;
-  height: 20px;
-  font-size: 16px;
+.question-display--narrow .question-row {
+  flex-wrap: wrap;
+  row-gap: 8px;
 }
 
-@media (max-width: 768px) {
-  .question-container {
-    padding: 12px 16px;
-  }
-
-  .question-row {
-    gap: 12px;
-  }
-
-  .question-label {
-    font-size: 16px;
-  }
-
-  .question-text {
-    font-size: 13px;
-  }
-
-  .score-value {
-    font-size: 12px;
-  }
-
-  .question-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
-  }
+.question-display--narrow .question-score {
+  margin-left: auto;
 }
 
-@media (max-width: 480px) {
-  .question-row {
-    gap: 8px;
-  }
-
-  .question-label {
-    font-size: 14px;
-  }
-
-  .question-text {
-    font-size: 12px;
-  }
-
-  .question-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 14px;
-  }
-
-  .question-score {
-    padding: 6px 12px;
-  }
+.question-display--narrow .question-text {
+  flex: 1 1 100%;
+  order: 3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  white-space: normal;
+  font-size: 15px;
 }
 </style>

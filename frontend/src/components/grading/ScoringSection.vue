@@ -1,5 +1,5 @@
 <template>
-  <div class="scoring-section">
+  <div class="scoring-section" :class="`scoring-section--${layout}`">
     <div class="action-container">
       <el-button
         v-if="!isGoldPaper"
@@ -24,6 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { useContentLayout } from '@/composables/useContentLayout'
+
+const layout = useContentLayout()
+
 interface Props {
   isGoldPaper?: boolean
   canProceed?: boolean
@@ -64,132 +68,89 @@ const toggleConfirm = () => {
 
 <style scoped>
 .scoring-section {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+  height: 100%;
+  padding: 12px 16px;
 }
 
 .action-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 0 32px;
-  gap: 16px;
+  gap: 12px;
 }
 
 .scoring-section :deep(.el-button) {
-  border-radius: 24px;
+  margin: 0;
+  min-height: 40px;
+  padding: 0 22px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 600;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 12px 24px;
-  font-size: 16px;
-  min-height: 48px;
-  min-width: 140px;
   letter-spacing: -0.01em;
-  position: relative;
-  overflow: hidden;
   white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .scoring-section :deep(.el-button--primary) {
   background: #007aff;
   color: #ffffff;
-  border: none;
-  box-shadow:
-    0 2px 8px rgba(0, 122, 255, 0.2),
-    0 4px 16px rgba(0, 122, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
 }
 
 .scoring-section :deep(.el-button--primary:hover:not(.is-disabled)) {
-  background: #0056b3;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow:
-    0 4px 16px rgba(0, 122, 255, 0.3),
-    0 8px 32px rgba(0, 122, 255, 0.15);
+  background: #0062d6;
+  box-shadow: 0 6px 16px rgba(0, 122, 255, 0.28);
+  transform: translateY(-1px);
 }
 
 .scoring-section :deep(.el-button--warning) {
   background: #f56500;
   color: #ffffff;
-  border: none;
-  box-shadow:
-    0 2px 8px rgba(245, 101, 0, 0.2),
-    0 4px 16px rgba(245, 101, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(245, 101, 0, 0.2);
 }
 
 .scoring-section :deep(.el-button--warning:hover:not(.is-disabled)) {
   background: #d14900;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow:
-    0 4px 16px rgba(245, 101, 0, 0.3),
-    0 8px 32px rgba(245, 101, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(245, 101, 0, 0.28);
+  transform: translateY(-1px);
 }
 
 .scoring-section :deep(.el-button--success) {
   background: #34c759;
   color: #ffffff;
-  border: none;
-  box-shadow:
-    0 2px 8px rgba(52, 199, 89, 0.2),
-    0 4px 16px rgba(52, 199, 89, 0.1);
+  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.2);
 }
 
 .scoring-section :deep(.el-button--success:hover:not(.is-disabled)) {
   background: #28a745;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow:
-    0 4px 16px rgba(52, 199, 89, 0.3),
-    0 8px 32px rgba(52, 199, 89, 0.15);
-}
-
-.scoring-section :deep(.el-button:active) {
-  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 6px 16px rgba(52, 199, 89, 0.28);
+  transform: translateY(-1px);
 }
 
 .scoring-section :deep(.el-button:disabled) {
   opacity: 0.4;
-  transform: none !important;
-  box-shadow: none !important;
+  transform: none;
+  box-shadow: none;
 }
 
-:global(.main-content--narrow .action-container) {
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px 24px;
-}
-
-:global(.main-content--narrow .scoring-section .el-button) {
+/* Narrow: two full-width, touch-sized buttons side by side or stacked as space allows. */
+.scoring-section--narrow .action-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   width: 100%;
-  min-width: 0;
+  gap: 8px;
 }
 
-@media (max-width: 768px) {
-  .action-container {
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px 24px;
-  }
-
-  .scoring-section :deep(.el-button) {
-    min-width: 140px;
-    padding: 14px 24px;
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .action-container {
-    padding: 12px 20px;
-    gap: 10px;
-  }
+.scoring-section--narrow :deep(.el-button) {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 16px;
+  font-size: 15px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="highlight-toolbar">
     <div class="tool-section">
-      <div class="tool-group">
+      <div class="tool-group tool-group--mark">
         <el-button
           type="success"
           @click="() => handleMarkAnswer('correct')"
@@ -46,7 +46,7 @@
       </div>
 
       <el-divider direction="vertical" />
-      <div class="tool-group">
+      <div class="tool-group tool-group--edit">
         <el-button
           @click="handleSplit"
           class="split-btn"
@@ -260,57 +260,27 @@ defineExpose({
 
 <style scoped>
 .highlight-toolbar {
-  width: 100%;
-  height: 64px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e5e5e5;
   flex-shrink: 0;
-  padding: 0;
+  width: 100%;
+  background: #f7f7f8;
+  border-bottom: 1px solid #ececef;
 }
 
 .tool-section {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 8px 12px;
   width: 100%;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 12px 20px;
-  box-sizing: border-box;
-
-  white-space: nowrap;
-  flex-wrap: nowrap;
-}
-
-.tool-section::-webkit-scrollbar {
-  height: 8px;
-}
-
-.tool-section::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.tool-section::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-.tool-section::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  min-height: 56px;
+  padding: 10px 16px;
 }
 
 .tool-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  height: 100%;
+  gap: 6px;
 }
 
 .score-section {
@@ -323,66 +293,66 @@ defineExpose({
 .score-display-section {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .score-glass-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  min-height: 40px;
-  padding: 10px 16px;
+  min-width: 44px;
+  height: 34px;
+  padding: 0 12px;
   background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 24px;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  border: 1px solid #e3e3e8;
+  border-radius: var(--radius-pill);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.score-glass-container:hover {
-  background: rgba(245, 246, 247, 0.95);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
+.score-glass-container:hover,
+.score-glass-container:focus-within {
+  border-color: rgba(0, 122, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
 }
 
 .score-value {
-  font-size: 20px;
-  font-weight: 700;
+  min-width: 16px;
   color: #007aff;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1;
-  min-width: 20px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
 }
 
 .score-unit {
-  font-size: 14px;
   color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
   font-weight: 500;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
   white-space: nowrap;
 }
 
 .highlight-toolbar :deep(.el-button) {
-  border-radius: 24px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  min-height: 40px;
-  white-space: nowrap;
   flex-shrink: 0;
-  min-width: max-content;
-  position: relative;
+  height: 32px;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.highlight-toolbar :deep(.el-button .el-icon) {
+  margin-right: 4px;
 }
 
 .highlight-toolbar :deep(.el-button--primary) {
@@ -457,11 +427,11 @@ defineExpose({
 }
 
 .highlight-toolbar :deep(.el-divider--vertical) {
-  border-color: #e5e5e5;
-  height: 20px;
-  margin: 0 1px;
   flex-shrink: 0;
   align-self: center;
+  height: 20px;
+  margin: 0 2px;
+  border-color: #dcdce0;
 }
 
 .eraser-btn {
@@ -512,89 +482,54 @@ defineExpose({
   transform: none !important;
 }
 
-@media (max-width: 768px) {
-  .highlight-toolbar {
-    height: 56px;
-  }
-
-  .tool-section {
-    gap: 12px;
-    padding: 8px 16px;
-  }
-
-  .tool-group {
-    gap: 8px;
-    height: 100%;
-  }
-
-  .highlight-toolbar :deep(.el-button) {
-    padding: 8px 12px;
-    font-size: 13px;
-    min-height: 36px;
-  }
-
+/*
+ * Narrower response panels: the marking buttons and the score share the first row and the
+ * editing tools move to a second row, instead of overflowing behind a scrollbar.
+ */
+@container response-panel (max-width: 46rem) {
   .highlight-toolbar :deep(.el-divider--vertical) {
-    height: 24px;
-    margin: 0 8px;
+    display: none;
+  }
+
+  .tool-group--mark {
+    order: 1;
+  }
+
+  .score-section {
+    order: 2;
+  }
+
+  .tool-group--edit {
+    order: 3;
+    flex-basis: 100%;
   }
 }
 
-@media (max-width: 480px) {
+@container response-panel (max-width: 28rem) {
   .tool-section {
-    gap: 10px;
-    padding: 6px 12px;
+    padding: 10px 12px;
   }
 
-  .tool-group {
-    gap: 6px;
-    height: 100%;
+  .tool-group--mark {
+    flex-basis: 100%;
   }
 
-  .highlight-toolbar :deep(.el-button) {
-    padding: 6px 10px;
-    font-size: 12px;
-    min-height: 32px;
+  .tool-group--mark :deep(.el-button),
+  .tool-group--edit :deep(.el-button) {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 38px;
+    padding: 0 8px;
   }
 
-  .highlight-toolbar :deep(.el-button .el-icon) {
-    margin-right: 4px;
+  .tool-group--edit {
+    flex: 1 1 0;
+    flex-basis: auto;
+    order: 2;
   }
 
-  .highlight-toolbar :deep(.el-divider--vertical) {
-    height: 20px;
-    margin: 0 4px;
+  .score-section {
+    order: 3;
   }
-}
-
-:global(.main-content--compact .highlight-toolbar),
-:global(.main-content--narrow .highlight-toolbar) {
-  height: auto;
-}
-
-:global(.main-content--compact .tool-section),
-:global(.main-content--narrow .tool-section) {
-  height: auto;
-  min-height: 64px;
-  justify-content: center;
-  flex-wrap: wrap;
-  overflow: visible;
-  white-space: normal;
-  padding: 10px 14px;
-}
-
-:global(.main-content--compact .score-section),
-:global(.main-content--narrow .score-section) {
-  margin-left: 0;
-}
-
-:global(.main-content--compact .highlight-toolbar .el-button),
-:global(.main-content--narrow .highlight-toolbar .el-button) {
-  padding: 8px 12px;
-  font-size: 13px;
-  min-height: 36px;
-}
-
-:global(.main-content--narrow .highlight-toolbar .el-divider--vertical) {
-  display: none;
 }
 </style>
