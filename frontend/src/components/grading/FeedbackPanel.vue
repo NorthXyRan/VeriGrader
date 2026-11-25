@@ -237,7 +237,7 @@ defineExpose({
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 20px 24px;
+  padding: 18px 20px;
   background: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
@@ -278,10 +278,15 @@ defineExpose({
 
 .reason-content-text {
   flex: 1;
-  padding: 16px 0;
-  line-height: 1.65;
+  margin: -6px -10px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  line-height: 1.7;
   color: rgba(0, 0, 0, 0.6);
-  font-size: 18px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -295,10 +300,6 @@ defineExpose({
 .reason-content-text:hover {
   color: rgba(0, 0, 0, 0.8);
   background: rgba(0, 122, 255, 0.05);
-  border-radius: 8px;
-  padding: 16px 12px;
-  margin: 0 -12px;
-  transition: all 0.2s ease;
 }
 
 .reason-textarea {
@@ -320,7 +321,7 @@ defineExpose({
   background: #ffffff;
   transition: all 0.2s ease;
   line-height: 1.7;
-  font-size: 17px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   flex: 1;
@@ -448,7 +449,7 @@ defineExpose({
   }
 
   .reason-content-text {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .action-buttons {

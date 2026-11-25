@@ -1,39 +1,21 @@
 <template>
   <div class="question-display" :class="`question-display--${layout}`">
     <div class="question-container">
-      <div class="question-row">
+      <div class="question-heading">
         <el-icon class="question-icon"><Document /></el-icon>
         <span class="question-label">Question {{ currentQuestion }}</span>
-        <el-popover
-          v-if="isPagesDemo"
-          trigger="click"
-          placement="bottom"
-          width="min(420px, calc(100vw - 32px))"
-          :content="questionText"
-        >
-          <template #reference>
-            <button
-              type="button"
-              class="question-text question-text--expandable"
-              :title="questionText"
-            >
-              {{ questionText }}
-            </button>
-          </template>
-        </el-popover>
-        <p v-else class="question-text">{{ questionText }}</p>
         <div class="question-score">
           <span class="score-value">{{ questionScore }}</span>
           <span class="score-unit">marks</span>
         </div>
       </div>
+      <p class="question-text">{{ questionText }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useContentLayout } from '@/composables/useContentLayout'
-import { isPagesDemo } from '@/config/deployment'
 import { Document } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 
@@ -75,19 +57,22 @@ const questionScore = computed(() => {
   border: 1px solid #e9e9ec;
 }
 
+/* The full prompt is always shown: it sits beside its label on wide screens and below it on
+   narrow ones, wrapping as needed rather than being cut off. */
 .question-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   height: 100%;
-  padding: 12px 20px;
+  padding: 14px 20px;
 }
 
-.question-row {
+.question-heading {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-width: 0;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 24px;
 }
 
 .question-icon {
@@ -97,49 +82,20 @@ const questionScore = computed(() => {
 }
 
 .question-label {
-  flex-shrink: 0;
-  font-size: 16px;
-  font-weight: 600;
   color: #1d1d1f;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.question-text {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  color: rgba(0, 0, 0, 0.8);
-  font: inherit;
   font-size: 15px;
-  font-weight: 500;
-  line-height: 1.45;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.question-text--expandable {
-  border: 0;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-}
-
-.question-text--expandable:hover {
-  text-decoration: underline;
-  text-decoration-color: rgba(0, 0, 0, 0.3);
-  text-underline-offset: 3px;
 }
 
 .question-score {
-  flex-shrink: 0;
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  padding: 4px 12px;
+  flex-shrink: 0;
+  gap: 3px;
+  margin-left: 4px;
+  padding: 1px 10px;
   border: 1.5px solid #30d158;
   border-radius: var(--radius-pill);
   background: #ffffff;
@@ -148,38 +104,45 @@ const questionScore = computed(() => {
 }
 
 .score-value {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .score-unit {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
-/* Narrow: the prompt wraps onto a second row and shows up to three lines. */
+.question-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.82);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
+}
+
+/* Compact and narrow: label row on top, prompt underneath at full width. */
+.question-display--compact .question-container,
 .question-display--narrow .question-container {
-  padding: 14px 16px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.question-display--narrow .question-row {
-  flex-wrap: wrap;
-  row-gap: 8px;
+.question-display--compact .question-heading,
+.question-display--narrow .question-heading {
+  width: 100%;
 }
 
+.question-display--compact .question-score,
 .question-display--narrow .question-score {
   margin-left: auto;
 }
 
-.question-display--narrow .question-text {
-  flex: 1 1 100%;
-  order: 3;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  white-space: normal;
-  font-size: 15px;
+.question-display--narrow .question-container {
+  padding: 14px 16px;
 }
 </style>

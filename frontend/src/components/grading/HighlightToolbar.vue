@@ -262,8 +262,8 @@ defineExpose({
 .highlight-toolbar {
   flex-shrink: 0;
   width: 100%;
-  background: #f7f7f8;
-  border-bottom: 1px solid #ececef;
+  background: #fafafb;
+  border-bottom: 1px solid #eef0f3;
 }
 
 .tool-section {
@@ -272,8 +272,8 @@ defineExpose({
   align-items: center;
   gap: 8px 12px;
   width: 100%;
-  min-height: 56px;
-  padding: 10px 16px;
+  min-height: 50px;
+  padding: 9px 18px;
 }
 
 .tool-group {
@@ -337,13 +337,13 @@ defineExpose({
 
 .highlight-toolbar :deep(.el-button) {
   flex-shrink: 0;
-  height: 32px;
+  height: 30px;
   margin: 0;
   padding: 0 12px;
   border-radius: var(--radius-pill);
   font-family: inherit;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   transition:
     background-color 0.2s ease,
@@ -355,75 +355,38 @@ defineExpose({
   margin-right: 4px;
 }
 
-.highlight-toolbar :deep(.el-button--primary) {
-  background: #007aff;
-  border-color: #007aff;
-}
-
-.highlight-toolbar :deep(.el-button--primary:hover) {
-  background: #0056b3;
-  border-color: #0056b3;
-  transform: translateY(-1px);
-}
-
+/* Marking buttons are tinted to match the highlight colours used in the response text. */
 .highlight-toolbar :deep(.el-button--success) {
-  background: rgb(52, 199, 89);
-  border-color: rgb(52, 199, 89);
-}
-
-.highlight-toolbar :deep(.el-button--success:hover) {
-  background: rgb(48, 209, 88);
-  border-color: rgb(48, 209, 88);
-  transform: translateY(-1px);
+  background: rgba(52, 199, 89, 0.14);
+  border-color: transparent;
+  color: #1d8a3c;
 }
 
 .highlight-toolbar :deep(.el-button--danger) {
-  background: rgb(255, 59, 48);
-  border-color: rgb(255, 59, 48);
-}
-
-.highlight-toolbar :deep(.el-button--danger:hover) {
-  background: rgb(255, 69, 58);
-  border-color: rgb(255, 69, 58);
-  transform: translateY(-1px);
+  background: rgba(255, 59, 48, 0.12);
+  border-color: transparent;
+  color: #d62f26;
 }
 
 .highlight-toolbar :deep(.el-button--warning) {
-  background: rgb(255, 204, 0);
-  border-color: rgb(255, 204, 0);
-  color: #212529;
+  background: rgba(255, 204, 0, 0.22);
+  border-color: transparent;
+  color: #8a6a00;
 }
 
-.highlight-toolbar :deep(.el-button--warning:hover) {
-  background: rgb(255, 214, 10);
-  border-color: rgb(255, 214, 10);
-  color: #212529;
-  transform: translateY(-1px);
-}
-
-.highlight-toolbar :deep(.el-button--info) {
-  background: rgb(0, 122, 255);
-  border-color: rgb(0, 122, 255);
+.highlight-toolbar :deep(.el-button--success:not(.is-disabled):hover) {
+  background: #34c759;
   color: #ffffff;
 }
 
-.highlight-toolbar :deep(.el-button--info:hover) {
-  background: rgb(10, 132, 255);
-  border-color: rgb(10, 132, 255);
+.highlight-toolbar :deep(.el-button--danger:not(.is-disabled):hover) {
+  background: #ff3b30;
   color: #ffffff;
-  transform: translateY(-1px);
 }
 
-.highlight-toolbar :deep(.el-button--default) {
-  background: #e5e5e5;
-  border-color: #e5e5e5;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.highlight-toolbar :deep(.el-button--default:hover) {
-  background: #d1d1d1;
-  border-color: #d1d1d1;
-  transform: translateY(-1px);
+.highlight-toolbar :deep(.el-button--warning:not(.is-disabled):hover) {
+  background: #ffcc00;
+  color: #3d2f00;
 }
 
 .highlight-toolbar :deep(.el-divider--vertical) {
@@ -434,51 +397,32 @@ defineExpose({
   border-color: #dcdce0;
 }
 
-.eraser-btn {
-  background: #f0f0f0 !important;
-  border-color: #d0d0d0 !important;
-  color: #666 !important;
+/* Editing tools are neutral so the marking buttons stay the visual focus. */
+.split-btn,
+.eraser-btn,
+.clear-btn {
+  background: #ffffff !important;
+  border-color: #e1e2e6 !important;
+  color: #3c3c43 !important;
 }
 
-.eraser-btn:hover {
-  background: #e0e0e0 !important;
-  border-color: #c0c0c0 !important;
-  color: #333 !important;
+.split-btn:not(.is-disabled):hover,
+.eraser-btn:not(.is-disabled):hover {
+  background: #f2f2f5 !important;
+  border-color: #cfd0d6 !important;
 }
 
 .clear-btn {
-  background: #fff3e0 !important;
-  border-color: #ffb74d !important;
-  color: #f57c00 !important;
+  color: #c25e00 !important;
 }
 
-.clear-btn:hover {
-  background: #ffe0b2 !important;
-  border-color: #ffa726 !important;
-  color: #e65100 !important;
+.clear-btn:not(.is-disabled):hover {
+  background: #fff4e5 !important;
+  border-color: #ffc58a !important;
 }
 
-.split-btn {
-  background: #e8f5e8 !important;
-  border-color: #4caf50 !important;
-  color: #2e7d32 !important;
-}
-
-.split-btn:hover:not(:disabled) {
-  background: #c8e6c9 !important;
-  border-color: #388e3c !important;
-  color: #1b5e20 !important;
-}
-
-.split-btn:disabled {
-  background: #f5f5f5 !important;
-  border-color: #e0e0e0 !important;
-  color: #bdbdbd !important;
-  cursor: not-allowed;
-}
-
-.highlight-toolbar :deep(.el-button:disabled) {
-  opacity: 0.4;
+.highlight-toolbar :deep(.el-button.is-disabled) {
+  opacity: 0.45;
   transform: none !important;
 }
 

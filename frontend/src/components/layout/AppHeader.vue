@@ -155,7 +155,7 @@ onUnmounted(() => {
 
 .header-title {
   min-width: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -188,8 +188,8 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 36px;
+  padding: 0 14px;
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
@@ -205,7 +205,7 @@ onUnmounted(() => {
 }
 
 .control-button--icon {
-  width: 40px;
+  width: 36px;
   padding: 0;
 }
 

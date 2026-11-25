@@ -82,8 +82,8 @@ const toggleConfirm = () => {
 
 .scoring-section :deep(.el-button) {
   margin: 0;
-  min-height: 40px;
-  padding: 0 22px;
+  min-height: 38px;
+  padding: 0 20px;
   border: none;
   border-radius: var(--radius-pill);
   font-family: inherit;
@@ -137,6 +137,13 @@ const toggleConfirm = () => {
   opacity: 0.4;
   transform: none;
   box-shadow: none;
+}
+
+/* Compact: stacked so the question beside it keeps most of the row. */
+.scoring-section--compact .action-container {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
 }
 
 /* Narrow: two full-width, touch-sized buttons side by side or stacked as space allows. */

@@ -37,6 +37,10 @@
 
     <div class="page-row workspace-row">
       <div class="grading-card preview-card hover">
+        <div class="panel-header">
+          <el-icon class="panel-icon panel-icon--response"><EditPen /></el-icon>
+          <h3>Student Response</h3>
+        </div>
         <highlight-toolbar
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
@@ -63,7 +67,8 @@
       </div>
 
       <div class="grading-card reference-card hover">
-        <div class="card-header">
+        <div class="panel-header">
+          <el-icon class="panel-icon panel-icon--reference"><Notebook /></el-icon>
           <h3>Reference Answer</h3>
         </div>
         <reference-answer
@@ -76,7 +81,8 @@
       </div>
 
       <div class="grading-card feedback-card hover">
-        <div class="card-header">
+        <div class="panel-header">
+          <el-icon class="panel-icon panel-icon--rationale"><ChatDotSquare /></el-icon>
           <h3>Scoring Rationale</h3>
         </div>
         <feedback-panel
@@ -100,6 +106,7 @@ import { useCurrentGradingContext } from '@/composables/useCurrentGradingContext
 import { useExamDataStore, type HighlightData } from '@/stores/useExamDataStore'
 import type { HighlightSelection, HighlightType, HighlightUpdate } from '@/types/exam'
 import { getHighlightItem, getHighlightItemIndex } from '@/utils/highlightRanges'
+import { ChatDotSquare, EditPen, Notebook } from '@element-plus/icons-vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import FeedbackPanel from './FeedbackPanel.vue'
 import GradingHeader from './GradingHeader.vue'
@@ -692,22 +699,39 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-.reference-card .card-header,
-.feedback-card .card-header {
+.panel-header {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
-  height: auto;
-  min-height: 52px;
-  padding: 12px 20px;
-  background: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 8px;
+  height: 46px;
+  padding: 0 18px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f3;
 }
 
-.reference-card .card-header h3,
-.feedback-card .card-header h3 {
+.panel-header h3 {
   margin: 0;
-  font-size: 15px;
+  color: #1d1d1f;
+  font-size: 14px;
   font-weight: 600;
-  color: #333;
+  letter-spacing: -0.01em;
+}
+
+.panel-icon {
+  font-size: 16px;
+}
+
+.panel-icon--response {
+  color: #007aff;
+}
+
+.panel-icon--reference {
+  color: #2fb84f;
+}
+
+.panel-icon--rationale {
+  color: #8e5cf7;
 }
 
 .reference-card :deep(.reference-answer),

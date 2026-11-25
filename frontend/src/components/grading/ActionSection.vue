@@ -417,8 +417,8 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  min-width: 88px;
+  height: 34px;
+  min-width: 84px;
   margin: 0;
   padding: 0 16px;
   border-radius: var(--radius-pill);

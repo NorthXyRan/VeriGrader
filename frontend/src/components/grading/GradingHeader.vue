@@ -350,7 +350,7 @@ defineExpose({
 .page-header {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   padding: 16px 20px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -366,7 +366,7 @@ defineExpose({
     'question actions'
     'student legend';
   align-items: center;
-  gap: 12px 24px;
+  gap: 10px 24px;
 }
 
 .select-section--question {
@@ -393,10 +393,10 @@ defineExpose({
 }
 
 .select-section h1 {
-  flex: 0 0 128px;
+  flex: 0 0 112px;
   margin: 0;
   color: rgba(0, 0, 0, 0.82);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -404,22 +404,22 @@ defineExpose({
 .select-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
   padding: 3px;
 }
 
 .select-item {
   flex-shrink: 0;
-  min-height: 36px;
-  padding: 0 16px;
+  min-height: 32px;
+  padding: 0 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
   background-color: #f1f2f4;
   color: rgba(0, 0, 0, 0.62);
   cursor: pointer;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   user-select: none;
   transition:
@@ -450,12 +450,12 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   min-height: 0;
   padding: 0;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -569,7 +569,7 @@ defineExpose({
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-  padding-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -579,8 +579,8 @@ defineExpose({
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
-  min-height: 44px;
-  padding: 8px 16px;
+  min-height: 40px;
+  padding: 6px 16px;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   background: #f6f7f8;
@@ -677,31 +677,26 @@ defineExpose({
   letter-spacing: 0.04em;
 }
 
+/* Every question stays visible: four across on tablets, a balanced 2 x 2 on phones. */
 .page-header--narrow .select-section--question .select-list {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  margin: 0 -14px;
-  padding: 3px 14px;
-  scrollbar-width: none;
-}
-
-.page-header--narrow .select-section--question .select-list::-webkit-scrollbar {
-  display: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 8px;
 }
 
 .page-header--narrow .select-item {
-  min-height: 42px;
-  font-size: 15px;
+  min-height: 40px;
+  font-size: 14px;
 }
 
 .page-header--narrow .select-item.circle {
-  width: 44px;
-  height: 44px;
-  font-size: 15px;
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
 }
 
 .page-header--narrow .student-list {
-  gap: 10px;
+  gap: 8px;
 }
 
 .page-header--narrow .quality-legend {
@@ -716,5 +711,22 @@ defineExpose({
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   padding-top: 12px;
+}
+
+/* Label above value so neither has to be truncated in a half-width tile. */
+.page-header--narrow .stat-item {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 14px;
+}
+
+.page-header--narrow .stat-item .label {
+  font-size: 12px;
+}
+
+.page-header--narrow .stat-item .value {
+  font-size: 20px;
 }
 </style>

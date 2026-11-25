@@ -491,7 +491,8 @@ onMounted(() => {
   height: auto;
   min-height: 64px;
   padding: 12px 16px 12px 28px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f3;
 }
 
 .header-content {

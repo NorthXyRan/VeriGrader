@@ -124,9 +124,9 @@ const navigateToRoute = (routePath: string) => {
 <style scoped>
 .sidebar {
   flex: 0 0 auto;
-  width: 232px;
+  width: 228px;
   padding: var(--shell-gutter) 0 var(--shell-gutter) var(--shell-gutter);
-  transition: width 0.25s ease;
+  white-space: nowrap;
 }
 
 .sidebar.collapsed {
@@ -165,7 +165,7 @@ const navigateToRoute = (routePath: string) => {
     background-color 0.2s ease,
     color 0.2s ease;
   color: var(--text-strong);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .nav-menu :deep(.el-sub-menu .el-menu) {
@@ -254,7 +254,6 @@ const navigateToRoute = (routePath: string) => {
 .sidebar--bar.collapsed {
   width: 100%;
   padding: var(--shell-gutter) var(--shell-gutter) 0;
-  transition: none;
 }
 
 .sidebar--bar .sidebar-card {
