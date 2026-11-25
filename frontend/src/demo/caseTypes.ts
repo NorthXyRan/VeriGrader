@@ -5,7 +5,7 @@ export interface DemoAnnotation {
   text: string
   matchedReferenceAnswer: string
   reason: string
-  missedOnFirstPass?: boolean
+  initialClassification?: { type: HighlightType; reason: string }
 }
 
 export interface DemoResponse {

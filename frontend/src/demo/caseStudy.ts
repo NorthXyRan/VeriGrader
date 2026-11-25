@@ -84,14 +84,25 @@ export const coreCases: DemoCase[] = [
                 returnRubric.transaction,
                 'Queue delivery guarantees do not roll back writes in an external database. The application must make the financial write and its deduplication record atomic.',
               ),
-              missedOnFirstPass: true,
+              initialClassification: {
+                type: 'unclear',
+                reason:
+                  'The queue setting is unspecified. Check whether its delivery guarantee applies to the external database write.',
+              },
             },
-            annotation(
-              'wrong',
-              'Each worker can give the delivery a new UUID and put it in the log to identify duplicates.',
-              returnRubric.identity,
-              'A new UUID identifies a delivery attempt. Replays of one return get distinct IDs, so this lookup would miss the duplicate.',
-            ),
+            {
+              ...annotation(
+                'wrong',
+                'Each worker can give the delivery a new UUID and put it in the log to identify duplicates.',
+                returnRubric.identity,
+                'A new UUID identifies a delivery attempt. Replays of one return get distinct IDs, so this lookup would miss the duplicate.',
+              ),
+              initialClassification: {
+                type: 'unclear',
+                reason:
+                  'Review when the UUID is assigned and whether the same identifier is reused on redelivery.',
+              },
+            },
             annotation(
               'wrong',
               'When a duplicate turns up, leave its message unacknowledged so a different worker can try it.',

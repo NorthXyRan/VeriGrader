@@ -27,11 +27,10 @@ export function getDemoGradingResult(
 
   const answer: HighlightData['answer'] = { correct: [], wrong: [], unclear: [] }
   for (const annotation of response.paragraphs.flat()) {
-    const { type, text, matchedReferenceAnswer, reason, missedOnFirstPass } = annotation
-    if (initialPass && missedOnFirstPass) continue
+    const { type, reason } = (initialPass && annotation.initialClassification) || annotation
     answer[type].push({
-      'Student answer': text,
-      'matched reference answer': matchedReferenceAnswer,
+      'Student answer': annotation.text,
+      'matched reference answer': annotation.matchedReferenceAnswer,
       reason,
     })
   }
