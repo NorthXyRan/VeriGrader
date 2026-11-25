@@ -38,7 +38,7 @@ The main workflow is:
 
 A fully synthetic upload example and the accepted JSON schemas are available in [`examples/`](examples/README.md).
 
-The [interactive demo](https://northxyran.github.io/VeriGrader/) opens in the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. Inspect and correct pre-graded responses, regrade the papers the first pass flagged for review to see their settled results, rerun single or batch grading, and export the score report. The demo replays prepared model results in the browser and needs no API key.
+The [project page](https://northxyran.github.io/VeriGrader/) embeds an [interactive demo](https://northxyran.github.io/VeriGrader/demo/) that opens in the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. Inspect and correct pre-graded responses, regrade the papers the first pass flagged for review to see their settled results, rerun single or batch grading, and export the score report. The demo replays prepared model results in the browser and needs no API key.
 
 To run the prototype locally:
 
@@ -58,16 +58,16 @@ VITE_API_URL=https://your-openai-compatible-endpoint/v1/chat/completions
 
 Model names and generation settings can be changed in `frontend/src/config/api.ts`. Because this research prototype calls the LLM endpoint from the browser, use it locally and do not deploy it publicly with a real API key.
 
-### Build the GitHub Pages demo
+### Build the project page and demo
+
+The GitHub Pages site has two parts: the project page in `site/` at the root, and the demo app under `demo/`.
 
 ```bash
-cd frontend
-npm ci
-npm run type-check
-npm run build-only -- --mode pages --base /VeriGrader/
+bash scripts/build-pages.sh    # assembles site/ and builds the demo into site/dist/demo
+node scripts/serve-site.mjs    # preview at http://localhost:4173/VeriGrader/
 ```
 
-The Pages build excludes the local `VITE_` environment variables. Publish the contents of `frontend/dist/` to the root of the `gh-pages` branch with a `.nojekyll` file.
+The Pages build of the app excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. Each section of the page lives in `site/sections/<name>.html` with matching `site/assets/css/<name>.css` and `site/assets/js/<name>.js`. `scripts/record-demo-clip.mjs` re-records the phone clip of the demo.
 
 ## Citation
 

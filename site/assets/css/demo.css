@@ -1,0 +1,523 @@
+/* Live demo section: a dark keynote stage with the real app in a browser window (desktop)
+   or a looping screen recording (phones). Classes are prefixed with demo-. */
+
+.demo {
+  --demo-bg: #0c0e13;
+  --demo-ink: #f4f5f8;
+  --demo-ink-2: #c3c7d1;
+  --demo-ink-3: #9198a6;
+  --demo-line: rgb(255 255 255 / 0.1);
+  --demo-card: rgb(255 255 255 / 0.045);
+  --demo-accent: #8ea8ff;
+  --demo-stage-h: clamp(520px, calc(88vh - 48px), 832px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--demo-bg);
+  color: var(--demo-ink);
+}
+.demo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 34% at 50% 0%, rgb(43 89 255 / 0.28), transparent 70%),
+    radial-gradient(30% 30% at 12% 62%, rgb(40 167 69 / 0.1), transparent 70%),
+    radial-gradient(30% 30% at 90% 70%, rgb(240 180 0 / 0.08), transparent 70%);
+}
+.demo .container {
+  display: flex;
+  flex-direction: column;
+}
+.demo .section-head {
+  margin-bottom: var(--s-7);
+}
+.demo .eyebrow {
+  color: var(--demo-ink-3);
+}
+.demo .section-title em {
+  color: var(--demo-accent);
+}
+.demo .section-lead {
+  color: var(--demo-ink-2);
+}
+.demo :focus-visible {
+  outline-color: var(--demo-accent);
+}
+
+/* ---------- Guided tour ---------- */
+
+.demo-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: 0 0 var(--s-6);
+  padding: 0;
+  list-style: none;
+}
+.demo-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-4) var(--s-4) var(--s-4);
+  border: 1px solid var(--demo-line);
+  border-radius: var(--radius);
+  background: var(--demo-card);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease),
+    border-color 0.3s,
+    background 0.3s;
+  transition-delay: calc(var(--demo-i, 0) * 90ms);
+}
+.demo.demo-js .demo-steps:not(.demo-in) .demo-step {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.demo-step:hover {
+  border-color: rgb(255 255 255 / 0.2);
+  background: rgb(255 255 255 / 0.07);
+}
+.demo-step-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 34px;
+  line-height: 0.9;
+  color: var(--demo-accent);
+}
+.demo-step-title {
+  font: 600 16px/1.3 var(--font-body);
+  color: var(--demo-ink);
+}
+.demo-step-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--demo-ink-2);
+}
+.demo-step-text b {
+  color: var(--demo-ink);
+  font-weight: 600;
+}
+.demo-step-cue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: var(--s-2);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.demo-step-cue .hl {
+  color: var(--ink);
+  font-size: 12.5px;
+}
+.demo-step-cue .tag {
+  padding: 1px 8px;
+  font-size: 11.5px;
+}
+.demo-cue-dot {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #4cd964;
+  color: #fff;
+  font: 700 12px/1 var(--font-body);
+}
+.demo-cue-dot::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff9500;
+  box-shadow: 0 0 0 2px var(--demo-bg);
+}
+.demo-cue-arrow {
+  color: var(--demo-ink-3);
+}
+.demo-cue-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: 1px solid rgb(255 255 255 / 0.32);
+  border-radius: 999px;
+  color: var(--demo-ink);
+  font: 600 12px/1.4 var(--font-body);
+}
+.demo-cue-btn--gold {
+  gap: 5px;
+  border-color: #d9b44a;
+  background: #fff8e6;
+  color: #8a6200;
+}
+.demo-cue-btn--gold svg {
+  width: 12px;
+  height: 12px;
+}
+.demo-cue-file {
+  font: 500 12px/1.4 var(--font-mono);
+  color: var(--demo-ink-2);
+}
+
+/* ---------- Browser window ---------- */
+
+.demo-window {
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 30px 80px rgb(0 0 0 / 0.5),
+    0 0 120px rgb(43 89 255 / 0.18);
+}
+.demo-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  height: 48px;
+  padding: 0 var(--s-4);
+  border-bottom: 1px solid #e4e4e7;
+  background: linear-gradient(#f7f7f8, #eeeef0);
+  color: #52525b;
+}
+.demo-lights {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.demo-lights i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.15);
+}
+.demo-lights i:nth-child(2) {
+  background: #febc2e;
+}
+.demo-lights i:nth-child(3) {
+  background: #28c840;
+}
+.demo-address {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: min(440px, calc(100% - 220px));
+  height: 30px;
+  padding: 0 var(--s-3);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e4e4e7;
+  font: 500 13px/1 var(--font-body);
+  color: #3f3f46;
+  white-space: nowrap;
+}
+.demo-address span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.demo-address svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: #71717a;
+}
+.demo-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--correct-bg);
+  color: var(--correct);
+  font: 600 12px/1.4 var(--font-body);
+}
+.demo-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--correct-line);
+  animation: demo-pulse 2s var(--ease) infinite;
+}
+@keyframes demo-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(40 167 69 / 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgb(40 167 69 / 0);
+  }
+}
+
+/* ---------- Live stage (desktop / tablet) ---------- */
+
+.demo-live,
+.demo.is-live .demo-phone {
+  display: none;
+}
+.demo.is-live .demo-live {
+  display: block;
+}
+
+.demo-stage {
+  position: relative;
+  overflow: hidden;
+  height: var(--demo-stage-h);
+  background: #eef1f8;
+}
+.demo-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  filter: saturate(0.85);
+  transition: opacity 0.6s var(--ease);
+}
+.demo-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #f4f6fb;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+.demo-stage.is-ready .demo-frame {
+  opacity: 1;
+}
+.demo-stage.is-ready .demo-poster {
+  opacity: 0;
+}
+.demo-loading {
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-6);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgb(20 22 27 / 0.82);
+  color: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.4s;
+}
+.demo-stage.is-ready .demo-loading {
+  opacity: 0;
+  pointer-events: none;
+}
+.demo-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgb(255 255 255 / 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: demo-spin 0.8s linear infinite;
+}
+@keyframes demo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4) var(--s-6);
+  margin-top: var(--s-5);
+}
+.demo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--demo-ink-3);
+}
+.demo-note svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 1px;
+  color: #6fd08c;
+}
+.demo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.demo .demo-btn-solid {
+  border-color: #fff;
+  background: #fff;
+  color: var(--ink);
+}
+.demo .demo-btn-solid:hover {
+  background: #e9edff;
+  box-shadow: 0 8px 24px rgb(43 89 255 / 0.3);
+}
+.demo .demo-btn-ghost {
+  border-color: rgb(255 255 255 / 0.28);
+  background: transparent;
+  color: var(--demo-ink);
+}
+.demo .demo-btn-ghost:hover {
+  border-color: rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* ---------- Phone clip ---------- */
+
+.demo-phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+.demo-window--clip {
+  width: 100%;
+  border-radius: 14px;
+}
+.demo-window--clip .demo-bar {
+  height: 32px;
+  padding: 0 10px;
+}
+.demo-window--clip .demo-lights {
+  gap: 5px;
+}
+.demo-window--clip .demo-lights i {
+  width: 8px;
+  height: 8px;
+}
+.demo-window--clip .demo-address {
+  width: calc(100% - 96px);
+  height: 20px;
+  font-size: 11px;
+  border-radius: 6px;
+}
+.demo-clip {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  background: #eef1f8;
+  object-fit: cover;
+}
+.demo-phone-cta {
+  margin-top: var(--s-5);
+  min-height: 48px;
+}
+.demo-phone-note {
+  margin-top: var(--s-3);
+  font-size: 14px;
+  color: var(--demo-ink-3);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .demo-steps {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .demo-step {
+    grid-column: span 2;
+  }
+  .demo-step:nth-child(4),
+  .demo-step:nth-child(5) {
+    grid-column: span 3;
+  }
+}
+@media (max-width: 860px) {
+  .demo-address {
+    width: calc(100% - 200px);
+  }
+  .demo-actions {
+    justify-content: center;
+    text-align: left;
+  }
+}
+@media (max-width: 767px) {
+  /* Phones: the clip comes first, the tour reads as captions below it. */
+  .demo .section-head {
+    margin-bottom: var(--s-6);
+  }
+  .demo-phone {
+    order: 1;
+  }
+  .demo-steps {
+    order: 2;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-2);
+    margin: var(--s-7) 0 0;
+  }
+  .demo-step,
+  .demo-step:nth-child(4),
+  .demo-step:nth-child(5) {
+    grid-column: auto;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 2px var(--s-3);
+    padding: var(--s-4);
+  }
+  .demo-step-num {
+    grid-row: span 2;
+    font-size: 30px;
+  }
+  .demo-step-cue {
+    display: none;
+  }
+}
+/* Touch tablets get the clip too; keep the tour as a grid there. */
+.demo:not(.is-live) .demo-phone {
+  order: 1;
+}
+.demo:not(.is-live) .demo-steps {
+  order: 2;
+  margin: var(--s-7) 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo.demo-js .demo-steps:not(.demo-in) .demo-step,
+  .demo-step {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .demo-live-dot,
+  .demo-spinner {
+    animation: none;
+  }
+  .demo-poster,
+  .demo-frame {
+    transition: none;
+  }
+}

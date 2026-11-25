@@ -1,0 +1,157 @@
+<section class="section section--alt results" id="results" aria-labelledby="results-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Results</span>
+      <h2 class="section-title" id="results-title">Faster. More accurate. <em>More consistent.</em></h2>
+      <p class="section-lead">
+        Twelve teaching assistants graded real quiz answers, by hand and with VeriGrader, and every mark was checked
+        against an expert-consensus ground truth.
+      </p>
+    </div>
+
+    <!-- Study at a glance -->
+    <div class="results-glance reveal" data-results-glance>
+      <div class="results-glance__group results-glance__group--formative">
+        <p class="results-glance__label">Formative study</p>
+        <div class="results-glance__items" role="list">
+          <div class="results-glance__item" role="listitem">
+            <span class="results-glance__value" data-results-count="141">141</span>
+            <span class="results-glance__text">graded exam papers analysed</span>
+          </div>
+          <div class="results-glance__item" role="listitem">
+            <span class="results-glance__value" data-results-count="5">5</span>
+            <span class="results-glance__text">stakeholder interviews</span>
+          </div>
+        </div>
+      </div>
+      <div class="results-glance__group results-glance__group--study">
+        <p class="results-glance__label">Controlled user study</p>
+        <div class="results-glance__items" role="list">
+          <div class="results-glance__item" role="listitem">
+            <span class="results-glance__value" data-results-count="12">12</span>
+            <span class="results-glance__text">teaching assistants with grading experience</span>
+          </div>
+          <div class="results-glance__item" role="listitem">
+            <span class="results-glance__value" data-results-count="15">15</span>
+            <span class="results-glance__text">real student answers per question, from in-class quizzes</span>
+          </div>
+          <div class="results-glance__item" role="listitem">
+            <span class="results-glance__value" data-results-count="2">2</span>
+            <span class="results-glance__text">subjects: data structures &amp; numerical methods</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-bento">
+      <!-- RQ1: efficiency + accuracy -->
+      <article class="results-card results-card--rq1 reveal" data-results-card="rq1">
+        <p class="results-card__kicker">RQ1 · Efficiency &amp; accuracy</p>
+        <h3 class="results-card__title">Twice as fast. <em>And</em> more accurate.</h3>
+        <div class="results-kpis">
+          <div class="results-kpi">
+            <span class="results-kpi__value"><span data-results-num="-56.3" data-results-dec="1">−56.3</span><small>%</small></span>
+            <span class="results-kpi__label">time per response<br />3.82 → 1.67 min</span>
+          </div>
+          <div class="results-kpi">
+            <span class="results-kpi__value"><span data-results-num="5.6" data-results-dec="1" data-results-sign="+">+5.6</span><small>pts</small></span>
+            <span class="results-kpi__label">F1 accuracy<br />86.26 → 91.86%</span>
+          </div>
+        </div>
+        <div class="results-slopes">
+          <figure class="results-slope" data-results-slope="time"></figure>
+          <figure class="results-slope" data-results-slope="f1"></figure>
+        </div>
+        <ul class="results-legend" aria-hidden="true">
+          <li><i class="results-legend__swatch results-legend__swatch--mean"></i>Mean ± SD</li>
+          <li><i class="results-legend__swatch results-legend__swatch--person"></i>One participant</li>
+        </ul>
+        <p class="results-card__note">
+          Both improve together, and the spread shrinks: all 12 participants graded faster, and the SD of accuracy halved
+          (10.2 → 5.0).
+        </p>
+        <p class="results-source">User study, N = 12 · paired <i>t</i>-test <i>p</i> &lt; .001 (time) · Wilcoxon <i>p</i> = .034 (F1)</p>
+      </article>
+
+      <!-- RQ2 + RQ3: model alone, then the loop -->
+      <article class="results-card results-card--ladder reveal" data-results-card="ladder">
+        <p class="results-card__kicker">RQ2 + RQ3 · The model, then the loop</p>
+        <h3 class="results-card__title">Strong on its own. <em>Stronger</em> with you.</h3>
+        <div class="results-minis">
+          <div class="results-mini">
+            <span class="results-mini__value">89.5<small>%</small> <span>/</span> 89.2<small>%</small></span>
+            <span class="results-mini__label">LLM-only F1 on OSQ1 / OSQ2, with no exemplars and no human in the loop</span>
+          </div>
+          <div class="results-mini">
+            <span class="results-mini__value">70.1<small>%</small> <span>/</span> 74.1<small>%</small></span>
+            <span class="results-mini__label">of answer pieces split like the experts’ (≥ 70% shared words)</span>
+          </div>
+        </div>
+        <figure class="results-ladder" data-results-ladder></figure>
+        <p class="results-source">Setting S3, 10 answers × 12 participants · step values are the means of the paper’s Fig. 11</p>
+      </article>
+
+      <!-- Usability -->
+      <article class="results-card results-card--sus reveal" data-results-card="sus">
+        <p class="results-card__kicker">Usability · 7-point scale</p>
+        <h3 class="results-card__title">They would <em>rather</em> grade with it.</h3>
+        <div class="results-key" aria-hidden="true">
+          <span><i class="results-key__dot results-key__dot--manual"></i>Manual grading</span>
+          <span><i class="results-key__dot results-key__dot--vg"></i>VeriGrader</span>
+        </div>
+        <figure class="results-sus" data-results-sus></figure>
+        <div class="results-sus__extra">
+          <p><b>6.42</b> <span>would recommend it to other teachers and TAs</span></p>
+          <p><b>6.25</b> <span>would keep using it for grading</span></p>
+        </div>
+        <p class="results-source">SUS and tailored questionnaire, N = 12 · 1 = strongly disagree, 7 = strongly agree</p>
+      </article>
+
+      <!-- RQ4: consistency -->
+      <article class="results-card results-card--rq4 reveal" data-results-card="rq4">
+        <p class="results-card__kicker">RQ4 · Consistency across graders</p>
+        <h3 class="results-card__title">Twelve graders. <em>One</em> standard.</h3>
+        <div class="results-rq4__bar">
+          <div class="results-key" aria-hidden="true">
+            <span><i class="results-key__dot results-key__dot--human"></i>Human only</span>
+            <span><i class="results-key__dot results-key__dot--llm"></i>LLM only</span>
+            <span><i class="results-key__dot results-key__dot--vg"></i>VeriGrader</span>
+          </div>
+          <div class="results-toggle" role="group" aria-label="Agreement metric">
+            <button type="button" class="results-toggle__btn" data-results-metric="kappa" aria-pressed="true">κ<sub>w</sub></button>
+            <button type="button" class="results-toggle__btn" data-results-metric="icc" aria-pressed="false">ICC(2,1)</button>
+          </div>
+        </div>
+        <figure class="results-consistency" data-results-consistency></figure>
+        <p class="results-card__note" data-results-consistency-note></p>
+        <figure class="results-heat" data-results-heat></figure>
+        <p class="results-source">
+          LLM only and VeriGrader: 10 answers × 12 participants per question · human-only reference: 5 answers × 6
+          participants, manual setting
+        </p>
+      </article>
+    </div>
+
+    <!-- What instructors said -->
+    <div class="results-voices reveal" data-results-voices>
+      <div class="results-voices__head">
+        <p class="results-voices__eyebrow">What instructors said</p>
+        <div class="results-voices__controls">
+          <button type="button" class="results-voices__arrow" data-results-voice-step="-1" aria-label="Previous quote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <button type="button" class="results-voices__arrow" data-results-voice-step="1" aria-label="Next quote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+          <button type="button" class="results-voices__arrow results-voices__pause" data-results-voice-pause aria-label="Pause quotes" aria-pressed="false">
+            <svg class="results-voices__icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1" /><rect x="13.5" y="5" width="3.5" height="14" rx="1" /></svg>
+            <svg class="results-voices__icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+          </button>
+        </div>
+      </div>
+      <div class="results-voices__stage" aria-roledescription="carousel" aria-label="Participant quotes" data-results-voice-stage></div>
+      <div class="results-voices__dots" role="group" aria-label="Choose a quote" data-results-voice-dots></div>
+      <p class="results-voices__source">From post-study interviews, Section 7.4 of the paper</p>
+    </div>
+  </div>
+</section>
