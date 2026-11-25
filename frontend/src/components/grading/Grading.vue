@@ -96,7 +96,6 @@
 <script setup lang="ts">
 import { Message } from '@/components/Message'
 import { useCurrentGradingContext } from '@/composables/useCurrentGradingContext'
-import { isPagesDemo } from '@/config/deployment'
 import { useExamDataStore, type HighlightData } from '@/stores/useExamDataStore'
 import type { HighlightSelection, HighlightType, HighlightUpdate } from '@/types/exam'
 import { getHighlightItem, getHighlightItemIndex } from '@/utils/highlightRanges'
@@ -404,11 +403,11 @@ const handleUpdateHighlightData = (data: HighlightUpdate) => {
       occurrence: 0,
     }
 
-    if (isPagesDemo || (isInModifyMode.value && data.reason)) {
+    if (isInModifyMode.value && data.reason) {
       saveReasonDirectly(
         data.text,
         targetType,
-        data.reason || '',
+        data.reason,
         currentStudentId.value,
         currentQuestionId.value,
         feedbackPanelRef,

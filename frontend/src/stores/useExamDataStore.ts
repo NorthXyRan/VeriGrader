@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
+import { workspaceStorageKey } from '@/config/deployment'
 import { validateDataRelationships } from '@/services/file/fileValidation'
 import {
   HIGHLIGHT_TYPES,
@@ -47,7 +48,7 @@ function isNonEmptyString(value: unknown): value is string {
 
 function loadArray<Value>(key: string, guard: (value: unknown) => value is Value): Value[] {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(key) || '[]')
+    const value: unknown = JSON.parse(localStorage.getItem(workspaceStorageKey(key)) || '[]')
     return Array.isArray(value) ? value.filter(guard) : []
   } catch {
     return []
@@ -346,16 +347,28 @@ export const useExamDataStore = defineStore('examData', () => {
 
   function saveToLocal(): void {
     try {
-      localStorage.setItem('exam_questions', JSON.stringify(questions.value))
-      localStorage.setItem('exam_reference_answers', JSON.stringify(referenceAnswers.value))
-      localStorage.setItem('exam_student_answers', JSON.stringify(studentAnswers.value))
-      localStorage.setItem('exam_highlight_data', JSON.stringify(highlightDataList.value))
-      localStorage.setItem('exam_reason_examples', JSON.stringify(reasonExamples.value))
+      localStorage.setItem(workspaceStorageKey('exam_questions'), JSON.stringify(questions.value))
       localStorage.setItem(
-        'exam_gold_standard_examples',
+        workspaceStorageKey('exam_reference_answers'),
+        JSON.stringify(referenceAnswers.value),
+      )
+      localStorage.setItem(
+        workspaceStorageKey('exam_student_answers'),
+        JSON.stringify(studentAnswers.value),
+      )
+      localStorage.setItem(
+        workspaceStorageKey('exam_highlight_data'),
+        JSON.stringify(highlightDataList.value),
+      )
+      localStorage.setItem(
+        workspaceStorageKey('exam_reason_examples'),
+        JSON.stringify(reasonExamples.value),
+      )
+      localStorage.setItem(
+        workspaceStorageKey('exam_gold_standard_examples'),
         JSON.stringify(goldStandardExamples.value),
       )
-      localStorage.removeItem('exam_student_list')
+      localStorage.removeItem(workspaceStorageKey('exam_student_list'))
     } catch {}
   }
 

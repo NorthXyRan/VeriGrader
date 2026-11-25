@@ -1,3 +1,5 @@
+import { isPagesDemo } from '@/config/deployment'
+import { getDemoGradingResult } from '@/demo/loadDemo'
 import type { HighlightData, Question, ReferenceAnswer, StudentAnswer } from '@/types/exam'
 import { abortableDelay } from '@/utils/asyncUtils'
 
@@ -38,6 +40,15 @@ async function gradeStudentAnswer(
   }
   if (referenceAnswer.question_id !== question.question_id) {
     return { success: false, error: 'Reference answer question_id does not match the question' }
+  }
+
+  if (isPagesDemo) {
+    // Stagger responses so a batch can show individual completions.
+    await abortableDelay(550 + (studentAnswer.student_id % 4) * 180, signal)
+    const result = getDemoGradingResult(studentAnswer.student_id, question.question_id)
+    return result
+      ? { success: true, data: [result] }
+      : { success: false, error: 'No simulated result exists for this response' }
   }
 
   const prompt = buildGradingPrompt(question, referenceAnswer, studentAnswer, fewShotPrompt)
@@ -91,4 +102,8 @@ export function gradeSingleStudentAnswerWithFewShot(
   return gradeStudentAnswer(request, request.fewShotPrompt, maxRetries)
 }
 
-export const checkGradingServiceStatus = checkLLMServiceStatus
+export function checkGradingServiceStatus(): ReturnType<typeof checkLLMServiceStatus> {
+  return isPagesDemo
+    ? { available: true, message: 'Simulated grading is available' }
+    : checkLLMServiceStatus()
+}

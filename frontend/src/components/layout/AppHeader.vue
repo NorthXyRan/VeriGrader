@@ -1,7 +1,10 @@
 <template>
   <div class="header-container">
     <div class="header-card">
-      <span>VeriGrader</span>
+      <div class="header-title">
+        <span>VeriGrader</span>
+        <small v-if="isPagesDemo">Simulated grading</small>
+      </div>
       <div class="header-controls">
         <div class="theme-dropdown" ref="dropdownRef">
           <button
@@ -36,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPagesDemo } from '@/config/deployment'
 import { Brush, Expand, Fold } from '@element-plus/icons-vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 
@@ -149,6 +153,14 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.header-title small {
+  display: block;
+  color: #52637a;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .icon {

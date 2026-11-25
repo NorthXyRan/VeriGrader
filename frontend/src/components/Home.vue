@@ -1,19 +1,5 @@
 <template>
-  <div v-if="isPagesDemo" class="home-container demo-home">
-    <h2>Try VeriGrader</h2>
-    <p>
-      Review pre-graded responses from two fictional students. Select a highlighted passage to
-      inspect or edit its rationale, then export your results from the score report.
-    </p>
-    <div class="demo-actions">
-      <el-button type="primary" size="large" @click="openPage('grading')">
-        Review sample responses
-      </el-button>
-      <el-button size="large" @click="openPage('result')">Open score report</el-button>
-    </div>
-    <a href="https://github.com/NorthXyRan/VeriGrader#implementation">Run with your own data</a>
-  </div>
-  <div v-else class="home-container">
+  <div class="home-container">
     <div class="features-section">
       <div class="section-header">
         <h2>Choose your workflow</h2>
@@ -144,7 +130,6 @@
 </template>
 
 <script setup lang="ts">
-import { isPagesDemo } from '@/config/deployment'
 import {
   DataAnalysis,
   Document,
@@ -170,38 +155,6 @@ const openPage = (path: 'uploading' | 'grading' | 'result') => {
   background: #fbfbfd;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   border-radius: 30px;
-}
-
-.demo-home {
-  max-width: 720px;
-  padding: clamp(24px, 6vw, 64px);
-  margin-inline: max(12px, calc((100% - 720px) / 2));
-}
-
-.demo-home h2 {
-  font-size: clamp(26px, 4vw, 42px);
-  margin-bottom: 16px;
-}
-
-.demo-home p {
-  font-size: 17px;
-  line-height: 1.6;
-  color: #515154;
-}
-
-.demo-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 24px 0;
-}
-
-.demo-actions :deep(.el-button) {
-  margin: 0;
-}
-
-.demo-home a {
-  color: #145eb5;
 }
 
 .features-section {

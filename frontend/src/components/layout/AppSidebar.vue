@@ -84,7 +84,7 @@ const router = useRouter()
 const route = useRoute()
 
 const visibleMenuItems = isPagesDemo
-  ? menuItems.filter((item) => item.route !== '/uploading' && !item.children)
+  ? menuItems.filter((item) => item.route === '/grading' || item.route === '/result')
   : menuItems
 const routeToIndexMap = createRouteToIndexMap()
 

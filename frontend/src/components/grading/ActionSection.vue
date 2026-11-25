@@ -9,6 +9,7 @@
               size="default"
               :loading="item.loading"
               :disabled="item.disabled"
+              :aria-label="item.label"
               class="action-btn dock-btn"
               @click="item.onClick"
             >
@@ -48,6 +49,7 @@
                   size="default"
                   :loading="item.loading"
                   :disabled="item.disabled"
+                  :aria-label="item.label"
                   class="action-btn dock-btn"
                   @click="item.onClick"
                 >

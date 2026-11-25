@@ -4,7 +4,24 @@
       <div class="question-row">
         <el-icon class="question-icon"><Document /></el-icon>
         <span class="question-label">Question {{ currentQuestion }}</span>
-        <p class="question-text">{{ questionText }}</p>
+        <el-popover
+          v-if="isPagesDemo"
+          trigger="click"
+          placement="bottom"
+          width="min(420px, calc(100vw - 32px))"
+          :content="questionText"
+        >
+          <template #reference>
+            <button
+              type="button"
+              class="question-text question-text--expandable"
+              :title="questionText"
+            >
+              {{ questionText }}
+            </button>
+          </template>
+        </el-popover>
+        <p v-else class="question-text">{{ questionText }}</p>
         <div class="question-score">
           <span class="score-value">{{ questionScore }}</span>
           <span class="score-unit">marks</span>
@@ -15,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPagesDemo } from '@/config/deployment'
 import { Document } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 
@@ -137,6 +155,17 @@ const questionScore = computed(() => {
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+}
+
+.question-text--expandable {
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.question-text--expandable:hover {
+  text-decoration: underline;
 }
 
 :global(.main-content--narrow .question-container) {

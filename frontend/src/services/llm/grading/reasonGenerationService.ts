@@ -1,3 +1,5 @@
+import { isPagesDemo } from '@/config/deployment'
+import { getDemoGradingResult } from '@/demo/loadDemo'
 import type { HighlightType, Question, ReferenceAnswer, StudentAnswer } from '@/types/exam'
 import { abortableDelay } from '@/utils/asyncUtils'
 
@@ -42,6 +44,22 @@ export async function generateReasonForHighlight(
   request: ReasonGenerationRequest,
   maxRetries = 3,
 ): Promise<ReasonGenerationResponse> {
+  if (isPagesDemo) {
+    await abortableDelay(350, request.signal)
+    const result = getDemoGradingResult(
+      request.studentAnswer.student_id,
+      request.question.question_id,
+    )
+    const annotation = result?.answer[request.highlightType].find(
+      (item) => item['Student answer'] === request.highlightedText,
+    )
+    return {
+      success: true,
+      reason: annotation?.reason || 'Click here to write your rationale for this annotation.',
+      matchedReferenceAnswer: annotation?.['matched reference answer'] || '',
+    }
+  }
+
   const prompt = buildReasonGenerationPrompt(
     request.question,
     request.referenceAnswer,
@@ -84,4 +102,8 @@ export async function generateReasonForHighlight(
   }
 }
 
-export const checkReasonGenerationServiceStatus = checkLLMServiceStatus
+export function checkReasonGenerationServiceStatus(): ReturnType<typeof checkLLMServiceStatus> {
+  return isPagesDemo
+    ? { available: true, message: 'Simulated grading is available' }
+    : checkLLMServiceStatus()
+}
