@@ -152,7 +152,8 @@ import { Check, Close, Menu, QuestionFilled, VideoPlay } from '@element-plus/ico
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import WorkflowCursor from './WorkflowCursor.vue'
 import sample from './cases/q1'
-import { getDemoGradingResult, renderResponse } from './loadDemo'
+import { getDemoGradingResult, renderResponse } from './gradingResults'
+import { useWorkflowLink } from './useWorkflowLink'
 
 type RegradeScope = 'one' | 'problem' | 'all'
 interface RegradeBatch {
@@ -245,8 +246,6 @@ const allTarget = '[data-regrade="all"]'
 const step = ref(4)
 const stepProgress = ref(1)
 const displayScore = ref(0)
-const link = shallowRef<{ d: string; x2: number; y2: number; type: string } | null>(null)
-const linkKey = ref('')
 const clicked = ref<string | null>(null)
 const hovered = ref<string | null>(null)
 const reviews = shallowRef(new Map<string, HighlightType>())
@@ -660,52 +659,9 @@ watch(
   { immediate: true },
 )
 
-// A curve from the selected piece to its scoring point, redrawn every frame while it is on screen.
-let linkFrame = 0
-function visibleRect(element: Element | null, scroll: Element | null, last = false) {
-  if (!element || !scroll) return null
-  const rects = [...element.getClientRects()]
-  const rect = last ? rects[rects.length - 1] : rects[0]
-  const view = scroll.getBoundingClientRect()
-  if (!rect || rect.bottom < view.top + 4 || rect.top > view.bottom - 4) return null
-  return rect
-}
-function drawLink() {
-  linkFrame = requestAnimationFrame(drawLink)
-  const root = workspace.value?.parentElement
-  if (!root || step.value < 2 || !selection.value) {
-    link.value = null
-    return
-  }
-  const preview = root.querySelector('.preview-content')
-  const reference = root.querySelector('.reference-content')
-  const from = visibleRect(root.querySelector('[data-workflow-selected]'), preview, true)
-  const to = visibleRect(reference?.querySelector('.reference-highlight') ?? null, reference)
-  if (!from || !to) {
-    link.value = null
-    return
-  }
-  const box = root.getBoundingClientRect()
-  // Leave from the response panel's edge, level with the piece, so the curve never crosses the text.
-  const x1 =
-    Math.min(from.right, (preview?.getBoundingClientRect().right ?? from.right) - 10) - box.left
-  const y1 = from.top + from.height / 2 - box.top
-  const x2 = to.left - box.left - 4
-  const y2 = to.top + Math.min(to.height / 2, 11) - box.top
-  if (x2 - x1 < 8) {
-    link.value = null
-    return
-  }
-  const bend = (x2 - x1) * 0.5
-  const d = `M${x1.toFixed(1)} ${y1.toFixed(1)}C${(x1 + bend).toFixed(1)} ${y1.toFixed(1)} ${(x2 - bend).toFixed(1)} ${y2.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`
-  const type = step.value >= 3 ? selection.value.type : 'segment'
-  const key = `${selection.value.text}|${type}`
-  if (key !== linkKey.value) linkKey.value = key
-  link.value = { d, x2, y2, type }
-}
+const { link, linkKey } = useWorkflowLink(workspace, step, selection)
 
 onMounted(() => {
-  linkFrame = requestAnimationFrame(drawLink)
   window.addEventListener('message', receiveState)
   post('verigrader:workflow-ready')
 })
@@ -714,7 +670,6 @@ onUnmounted(() => {
   window.removeEventListener('message', receiveState)
   clearRegradeTimer()
   clearInterval(scoreTimer)
-  cancelAnimationFrame(linkFrame)
 })
 </script>
 

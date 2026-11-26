@@ -10,7 +10,7 @@
     </header>
 
     <div class="workflow-stage reveal">
-      <!-- The loop: SVG ring on wide screens, a vertical timeline on phones -->
+      <!-- The loop stays interactive at every screen size. -->
       <div class="workflow-loop">
         <div class="workflow-loop__ring">
           <svg class="workflow-loop__svg" viewBox="0 0 480 460" aria-hidden="true" focusable="false">
@@ -41,20 +41,18 @@
 
           <div class="workflow-loop__tabs" role="tablist" aria-label="Stages of the grading loop" aria-orientation="vertical">
             <button
-              class="workflow-node"
+              class="workflow-node is-active"
               type="button"
               role="tab"
               id="workflow-tab-grade"
               aria-controls="workflow-panel-canvas"
               aria-selected="true"
-              data-stage="0"
             >
               <span class="workflow-node__num" aria-hidden="true">1</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">LLM grades</span>
                 <span class="workflow-node__sub">Segment · align · classify · explain</span>
               </span>
-              <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
             <button
               class="workflow-node"
@@ -64,14 +62,12 @@
               aria-controls="workflow-panel-canvas"
               aria-selected="false"
               tabindex="-1"
-              data-stage="1"
             >
               <span class="workflow-node__num" aria-hidden="true">2</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">You verify</span>
                 <span class="workflow-node__sub">Settle unclear pieces</span>
               </span>
-              <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
             <button
               class="workflow-node"
@@ -81,20 +77,14 @@
               aria-controls="workflow-panel-canvas"
               aria-selected="false"
               tabindex="-1"
-              data-stage="2"
             >
               <span class="workflow-node__num" aria-hidden="true">3</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">Feedback steers</span>
                 <span class="workflow-node__sub">Revise · save · regrade</span>
               </span>
-              <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
           </div>
-          <p class="workflow-loop__return" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg>
-            Back to 1, with your exemplars in the prompt
-          </p>
         </div>
 
         <div class="workflow-loop__controls">
@@ -125,7 +115,7 @@
           </div>
         </div>
         <div class="workflow-canvas card" id="workflow-panel-canvas" role="tabpanel" aria-labelledby="workflow-tab-grade" tabindex="0">
-          <iframe class="workflow-canvas__frame" title="Interactive grading workflow" src="demo/#/workflow-review" loading="lazy"></iframe>
+          <iframe class="workflow-canvas__frame" title="Interactive grading workflow" data-src="demo/#/workflow-review" loading="lazy"></iframe>
         </div>
       </div>
     </div>

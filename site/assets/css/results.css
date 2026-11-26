@@ -114,3 +114,21 @@
 .results-figure--table img {
   mix-blend-mode: multiply;
 }
+
+@media (max-width: 640px) {
+  /* ---------- User Study: every figure and table, scaled to the screen width ---------- */
+  .results-finding {
+    gap: var(--s-4);
+    padding-block: var(--s-6);
+  }
+  .results-finding:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .results-finding__copy p {
+    margin-top: var(--s-2);
+  }
+  .results-figure figcaption {
+    margin-top: var(--s-2);
+  }
+}

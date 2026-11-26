@@ -84,14 +84,16 @@ const toggleConfirm = () => {
 <style scoped>
 .scoring-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  height: 100%;
+  justify-content: center;
   padding: 12px 16px;
 }
 
 .action-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 
@@ -121,18 +123,6 @@ const toggleConfirm = () => {
 .scoring-section :deep(.el-button--primary:hover:not(.is-disabled)) {
   background: #0062d6;
   box-shadow: 0 6px 16px rgba(0, 122, 255, 0.28);
-  transform: translateY(-1px);
-}
-
-.scoring-section :deep(.el-button--warning) {
-  background: #f56500;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(245, 101, 0, 0.2);
-}
-
-.scoring-section :deep(.el-button--warning:hover:not(.is-disabled)) {
-  background: #d14900;
-  box-shadow: 0 6px 16px rgba(245, 101, 0, 0.28);
   transform: translateY(-1px);
 }
 
@@ -194,18 +184,19 @@ const toggleConfirm = () => {
   gap: 8px;
 }
 
-/* Narrow: two full-width, touch-sized buttons side by side or stacked as space allows. */
+/* Narrow: center each row and wrap when both buttons no longer fit. */
 .scoring-section--narrow .action-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  flex-wrap: wrap;
   width: 100%;
   gap: 8px;
 }
 
 .scoring-section--narrow :deep(.el-button) {
-  width: 100%;
+  max-width: 100%;
+  height: auto;
   min-height: 46px;
   padding: 0 16px;
   font-size: 15px;
+  white-space: normal;
 }
 </style>

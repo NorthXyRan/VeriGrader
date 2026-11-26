@@ -1,5 +1,5 @@
 import { isPagesDemo } from '@/config/deployment'
-import { getDemoGradingResult } from '@/demo/loadDemo'
+import { getDemoGradingResult } from '@/demo/gradingResults'
 import type { HighlightType, Question, ReferenceAnswer, StudentAnswer } from '@/types/exam'
 import { abortableDelay } from '@/utils/asyncUtils'
 

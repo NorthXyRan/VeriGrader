@@ -2,7 +2,6 @@
 
 .workflow {
   --content: 1440px;
-  --workflow-progress: 0;
 }
 
 .workflow .section-head {
@@ -28,9 +27,6 @@
     gap: clamp(var(--s-5), 3vw, var(--s-7));
     /* The canvas ends level with the bottom of the loop. */
     align-items: end;
-  }
-  .workflow-stage .workflow-canvas {
-    height: 520px;
   }
 }
 
@@ -151,7 +147,7 @@
   transform: translate(-50%, calc(-50% - 2px));
   box-shadow: var(--shadow);
 }
-.workflow-node[aria-selected='true'] {
+.workflow-node.is-active {
   border-color: var(--accent);
   box-shadow:
     0 0 0 4px rgb(43 89 255 / 0.12),
@@ -172,7 +168,7 @@
     border-color 0.3s,
     color 0.3s;
 }
-.workflow-node[aria-selected='true'] .workflow-node__num {
+.workflow-node.is-active .workflow-node__num {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
@@ -193,12 +189,6 @@
   font-size: 12px;
   line-height: 1.35;
   color: var(--ink-3);
-}
-.workflow-node__bar {
-  display: none;
-}
-.workflow-loop__return {
-  display: none;
 }
 
 .workflow-loop__controls {
@@ -234,10 +224,9 @@
 /* ---------- Shared grading canvas ---------- */
 
 .workflow-canvas {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  position: relative;
   min-width: 0;
-  height: 600px;
+  height: 520px;
   overflow: hidden;
   box-shadow: var(--shadow);
 }
@@ -383,98 +372,18 @@
   font-weight: 600;
 }
 
+/* workflow.js lays the app out at its desktop size and scales it to the card. */
 .workflow-canvas__frame {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--canvas-w, 100%);
+  max-width: none;
+  height: var(--canvas-h, 100%);
   border: 0;
   background: #eef1f5;
-}
-
-/* Phone: the ring becomes a vertical, tappable timeline */
-@media (max-width: 639px) {
-  .workflow-loop__ring {
-    aspect-ratio: auto;
-  }
-  .workflow-loop__svg {
-    display: none;
-  }
-  .workflow-loop__tabs {
-    position: static;
-    display: grid;
-    gap: var(--s-3);
-  }
-  .workflow-node {
-    position: relative;
-    left: auto;
-    top: auto;
-    transform: none;
-    width: 100%;
-    max-width: none;
-    min-height: 64px;
-    padding: 12px var(--s-4) 12px 12px;
-    border-radius: 16px;
-    overflow: visible;
-  }
-  .workflow-node:hover {
-    transform: none;
-  }
-  .workflow-node:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: 30px;
-    top: 100%;
-    width: 2px;
-    height: calc(var(--s-3) + 2px);
-    background: var(--line-strong);
-  }
-  .workflow-node__bar {
-    display: block;
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 0;
-    height: 3px;
-    border-radius: 3px 3px 0 0;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  .workflow-node[aria-selected='true'] .workflow-node__bar {
-    transform: scaleX(var(--workflow-progress));
-  }
-  .workflow-loop__return {
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-    margin: var(--s-3) 0 0 12px;
-    font-size: 13px;
-    color: var(--ink-2);
-  }
-  .workflow-loop__return svg {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    color: var(--accent);
-  }
-  .workflow-loop__controls {
-    justify-content: flex-start;
-  }
-  .workflow-canvas {
-    height: 800px;
-  }
-  .workflow-track {
-    padding: 0 var(--s-1);
-  }
-  .workflow-track__note {
-    white-space: normal;
-    min-height: 2.9em;
-  }
-  .workflow-step__name {
-    font-size: 10px;
-    letter-spacing: 0;
-  }
+  transform: scale(var(--canvas-scale, 1));
+  transform-origin: 0 0;
 }
 
 /* Reduced motion: every element rests in its final state. */
@@ -484,5 +393,59 @@
   .workflow *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* The section heading already provides this text when larger fonts crowd the ring. */
+@media (max-width: 640px) and (max-width: 18em) {
+  .workflow-loop__center {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* ---------- How it works: the loop, smaller ----------
+     The canvas and its step track need a big screen, so phones keep only the ring, its token
+     circling on its own (workflow.js), with compact stage labels. */
+  .workflow-canvas-wrap {
+    display: none;
+  }
+  .workflow-stage {
+    gap: 0;
+  }
+  .workflow-loop {
+    max-width: 380px;
+  }
+  .workflow-loop__edge-labels text {
+    font-size: 16px;
+  }
+  .workflow-node {
+    gap: 6px;
+    min-height: 44px;
+    max-width: calc(50% - var(--s-1));
+    padding: 4px 11px 4px 4px;
+  }
+  .workflow-node__num {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+  .workflow-node__title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .workflow-node__sub {
+    display: none;
+  }
+}
+
+/* Phones held sideways keep the wider layout but, like portrait phones, skip the canvas
+   (too small to read or tap at that height); the loop circles on its own. */
+@media (max-height: 500px) and (pointer: coarse) {
+  .workflow-canvas-wrap {
+    display: none;
+  }
+  .workflow-stage {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

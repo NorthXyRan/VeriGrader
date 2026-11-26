@@ -1,13 +1,13 @@
 <section class="demo" id="demo" aria-label="Live demo">
   <div class="demo-screen">
-    <!-- Wider screens: the live app. main.js sets src only there, so phones never load it. -->
+    <!-- Wider screens: the live app. demo.js loads the app when this viewport is visible. -->
     <div class="demo-viewport">
       <iframe
         class="demo-frame"
         data-src="demo/#/grading"
         title="VeriGrader grading demo with sample responses"
-        width="3840"
-        height="2048"
+        width="1920"
+        height="1080"
         loading="lazy"
       ></iframe>
     </div>
@@ -17,11 +17,11 @@
         <source srcset="assets/media/demo-screenshot.webp" type="image/webp" />
         <img
           src="assets/media/demo-screenshot.jpg"
-          width="1440"
-          height="768"
+          width="3240"
+          height="1728"
           loading="lazy"
           decoding="async"
-          alt="VeriGrader grading view: a student response with highlighted pieces, the reference answer, and the scoring rationale for an unclear piece"
+          alt="VeriGrader grading view showing an unclear response piece, its highlighted scoring point in the reference answer, and the scoring rationale"
         />
       </picture>
       <span class="demo-shot-cta">

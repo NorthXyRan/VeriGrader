@@ -1,11 +1,14 @@
+import { fitEmbeddedFrame, loadFrameWhenShown } from './embedded-frame.js'
+
 // Drive the loop and the shared grading canvas from one six-step timeline.
-;(() => {
+export function initWorkflow() {
   const root = document.getElementById('workflow')
   if (!root) return
 
   const tabs = [...root.querySelectorAll('.workflow-node')]
   const canvas = root.querySelector('.workflow-canvas')
-  const iframe = canvas.querySelector('iframe')
+  const iframe = canvas?.querySelector('iframe')
+  if (!iframe) return
   const buttons = [...root.querySelectorAll('.workflow-step')]
   // The step track sits outside the canvas, so look it up from the section.
   const note = root.querySelector('.workflow-track__note')
@@ -17,7 +20,8 @@
   const token = root.querySelector('.workflow-loop__token')
   const trail = root.querySelector('.workflow-loop__trail')
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const phone = window.matchMedia('(max-width: 640px)')
+  // Matches workflow.css: phones in either orientation show only the circling loop.
+  const phone = window.matchMedia('(max-width: 640px), (max-height: 500px) and (pointer: coarse)')
   const origin = window.location.origin
 
   const order = [0, 4, 5, 6] // First step index of each stage, followed by the end of the tour.
@@ -33,25 +37,30 @@
   let index = 0
   let elapsed = 0
   let paused = false
-  let visible = false
+  let frameVisible = false
+  let loopVisible = false
   let ready = false
   let frameId = 0
   let lastFrame = 0
 
-  const playing = () => ready && visible && !paused && !reducedMotion.matches && !document.hidden
+  // Phones hide the canvas, so there the ring tours on its own while it is on screen.
+  const playing = () =>
+    (phone.matches ? loopVisible : ready && frameVisible) &&
+    !paused &&
+    !reducedMotion.matches &&
+    !document.hidden
   const progress = () => elapsed / steps[index].duration
 
   function showStep() {
     const { stage } = steps[index]
-    if (!phone.matches) {
-      tabs.forEach((tab, i) => {
-        tab.setAttribute('aria-selected', String(i === stage))
-        tab.tabIndex = i === stage ? 0 : -1
-      })
-    }
+    tabs.forEach((tab, i) => {
+      tab.classList.toggle('is-active', i === stage)
+      tab.setAttribute(phone.matches ? 'aria-pressed' : 'aria-selected', String(i === stage))
+      tab.tabIndex = phone.matches || i === stage ? 0 : -1
+    })
     canvas.setAttribute('aria-labelledby', tabs[stage].id)
-    canvas.dataset.stage = String(stage)
     buttons.forEach((button, i) => {
+      button.classList.toggle('is-reached', i <= index)
       if (i === index) button.setAttribute('aria-current', 'step')
       else button.removeAttribute('aria-current')
     })
@@ -75,10 +84,8 @@
     token.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`)
     trail.style.strokeDasharray = `${((fraction / 3) * circumference).toFixed(2)} ${circumference}`
     trail.style.strokeDashoffset = (-(stage / 3) * circumference).toFixed(2)
-    root.style.setProperty('--workflow-progress', fraction.toFixed(4))
     // The step track above the canvas: one rail across all six steps.
     root.style.setProperty('--track-progress', ((index + progress()) / steps.length).toFixed(4))
-    buttons.forEach((button, i) => button.classList.toggle('is-reached', i <= index))
   }
 
   function publish() {
@@ -88,7 +95,7 @@
         type: 'verigrader:workflow-state',
         step: index + 1,
         progress: progress(),
-        playing: playing(),
+        playing: !phone.matches && playing(),
       },
       origin,
     )
@@ -105,11 +112,9 @@
       index = (index + 1) % steps.length
       elapsed = 0
       showStep()
-      publish()
-    } else {
-      // Every frame, so typing, the cursor and the step track move smoothly.
-      publish()
     }
+    // The phone ring runs independently; don't animate a hidden app.
+    if (!phone.matches) publish()
     drawRing()
     frameId = requestAnimationFrame(tick)
   }
@@ -142,7 +147,9 @@
   buttons.forEach((button, i) => button.addEventListener('click', () => selectStep(i)))
 
   root.querySelector('.workflow-loop__tabs').addEventListener('keydown', (event) => {
-    const stage = steps[index].stage
+    if (phone.matches) return
+    const stage = tabs.indexOf(document.activeElement)
+    if (stage < 0) return
     const offsets = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }
     let next
     if (event.key in offsets) next = (stage + offsets[event.key] + tabs.length) % tabs.length
@@ -170,40 +177,56 @@
     }
   })
 
-  const observer = new IntersectionObserver(([entry]) => {
-    visible = entry.intersectionRatio >= 0.15
-    syncPlayback()
-  }, { threshold: 0.15 })
+  const loop = root.querySelector('.workflow-loop')
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const shown = entry.intersectionRatio >= 0.15
+        if (entry.target === iframe) frameVisible = shown
+        else loopVisible = shown
+      }
+      syncPlayback()
+    },
+    { threshold: 0.15 },
+  )
   observer.observe(iframe)
+  observer.observe(loop)
 
-  // Phones hide the canvas and show the loop as a plain list, so its stages stop being tabs.
+  fitEmbeddedFrame(canvas, {
+    width: 907, height: 520, prefix: 'canvas', expand: true, resizeHeight: true,
+  })
+  loadFrameWhenShown(iframe, phone)
+
+  // Without a visible canvas, the stages are ordinary toggle buttons.
   const tabList = root.querySelector('.workflow-loop__tabs')
   function applyLayout() {
     const listOnly = phone.matches
-    if (listOnly) tabList.removeAttribute('role')
-    else tabList.setAttribute('role', 'tablist')
+    tabList.setAttribute('role', listOnly ? 'group' : 'tablist')
+    if (listOnly) tabList.removeAttribute('aria-orientation')
+    else tabList.setAttribute('aria-orientation', 'vertical')
     tabs.forEach((tab) => {
       if (listOnly) {
         tab.removeAttribute('role')
         tab.removeAttribute('aria-selected')
         tab.removeAttribute('aria-controls')
-        tab.setAttribute('aria-disabled', 'true')
-        tab.tabIndex = -1
+        tab.tabIndex = 0
       } else {
+        tab.removeAttribute('aria-pressed')
         tab.setAttribute('role', 'tab')
         tab.setAttribute('aria-controls', canvas.id)
-        tab.removeAttribute('aria-disabled')
       }
     })
-    if (!listOnly) showStep()
+    showStep()
   }
-  phone.addEventListener('change', applyLayout)
+  phone.addEventListener('change', () => {
+    applyLayout()
+    syncPlayback()
+  })
 
   document.addEventListener('visibilitychange', syncPlayback)
   reducedMotion.addEventListener('change', syncPlayback)
   applyLayout()
-  showStep()
   drawRing()
   syncPlayback()
   iframe.contentWindow?.postMessage({ type: 'verigrader:workflow-probe' }, origin)
-})()
+}

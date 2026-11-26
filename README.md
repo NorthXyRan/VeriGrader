@@ -64,10 +64,15 @@ The GitHub Pages site has two parts: the project page in `site/` at the root, an
 
 ```bash
 bash scripts/build-pages.sh    # assembles site/ and builds the demo into site/dist/demo
+node --test scripts/*.test.mjs # Pages build, preview and interaction regression tests
 node scripts/serve-site.mjs    # preview at http://localhost:4173/VeriGrader/
 ```
 
-The Pages build of the app excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`.
+Install the frontend dependencies before building or running the tests. The Pages build runs TypeScript checks and excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`. Missing sections fail the build.
+
+The page has no bundler or framework dependency: `assets/js/main.js` initializes the page shell, usage videos, demo embed, and workflow as separate ES modules. Section styles (including their responsive layouts) live in matching CSS files; `base.css` owns shared layout and tokens, while `mobile.css` owns shared compact typography and page spacing. `embedded-frame.js` shares desktop iframe sizing and conditional loading.
+
+Inside the Vue demo, `demo/gradingResults.ts` computes prepared results without stores, `demo/loadDemo.ts` seeds application state, and `demo/useWorkflowLink.ts` draws the selected-piece connection only when selection or layout changes.
 
 ## Citation
 

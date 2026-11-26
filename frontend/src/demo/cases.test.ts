@@ -4,7 +4,7 @@ import { gradingThresholds } from '@/config/gradingThresholds'
 import type { HighlightData } from '@/types/exam'
 
 import { demoCases } from './cases'
-import { getDemoGradingResult, responseAnnotations } from './loadDemo'
+import { getDemoGradingResult, responseAnnotations } from './gradingResults'
 
 const studentIds = Array.from({ length: 12 }, (_, index) => index + 1)
 /** Papers the first pass flags for review, per question. Regrading settles them. */
