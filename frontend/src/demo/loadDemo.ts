@@ -6,7 +6,7 @@ import { computeScoreFromReferences, sanitizeHighlightData } from '@/utils/highl
 import { demoCases as cases } from './cases'
 import type { DemoAnnotation, DemoResponse } from './caseTypes'
 
-function renderResponse(response: DemoResponse): string {
+export function renderResponse(response: DemoResponse): string {
   return response.paragraphs
     .map((paragraph) =>
       paragraph.map((segment) => (typeof segment === 'string' ? segment : segment.text)).join(' '),

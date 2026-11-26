@@ -69,8 +69,8 @@
         </div>
       </section>
 
-      <section class="header-block action-block">
-        <h1 class="block-label">Grade</h1>
+      <section class="header-block action-block" aria-label="Grading actions">
+        <h1 v-if="!isPagesDemo" class="block-label">Grade</h1>
         <ActionSection
           ref="actionSectionRef"
           :can-proceed="props.canProceed"
@@ -121,6 +121,7 @@ import { Message } from '@/components/Message'
 import { useContentLayout } from '@/composables/useContentLayout'
 import { useGradingStatistics } from '@/composables/useGradingStatistics'
 import { useQualityFlag } from '@/composables/useQualityFlag'
+import { isPagesDemo } from '@/config/deployment'
 import { useExamDataStore } from '@/stores/useExamDataStore'
 import type { HighlightData, Question } from '@/types/exam'
 import { calcHighlightMissingRate, calcHighlightOverlapRate } from '@/utils/highlightMetrics'

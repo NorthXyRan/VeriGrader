@@ -38,7 +38,7 @@ The main workflow is:
 
 A fully synthetic upload example and the accepted JSON schemas are available in [`examples/`](examples/README.md).
 
-The [project page](https://northxyran.github.io/VeriGrader/) embeds an [interactive demo](https://northxyran.github.io/VeriGrader/demo/) that opens in the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. Inspect and correct pre-graded responses, regrade the papers the first pass flagged for review to see their settled results, rerun single or batch grading, and export the score report. The demo replays prepared model results in the browser and needs no API key.
+The [project page](https://northxyran.github.io/VeriGrader/) embeds an [interactive demo](https://northxyran.github.io/VeriGrader/demo/) of the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. You can inspect and correct pre-graded responses and use One, Problem, or All to regrade them. The demo loads prepared model results in the browser and needs no API key.
 
 To run the prototype locally:
 
@@ -67,7 +67,7 @@ bash scripts/build-pages.sh    # assembles site/ and builds the demo into site/d
 node scripts/serve-site.mjs    # preview at http://localhost:4173/VeriGrader/
 ```
 
-The Pages build of the app excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. Each section of the page lives in `site/sections/<name>.html` with matching `site/assets/css/<name>.css` and `site/assets/js/<name>.js`. `scripts/record-demo-clip.mjs` re-records the phone clip of the demo.
+The Pages build of the app excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`.
 
 ## Citation
 

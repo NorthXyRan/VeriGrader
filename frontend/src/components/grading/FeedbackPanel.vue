@@ -1,19 +1,29 @@
 <template>
-  <div class="feedback-panel">
+  <div class="feedback-panel" :class="{ 'feedback-panel--readonly': readOnly }">
     <div class="feedback-content">
       <div class="reason-area">
         <el-input
           v-if="isEditing"
+          ref="reasonInput"
           v-model="editableReason"
           type="textarea"
           placeholder="Please enter the scoring reason..."
           :rows="6"
           resize="none"
           class="reason-textarea"
+          aria-label="Scoring rationale"
           @blur="autoSave"
         />
 
-        <div v-else class="reason-display" @click="enterEditMode">
+        <div
+          v-else
+          class="reason-display"
+          :role="canEdit ? 'button' : undefined"
+          :tabindex="canEdit ? 0 : undefined"
+          @click="enterEditMode"
+          @keydown.enter="enterEditMode"
+          @keydown.space="enterEditMode"
+        >
           <div v-if="isCurrentReasonInExamples" class="example-indicator">
             <el-icon><Star /></el-icon>
             <span>This rationale is currently used as a few-shot example</span>
@@ -26,13 +36,13 @@
       </div>
     </div>
 
-    <div class="action-buttons">
+    <div v-if="!readOnly" class="action-buttons">
       <el-button
         :type="isCurrentReasonInExamples ? 'warning' : 'primary'"
         @click="toggleSubmitReason"
-        :disabled="!editableReason.trim()"
+        :disabled="!editableReason.trim() || exampleDisabled"
       >
-        {{ isCurrentReasonInExamples ? 'Remove Example' : 'Save as Example' }}
+        {{ isCurrentReasonInExamples ? 'Remove Example' : exampleLabel }}
       </el-button>
     </div>
   </div>
@@ -43,7 +53,7 @@ import { Message } from '@/components/Message'
 import { useContentLayout } from '@/composables/useContentLayout'
 import type { HighlightType } from '@/utils/highlightUtils'
 import { Star } from '@element-plus/icons-vue'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 
 interface HighlightClickData {
   text: string
@@ -61,6 +71,9 @@ interface SelectedHighlight {
 
 interface Props {
   currentQuestionId?: number
+  readOnly?: boolean
+  exampleLabel?: string
+  exampleDisabled?: boolean
   reasonExamples?: Array<{
     questionId: number
     studentId: number
@@ -73,6 +86,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   currentQuestionId: 1,
+  exampleLabel: 'Save as Example',
   reasonExamples: () => [],
 })
 
@@ -94,6 +108,7 @@ const layout = useContentLayout()
 const selectedHighlight = ref<SelectedHighlight | null>(null)
 const editableReason = ref('')
 const isEditing = ref(false)
+const reasonInput = useTemplateRef<{ focus: () => void }>('reasonInput')
 
 const displayReason = computed(() => {
   if (!selectedHighlight.value) {
@@ -153,16 +168,16 @@ watch(
   { immediate: true },
 )
 
-const enterEditMode = () => {
-  if (!selectedHighlight.value || isCurrentReasonInExamples.value) {
-    return
-  }
+const canEdit = computed(
+  () => !props.readOnly && !!selectedHighlight.value && !isCurrentReasonInExamples.value,
+)
 
+const enterEditMode = (event?: Event) => {
+  if (!canEdit.value) return
+  event?.preventDefault()
   isEditing.value = true
-
-  if (selectedHighlight.value) {
-    emits('modifyReason', selectedHighlight.value)
-  }
+  if (selectedHighlight.value) emits('modifyReason', selectedHighlight.value)
+  if (event) void nextTick(() => reasonInput.value?.focus())
 }
 
 const autoSave = () => {
@@ -186,6 +201,7 @@ const autoSave = () => {
 }
 
 const toggleSubmitReason = () => {
+  if (props.readOnly || props.exampleDisabled) return
   if (!editableReason.value.trim()) {
     Message.warning('Please enter reason content')
     return
@@ -217,8 +233,11 @@ const resetPanel = () => {
 }
 
 defineExpose({
+  editableReason,
+  enterEditMode,
   handleHighlightClicked,
   resetPanel,
+  toggleSubmitReason,
 })
 </script>
 
@@ -297,9 +316,13 @@ defineExpose({
   overflow-y: auto;
 }
 
-.reason-content-text:hover {
+.feedback-panel:not(.feedback-panel--readonly) .reason-content-text:hover {
   color: rgba(0, 0, 0, 0.8);
   background: rgba(0, 122, 255, 0.05);
+}
+
+.feedback-panel--readonly .reason-content-text {
+  cursor: default;
 }
 
 .reason-textarea {

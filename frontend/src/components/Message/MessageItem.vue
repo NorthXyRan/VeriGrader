@@ -8,8 +8,8 @@
         { 'with-icon': showIcon },
         type === 'grading' && status ? `grading-${status}` : '',
       ]"
-      @mouseenter="pauseTimer"
-      @mouseleave="resumeTimer"
+      @pointerenter="pauseTimer"
+      @pointerleave="resumeTimer"
     >
       <div v-if="showIcon" class="message-icon">
         <transition name="icon-fade" mode="out-in">
@@ -234,14 +234,18 @@ const startTimer = () => {
   }, props.duration)
 }
 
-const pauseTimer = () => {
+// Hovering a toast with a mouse keeps it open. A touch leaves a lingering "hover" where the finger
+// tapped, which would freeze the toast forever, so touch and pen never pause it.
+const pauseTimer = (event: PointerEvent) => {
+  if (event.pointerType !== 'mouse') return
   if (timer) {
     clearTimeout(timer)
     timer = null
   }
 }
 
-const resumeTimer = () => {
+const resumeTimer = (event: PointerEvent) => {
+  if (event.pointerType !== 'mouse') return
   startTimer()
 }
 

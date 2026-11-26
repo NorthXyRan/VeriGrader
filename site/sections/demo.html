@@ -1,98 +1,38 @@
-<section class="section demo" id="demo" aria-labelledby="demo-title">
-  <div class="container">
-    <div class="section-head reveal">
-      <span class="eyebrow">Live demo</span>
-      <h2 class="section-title" id="demo-title">Grade a real exam. <em>Right&nbsp;here.</em></h2>
-      <p class="section-lead">
-        This is the full VeriGrader interface, loaded with a Numerical Analysis midterm: four questions, twelve
-        students, every answer already graded by the model. Nothing to install. Just click.
-      </p>
+<section class="demo" id="demo" aria-label="Live demo">
+  <div class="demo-screen">
+    <!-- Wider screens: the live app. main.js sets src only there, so phones never load it. -->
+    <div class="demo-viewport">
+      <iframe
+        class="demo-frame"
+        data-src="demo/#/grading"
+        title="VeriGrader grading demo with sample responses"
+        width="3840"
+        height="2048"
+        loading="lazy"
+      ></iframe>
     </div>
-
-    <ol class="demo-steps" aria-label="Five things to try">
-      <li class="demo-step">
-        <span class="demo-step-num" aria-hidden="true">1</span>
-        <h3 class="demo-step-title">Ask why</h3>
-        <p class="demo-step-text">Click any highlight. Its scoring point lights up in the reference answer, and the model explains the call.</p>
-        <span class="demo-step-cue" aria-hidden="true"><span class="hl hl--unclear">“depends on the situation”</span></span>
-      </li>
-      <li class="demo-step">
-        <span class="demo-step-num" aria-hidden="true">2</span>
-        <h3 class="demo-step-title">Settle the doubts</h3>
-        <p class="demo-step-text">Student 4 wears an orange dot. Press <b>Problem</b> and watch every flagged paper regrade and settle.</p>
-        <span class="demo-step-cue" aria-hidden="true"><span class="demo-cue-dot">4</span><span class="demo-cue-arrow">→</span><span class="demo-cue-btn">Problem</span></span>
-      </li>
-      <li class="demo-step">
-        <span class="demo-step-num" aria-hidden="true">3</span>
-        <h3 class="demo-step-title">Overrule the model</h3>
-        <p class="demo-step-text">Select a piece, relabel it, then click the rationale and write your own.</p>
-        <span class="demo-step-cue" aria-hidden="true"><span class="tag tag--correct">Correct</span><span class="tag tag--wrong">Wrong</span><span class="tag tag--unclear">Unclear</span></span>
-      </li>
-      <li class="demo-step">
-        <span class="demo-step-num" aria-hidden="true">4</span>
-        <h3 class="demo-step-title">Teach by example</h3>
-        <p class="demo-step-text"><b>Confirm Result</b> finalizes a paper. Star it as <b>Gold Standard</b> and it joins the exemplars that guide every regrade.</p>
-        <span class="demo-step-cue" aria-hidden="true"><span class="demo-cue-btn demo-cue-btn--gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>Gold Standard</span></span>
-      </li>
-      <li class="demo-step">
-        <span class="demo-step-num" aria-hidden="true">5</span>
-        <h3 class="demo-step-title">Report and export</h3>
-        <p class="demo-step-text">Open <b>Score Report</b> (the chart icon) for class statistics, then <b>Export Results</b> as JSON.</p>
-        <span class="demo-step-cue" aria-hidden="true"><span class="demo-cue-btn">Score Report</span><span class="demo-cue-arrow">→</span><span class="demo-cue-file">results.json</span></span>
-      </li>
-    </ol>
-
-    <!-- Desktop and tablet: the real app in a browser window (demo.js mounts the iframe near the viewport). -->
-    <div class="demo-live reveal">
-      <div class="demo-window">
-        <div class="demo-bar">
-          <span class="demo-lights" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="demo-address">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <span>northxyran.github.io/VeriGrader/demo</span>
-          </span>
-          <span class="demo-live-badge"><span class="demo-live-dot" aria-hidden="true"></span>Live</span>
-        </div>
-        <div class="demo-stage" data-demo-stage>
-          <img class="demo-poster" src="assets/media/demo-poster.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" />
-          <p class="demo-loading" data-demo-loading><span class="demo-spinner" aria-hidden="true"></span>Loading the live demo…</p>
-        </div>
-      </div>
-      <div class="demo-actions">
-        <p class="demo-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
-          <span>Runs entirely in your browser on prepared model results. No API key, and no data leaves this page.</span>
-        </p>
-        <div class="demo-buttons">
-          <button class="btn btn--ghost demo-btn-ghost" type="button" data-demo-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-            Reset demo
-          </button>
-          <a class="btn demo-btn-solid" href="demo/" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-            Open full screen
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Phones and touch screens: a short screen recording instead of the live app. -->
-    <div class="demo-phone reveal">
-      <div class="demo-window demo-window--clip">
-        <div class="demo-bar">
-          <span class="demo-lights" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="demo-address"><span>northxyran.github.io/VeriGrader/demo</span></span>
-        </div>
-        <video class="demo-clip" muted loop playsinline controls preload="none" poster="assets/media/demo-poster.jpg" width="1280" height="800" aria-label="Screen recording: clicking a highlight reveals its scoring point and rationale, Problem regrades the flagged papers, a piece is relabelled, and the Score Report opens" data-demo-clip>
-          <source src="assets/media/demo-clip.mp4" type="video/mp4" />
-          <source src="assets/media/demo-clip.webm" type="video/webm" />
-        </video>
-      </div>
-      <a class="btn demo-btn-solid demo-phone-cta" href="demo/">
-        Open the full demo
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <p class="demo-phone-note">The live demo is best on a larger screen.</p>
-    </div>
+    <!-- Phones: a screenshot of the same view that opens the demo. -->
+    <a class="demo-shot" href="demo/">
+      <picture>
+        <source srcset="assets/media/demo-screenshot.webp" type="image/webp" />
+        <img
+          src="assets/media/demo-screenshot.jpg"
+          width="1440"
+          height="768"
+          loading="lazy"
+          decoding="async"
+          alt="VeriGrader grading view: a student response with highlighted pieces, the reference answer, and the scoring rationale for an unclear piece"
+        />
+      </picture>
+      <span class="demo-shot-cta">
+        Open the live demo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+      </span>
+    </a>
   </div>
+  <p class="demo-caption">
+    <span class="demo-caption-live"><span class="demo-live-dot" aria-hidden="true"></span>Live</span>
+    <span class="demo-caption-text">Runs in your browser on prepared model results.</span>
+    <span class="demo-caption-phone">The live demo is best on a larger screen.</span>
+  </p>
 </section>

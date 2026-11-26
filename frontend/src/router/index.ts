@@ -27,6 +27,11 @@ const entryRoutes: RouteRecordRaw[] = isPagesDemo
         name: 'DetailDocs',
         component: () => import('@/components/settings/DetailDocs.vue'),
       },
+      {
+        path: 'result',
+        name: 'ResultReport',
+        component: () => import('@/components/result/ReportPage.vue'),
+      },
     ]
 
 const router = createRouter({
@@ -34,6 +39,9 @@ const router = createRouter({
     ? createWebHashHistory(import.meta.env.BASE_URL)
     : createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    ...(isPagesDemo
+      ? [{ path: '/workflow-review', component: () => import('@/demo/WorkflowReview.vue') }]
+      : []),
     {
       path: '/',
       component: MainLayout,
@@ -43,11 +51,6 @@ const router = createRouter({
           path: 'grading',
           name: 'Grading',
           component: () => import('@/components/grading/Grading.vue'),
-        },
-        {
-          path: 'result',
-          name: 'ResultReport',
-          component: () => import('@/components/result/ReportPage.vue'),
         },
       ],
     },

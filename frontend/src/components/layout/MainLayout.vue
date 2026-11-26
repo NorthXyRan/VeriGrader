@@ -1,13 +1,17 @@
 <template>
-  <div class="main-layout" :class="{ 'main-layout--phone': isPhone }">
+  <div
+    class="main-layout"
+    :class="{ 'main-layout--phone': isPhone, 'main-layout--demo': isPagesDemo }"
+  >
     <AppHeader
+      v-if="!isPagesDemo"
       :is-collapse="isCollapse"
       :show-collapse-toggle="!isPhone"
       @toggle-collapse="toggleCollapse"
     />
 
     <div class="body-container">
-      <AppSidebar :is-collapse="isCollapse" :is-bar="isPhone" />
+      <AppSidebar v-if="!isPagesDemo" :is-collapse="isCollapse" :is-bar="isPhone" />
 
       <main ref="mainContentRef" class="main-content" :class="`main-content--${contentLayout}`">
         <router-view></router-view>
@@ -17,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPagesDemo } from '@/config/deployment'
 import { getContentLayout, VIEWPORT_BREAKPOINTS, type ContentLayout } from '@/utils/responsive'
 import { contentLayoutKey } from '@/composables/useContentLayout'
 import { onMounted, onUnmounted, provide, readonly, ref } from 'vue'
@@ -45,15 +50,15 @@ const watchMedia = (query: string, onChange: (matches: boolean) => void) => {
 }
 
 onMounted(() => {
-  // Phones get a navigation bar; mid-size screens start with the sidebar folded to icons so the
-  // grading workspace keeps its width. The header toggle still overrides this until the next
-  // breakpoint is crossed.
-  watchMedia(`(max-width: ${VIEWPORT_BREAKPOINTS.phone}px)`, (matches) => {
-    isPhone.value = matches
-  })
-  watchMedia(`(max-width: ${VIEWPORT_BREAKPOINTS.desktop - 1}px)`, (matches) => {
-    isCollapse.value = matches
-  })
+  if (!isPagesDemo) {
+    // The sidebar becomes a bar on phones and an icon rail on mid-size screens.
+    watchMedia(`(max-width: ${VIEWPORT_BREAKPOINTS.phone}px)`, (matches) => {
+      isPhone.value = matches
+    })
+    watchMedia(`(max-width: ${VIEWPORT_BREAKPOINTS.desktop - 1}px)`, (matches) => {
+      isCollapse.value = matches
+    })
+  }
 
   const content = mainContentRef.value
   if (!content) return
@@ -78,6 +83,11 @@ onUnmounted(() => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.main-layout--demo {
+  --app-header-height: 0px;
+  background: #eef1f5;
 }
 
 .body-container {

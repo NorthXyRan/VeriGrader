@@ -1,12 +1,12 @@
 <template>
   <nav
     class="sidebar"
-    :class="{ collapsed: showIconsOnly, 'sidebar--bar': isBar, 'sidebar--demo': isPagesDemo }"
+    :class="{ collapsed: showIconsOnly, 'sidebar--bar': isBar }"
     aria-label="Main navigation"
   >
     <div class="sidebar-card">
       <el-menu v-if="!showIconsOnly" :default-active="activeMenu" class="nav-menu" :router="true">
-        <template v-for="item in visibleMenuItems" :key="item.index">
+        <template v-for="item in menuItems" :key="item.index">
           <el-menu-item v-if="!item.children" :index="item.index" :route="item.route">
             <el-icon><component :is="item.icon" /></el-icon>
             <span>{{ item.title }}</span>
@@ -30,7 +30,7 @@
       </el-menu>
 
       <div v-else class="nav-menu collapsed-menu">
-        <template v-for="item in visibleMenuItems" :key="item.index">
+        <template v-for="item in menuItems" :key="item.index">
           <el-tooltip
             v-if="!item.children && item.route"
             :content="item.title"
@@ -84,7 +84,6 @@
 </template>
 
 <script setup lang="ts">
-import { isPagesDemo } from '@/config/deployment'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createRouteToIndexMap, isMenuActive, menuItems, type MenuItem } from './menuConfig'
@@ -100,9 +99,6 @@ const props = withDefaults(defineProps<Props>(), { isBar: false })
 const router = useRouter()
 const route = useRoute()
 
-const visibleMenuItems = isPagesDemo
-  ? menuItems.filter((item) => item.route === '/grading' || item.route === '/result')
-  : menuItems
 const routeToIndexMap = createRouteToIndexMap()
 
 const activeMenu = computed(() => {
@@ -113,8 +109,7 @@ const isMenuActiveItem = (item: MenuItem): boolean => {
   return isMenuActive(item, activeMenu.value)
 }
 
-// The demo has two destinations, so its bar keeps text labels; the full app's bar uses icons.
-const showIconsOnly = computed(() => (props.isBar ? !isPagesDemo : props.isCollapse))
+const showIconsOnly = computed(() => props.isBar || props.isCollapse)
 
 const navigateToRoute = (routePath: string) => {
   router.push(routePath)

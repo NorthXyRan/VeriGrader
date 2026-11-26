@@ -1,0 +1,259 @@
+/* Phone-only trims (up to 640px wide). Loaded last so it can simplify any section.
+   Desktop and tablet layouts live in the section stylesheets and are not changed here.
+
+   On a phone the page tells the same story with fewer, larger pieces:
+   hero → abstract → demo screenshot → the three-stage loop → one clip with a chapter list
+   → each study finding with its key numbers and at most one figure → BibTeX. */
+
+@media (max-width: 640px) {
+  /* ---------- Rhythm: shorter section spacing ---------- */
+  .section {
+    padding: var(--s-7) 0;
+  }
+  .section--tight {
+    padding: var(--s-7) 0;
+  }
+  .section-head {
+    margin-bottom: var(--s-6);
+  }
+  /* Keeps the two-line workflow title from leaving one word on its own line at 360px. */
+  .section-title {
+    font-size: clamp(32px, 9.2vw, 36px);
+  }
+  .section-lead {
+    margin-top: var(--s-3);
+  }
+  /* Small mono labels above the titles repeat the title; the workflow one names the section. */
+  .usage .eyebrow,
+  .section--citation .eyebrow {
+    display: none;
+  }
+  .eyebrow {
+    margin-bottom: var(--s-3);
+    font-size: 13px;
+  }
+
+  /* ---------- Nav: full-size touch targets ---------- */
+  .nav__brand,
+  .nav__links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ---------- Hero: one row of three links ---------- */
+  .hero {
+    padding: calc(var(--nav-h) + var(--s-6)) 0 var(--s-7);
+  }
+  .hero__subtitle {
+    margin-top: var(--s-4);
+  }
+  .hero__venue {
+    margin-top: var(--s-3);
+  }
+  .hero__authors {
+    margin-top: var(--s-5);
+  }
+  .hero__affils,
+  .hero__correspondence {
+    margin-top: var(--s-1);
+  }
+  /* The slide deck is a .pptx download and BibTeX is at the bottom of the page anyway. */
+  .hero__actions a[href$='.pptx'],
+  .hero__actions a[href='#bibtex'] {
+    display: none;
+  }
+  .hero__actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-2);
+    max-width: 400px;
+    margin: var(--s-5) auto 0;
+  }
+  .hero__actions .btn {
+    padding: 0 var(--s-2);
+  }
+
+  /* ---------- Abstract ---------- */
+  .abstract h2 {
+    margin-bottom: var(--s-3);
+  }
+
+  /* ---------- Live demo: screenshot link ---------- */
+  .demo {
+    padding: var(--s-5) 0 var(--s-7);
+  }
+  .demo-caption {
+    margin-top: var(--s-3);
+    font-size: 14px;
+  }
+  .demo-shot-cta {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* ---------- How it works: just the three-stage loop ----------
+     The animated canvas and its six-step track need a big screen (the track labels drop to
+     10px and the canvas is 800px tall); phones read the loop as a numbered list instead and
+     can open the full app from the demo screenshot above. */
+  .workflow-canvas-wrap,
+  .workflow-loop__controls {
+    display: none;
+  }
+  .workflow-stage {
+    gap: 0;
+  }
+  .workflow-loop {
+    max-width: none;
+  }
+  /* With no canvas to drive, the stages are a static list: all three look alike. */
+  .workflow-node {
+    min-height: 0;
+    padding: 12px var(--s-4) 12px 12px;
+    pointer-events: none;
+    cursor: default;
+  }
+  .workflow-node[aria-selected='true'] {
+    border-color: var(--line);
+    box-shadow: var(--shadow-sm);
+  }
+  .workflow-node .workflow-node__num,
+  .workflow-node[aria-selected='true'] .workflow-node__num {
+    background: var(--accent-soft);
+    border-color: transparent;
+    color: var(--accent-ink);
+  }
+  .workflow-node__bar {
+    display: none !important;
+  }
+  .workflow-node__title {
+    font-size: 16px;
+  }
+  .workflow-node__sub {
+    white-space: normal;
+    font-size: 14px;
+  }
+  .workflow-loop__return {
+    font-size: 14px;
+  }
+
+  /* ---------- Usage Scenario: player, its description, a compact chapter list ---------- */
+  .usage__head {
+    margin-bottom: var(--s-5);
+  }
+  .usage__layout {
+    gap: var(--s-4);
+  }
+  .usage__player {
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+  }
+  /* The selected chapter row already shows the clip's number, length and title. */
+  .usage--tabs .usage__caption .usage__meta,
+  .usage--tabs .usage__caption .usage__title {
+    display: none;
+  }
+  .usage--tabs .usage__panel {
+    gap: var(--s-3);
+  }
+  .usage__chapters {
+    gap: var(--s-2);
+  }
+  .usage__chapter {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 48px;
+    padding: 10px var(--s-4) 12px;
+    border-radius: var(--radius-sm);
+  }
+  .usage__thumb {
+    display: none;
+  }
+  /* One line per chapter: number · title · length. */
+  .usage__chapter-text {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .usage__chapter .usage__meta {
+    display: contents;
+  }
+  .usage__chapter .usage__meta > span + span {
+    order: 2;
+    margin-left: auto;
+    font: 500 13px/1 var(--font-mono);
+    color: var(--ink-3);
+  }
+  .usage__chapter .usage__meta > span + span::before {
+    content: none;
+  }
+  .usage__chapter .usage__num {
+    font: 500 13px/1 var(--font-mono);
+  }
+  .usage__chapter .usage__title {
+    order: 1;
+    min-width: 0;
+    font: 500 15px/1.3 var(--font-body);
+  }
+
+  /* ---------- User Study: the takeaways, one figure per finding at most ----------
+     Paper tables and the protocol diagram are unreadable at phone width; their key numbers
+     are already in the finding text above them. */
+  .results-protocol,
+  .results-figure--table,
+  .results-figure:has(img[src*='verigrader-questionnaire']) {
+    display: none;
+  }
+  .results-finding__figures:not(:has(> .results-figure:not(.results-figure--table))) {
+    display: none;
+  }
+  .results-finding {
+    gap: var(--s-4);
+    padding-block: var(--s-6);
+  }
+  .results-finding:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .results-finding__copy h3 {
+    font-size: 26px;
+  }
+  .results-finding__copy p {
+    margin-top: var(--s-2);
+  }
+  /* Long paper captions shrink to their first line or two: what the figure shows. */
+  .results-figure figcaption {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin-top: var(--s-2);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ---------- BibTeX and footer ---------- */
+  .section--citation {
+    padding: var(--s-7) 0;
+  }
+  .section--citation .section-head {
+    margin-bottom: var(--s-4);
+  }
+  .section:has(+ .section--citation) {
+    padding-bottom: var(--s-7);
+  }
+  .bibtex pre {
+    padding: calc(var(--s-3) + 44px) var(--s-4) var(--s-4);
+    border-radius: var(--radius);
+  }
+  .bibtex .btn {
+    top: var(--s-3);
+    right: var(--s-3);
+    min-height: 40px;
+  }
+  .footer {
+    padding: var(--s-6) 0;
+  }
+  .footer__inner {
+    gap: var(--s-2);
+  }
+}

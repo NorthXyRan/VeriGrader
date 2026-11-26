@@ -36,11 +36,7 @@
     </div>
 
     <div class="page-row workspace-row">
-      <div class="grading-card preview-card hover">
-        <div class="panel-header">
-          <el-icon class="panel-icon panel-icon--response"><EditPen /></el-icon>
-          <h3>Student Response</h3>
-        </div>
+      <grading-panel class="preview-card hover" kind="response">
         <highlight-toolbar
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
@@ -64,13 +60,9 @@
           @highlight-hover-cleared="handleHighlightHoverCleared"
           @highlight-cleared="handleHighlightCleared"
         />
-      </div>
+      </grading-panel>
 
-      <div class="grading-card reference-card hover">
-        <div class="panel-header">
-          <el-icon class="panel-icon panel-icon--reference"><Notebook /></el-icon>
-          <h3>Reference Answer</h3>
-        </div>
+      <grading-panel class="reference-card hover" kind="reference">
         <reference-answer
           :reference-answer="currentReferenceAnswer"
           :highlight-data="currentHighlightData"
@@ -78,13 +70,9 @@
           @erase-reference-highlight="handleEraseReferenceHighlight"
           @set-reference-highlight="handleSetReferenceHighlight"
         />
-      </div>
+      </grading-panel>
 
-      <div class="grading-card feedback-card hover">
-        <div class="panel-header">
-          <el-icon class="panel-icon panel-icon--rationale"><ChatDotSquare /></el-icon>
-          <h3>Scoring Rationale</h3>
-        </div>
+      <grading-panel class="feedback-card hover" kind="rationale">
         <feedback-panel
           ref="feedbackPanelRef"
           :current-question-id="currentQuestionId"
@@ -94,7 +82,7 @@
           @submit-reason-example="handleSubmitReasonExample"
           @cancel-reason-example="handleCancelReasonExample"
         />
-      </div>
+      </grading-panel>
     </div>
   </div>
 </template>
@@ -106,10 +94,10 @@ import { useCurrentGradingContext } from '@/composables/useCurrentGradingContext
 import { useExamDataStore, type HighlightData } from '@/stores/useExamDataStore'
 import type { HighlightSelection, HighlightType, HighlightUpdate } from '@/types/exam'
 import { getHighlightItem, getHighlightItemIndex } from '@/utils/highlightRanges'
-import { ChatDotSquare, EditPen, Notebook } from '@element-plus/icons-vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import FeedbackPanel from './FeedbackPanel.vue'
 import GradingHeader from './GradingHeader.vue'
+import GradingPanel from './GradingPanel.vue'
 import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
 import QuestionDisplay from './QuestionDisplay.vue'
@@ -697,41 +685,6 @@ onMounted(async () => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 8px;
-  height: 46px;
-  padding: 0 18px;
-  background: #ffffff;
-  border-bottom: 1px solid #eef0f3;
-}
-
-.panel-header h3 {
-  margin: 0;
-  color: #1d1d1f;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.panel-icon {
-  font-size: 16px;
-}
-
-.panel-icon--response {
-  color: #007aff;
-}
-
-.panel-icon--reference {
-  color: #2fb84f;
-}
-
-.panel-icon--rationale {
-  color: #8e5cf7;
 }
 
 .reference-card :deep(.reference-answer),

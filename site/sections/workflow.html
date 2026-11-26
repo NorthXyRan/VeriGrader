@@ -4,41 +4,10 @@
       <span class="eyebrow">How it works</span>
       <h2 class="section-title" id="workflow-title">Review a few, <em>scale</em> to the rest</h2>
       <p class="section-lead">
-        The LLM drafts every mark, one scoring point at a time. You verify the papers that need it.
-        Everything you confirm becomes an example that steers how it grades the rest.
+        The LLM grades one scoring point at a time and explains every call. You settle the pieces it is
+        unsure about, and the rationales you confirm become examples that steer how it grades the rest.
       </p>
     </header>
-
-    <!-- Entry and exit around the loop -->
-    <ol class="workflow-io reveal" aria-label="From upload to export">
-      <li class="workflow-io__step">
-        <span class="workflow-io__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0-4 4m4-4 4 4" /><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
-        </span>
-        <span class="workflow-io__text">
-          <b>Upload</b>
-          <span>The question, a reference answer with scoring points, and the student responses</span>
-        </span>
-      </li>
-      <li class="workflow-io__step workflow-io__step--loop">
-        <span class="workflow-io__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-13.7 5.6" /><path d="M4 12a8 8 0 0 1 13.7-5.6" /><path d="M18 3v4h-4M6 21v-4h4" /></svg>
-        </span>
-        <span class="workflow-io__text">
-          <b>Grade · verify · steer</b>
-          <span>The loop below, repeated until every paper is confirmed</span>
-        </span>
-      </li>
-      <li class="workflow-io__step">
-        <span class="workflow-io__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4" /><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
-        </span>
-        <span class="workflow-io__text">
-          <b>Export</b>
-          <span>Every score with its pieces, scoring points, labels and reasons</span>
-        </span>
-      </li>
-    </ol>
 
     <div class="workflow-stage reveal">
       <!-- The loop: SVG ring on wide screens, a vertical timeline on phones -->
@@ -76,14 +45,14 @@
               type="button"
               role="tab"
               id="workflow-tab-grade"
-              aria-controls="workflow-panel-grade"
+              aria-controls="workflow-panel-canvas"
               aria-selected="true"
               data-stage="0"
             >
               <span class="workflow-node__num" aria-hidden="true">1</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">LLM grades</span>
-                <span class="workflow-node__sub">Segment · classify · explain</span>
+                <span class="workflow-node__sub">Segment · align · classify · explain</span>
               </span>
               <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
@@ -92,7 +61,7 @@
               type="button"
               role="tab"
               id="workflow-tab-verify"
-              aria-controls="workflow-panel-verify"
+              aria-controls="workflow-panel-canvas"
               aria-selected="false"
               tabindex="-1"
               data-stage="1"
@@ -100,7 +69,7 @@
               <span class="workflow-node__num" aria-hidden="true">2</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">You verify</span>
-                <span class="workflow-node__sub">Three linked panels</span>
+                <span class="workflow-node__sub">Settle unclear pieces</span>
               </span>
               <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
@@ -109,7 +78,7 @@
               type="button"
               role="tab"
               id="workflow-tab-steer"
-              aria-controls="workflow-panel-steer"
+              aria-controls="workflow-panel-canvas"
               aria-selected="false"
               tabindex="-1"
               data-stage="2"
@@ -117,7 +86,7 @@
               <span class="workflow-node__num" aria-hidden="true">3</span>
               <span class="workflow-node__text">
                 <span class="workflow-node__title">Feedback steers</span>
-                <span class="workflow-node__sub">Exemplars · regrade</span>
+                <span class="workflow-node__sub">Revise · save · regrade</span>
               </span>
               <span class="workflow-node__bar" aria-hidden="true"></span>
             </button>
@@ -138,188 +107,27 @@
         </div>
       </div>
 
-      <!-- Detail panels -->
-      <div class="workflow-panels card">
-        <!-- 1 · LLM grades -->
-        <div class="workflow-panel" role="tabpanel" id="workflow-panel-grade" aria-labelledby="workflow-tab-grade" tabindex="0">
-          <p class="workflow-panel__kicker">Stage 1 · Grading with the LLM</p>
-          <h3 class="workflow-panel__title">It grades <em>the way you would</em></h3>
-          <ul class="workflow-panel__lines">
-            <li>A chain-of-thought prompt has the model split each response by scoring point, label every piece <span class="tag tag--correct">Correct</span> <span class="tag tag--wrong">Wrong</span> or <span class="tag tag--unclear">Unclear</span>, and say why.</li>
-            <li>Every call returns ⟨piece, scoring point, label, reason⟩ in a fixed JSON schema; the score is credited from those quadruples.</li>
-            <li>Unclear is a real option, so borderline pieces come to you instead of being forced into a verdict.</li>
-          </ul>
-
-          <figure class="workflow-prompt" aria-label="Stylised grading prompt: instructional cue, question, reference answer with scoring points, student response and exemplars, then three chain-of-thought steps and the expected JSON output.">
-            <div class="workflow-prompt__head" aria-hidden="true">
-              <span class="workflow-prompt__dots"><i></i><i></i><i></i></span>
-              <span>grading prompt</span>
-            </div>
-            <dl class="workflow-prompt__slots">
-              <div class="workflow-prompt__slot" style="--i: 0">
-                <dt>Instructional cue</dt>
-                <dd>Assume you are a Numerical Analysis instructor.</dd>
-              </div>
-              <div class="workflow-prompt__slot" style="--i: 1">
-                <dt>OSQ</dt>
-                <dd>What are the differences between interpolation and approximation?</dd>
-              </div>
-              <div class="workflow-prompt__slot" style="--i: 2">
-                <dt>Reference answer</dt>
-                <dd>8 scoring points, 1 mark each</dd>
-              </div>
-              <div class="workflow-prompt__slot" style="--i: 3">
-                <dt>Student response</dt>
-                <dd>Student 6, one long run-on sentence</dd>
-              </div>
-              <div class="workflow-prompt__slot workflow-prompt__slot--ex" style="--i: 4">
-                <dt>Exemplars</dt>
-                <dd>Point- and response-level, confirmed by you</dd>
-              </div>
-            </dl>
-            <ol class="workflow-prompt__cot" aria-label="Chain of thought">
-              <li style="--i: 0"><b>1</b> Segment pieces</li>
-              <li style="--i: 1"><b>2</b> Classify</li>
-              <li style="--i: 2"><b>3</b> Generate reasons</li>
+      <div class="workflow-canvas-wrap">
+        <div class="workflow-track">
+          <p class="workflow-track__note" aria-live="polite"><strong data-workflow-stage>LLM grades</strong> <span data-workflow-narration>Split the student response into pieces that can be graded separately.</span></p>
+          <div class="workflow-track__line">
+            <span class="workflow-track__rail" aria-hidden="true"></span>
+            <span class="workflow-track__fill" aria-hidden="true"></span>
+            <span class="workflow-track__token" aria-hidden="true"><i></i></span>
+            <ol class="workflow-steps" aria-label="Steps in the grading workflow">
+              <li><button type="button" class="workflow-step" data-step="1" aria-current="step"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">segment</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="2"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">align</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="3"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">classify</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="4"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">explain</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="5"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">verify</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="6"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">regrade</span></button></li>
             </ol>
-            <pre class="workflow-prompt__out" aria-label="Expected output"><code><span class="workflow-json" style="--i: 0">{ <span class="workflow-json__k workflow-json__k--correct">"Correct"</span>: [{ "response piece": "…if the data are exact",</span><span class="workflow-json workflow-json--in" style="--i: 1">"matched scoring point": "SP5", "reason": "…" }],</span><span class="workflow-json" style="--i: 2">  <span class="workflow-json__k workflow-json__k--wrong">"Wrong"</span>: [ … ],</span><span class="workflow-json" style="--i: 3">  <span class="workflow-json__k workflow-json__k--unclear">"Unclear"</span>: [{ "response piece": "…loses details.",</span><span class="workflow-json workflow-json--in" style="--i: 4">"matched scoring point": "SP8", "reason": "…" }] }</span></code></pre>
-          </figure>
-        </div>
-
-        <!-- 2 · You verify -->
-        <div class="workflow-panel" role="tabpanel" id="workflow-panel-verify" aria-labelledby="workflow-tab-verify" tabindex="0" hidden>
-          <p class="workflow-panel__kicker">Stage 2 · Instructor verification</p>
-          <h3 class="workflow-panel__title">Every call, <em>in plain sight</em></h3>
-          <ul class="workflow-panel__lines">
-            <li>Response, reference answer and rationale sit side by side. Point at a piece and its scoring point and reason light up.</li>
-            <li>Relabel, remap, remove or add pieces; the score updates as you go.</li>
-            <li>Priority dots say where to look first: orange when 25–50% of pieces are Unclear, red above 50% or when pieces overlap.</li>
-          </ul>
-
-          <figure class="workflow-verify">
-            <div class="workflow-verify__nav" aria-hidden="true">
-              <span class="workflow-verify__nav-label">Q1</span>
-              <span class="workflow-verify__papers">
-                <i>1</i><i>2</i><i>3</i><i class="is-flag">4</i><i>5</i><i class="is-flag is-current">6</i><i>7</i><i class="is-flag">8</i><i>9</i><i>10</i><i>11</i><i>12</i>
-              </span>
-            </div>
-
-            <div class="workflow-verify__panels">
-              <div class="workflow-verify__pane workflow-verify__pane--response">
-                <p class="workflow-verify__pane-title">Response <span>Student 6 · excerpt</span></p>
-                <p class="workflow-verify__text">
-                  …and both give a continuous function you can evaluate anywhere.
-                  <span role="button" tabindex="0" class="workflow-piece hl hl--correct" data-sp="7" data-reason="Edge oscillation at high degree (Runge) and fitting the noise are both halves of the interpolation disadvantage.">The interpolation polynomial can oscillate at the edges when the degree is high and it also fits the noise,</span>
-                  <span role="button" tabindex="0" class="workflow-piece hl hl--unclear" data-sp="6" data-reason="The scope of this clause is ambiguous: it may continue the previous clause about noisy data, or claim that approximation always beats interpolation. Needs a second look.">while approximation is always more accurate than interpolation at new points,</span>
-                  <span role="button" tabindex="0" class="workflow-piece hl hl--correct" data-sp="5" data-reason="Exact data as the setting where interpolation should be preferred is the interpolation advantage.">but interpolation is the right choice if the data are exact</span>
-                  <span role="button" tabindex="0" class="workflow-piece hl hl--unclear" data-sp="8" data-reason="“Loses details” gestures at underfitting, but it does not say that the loss comes from the choice of model or degree, nor mention the residuals. The instructor should decide whether this counts.">and approximation sometimes loses details.</span>
-                </p>
-              </div>
-
-              <div class="workflow-verify__pane workflow-verify__pane--answer">
-                <p class="workflow-verify__pane-title">Reference answer</p>
-                <ol class="workflow-verify__points">
-                  <li data-sp="5"><b>SP5</b> Interpolation’s advantage: exact at every point, for noise-free data</li>
-                  <li data-sp="6"><b>SP6</b> Approximation’s advantage: robust to noise, captures the trend</li>
-                  <li data-sp="7"><b>SP7</b> Interpolation’s drawback: follows noise; Runge oscillation</li>
-                  <li data-sp="8"><b>SP8</b> Approximation’s drawback: residuals; depends on model and degree</li>
-                </ol>
-              </div>
-
-              <div class="workflow-verify__pane workflow-verify__pane--reason" aria-live="polite">
-                <p class="workflow-verify__pane-title">Grading reason <span class="workflow-verify__llm">LLM</span></p>
-                <p class="workflow-verify__verdict"></p>
-                <p class="workflow-verify__reason"></p>
-              </div>
-            </div>
-          </figure>
-        </div>
-
-        <!-- 3 · Feedback steers -->
-        <div class="workflow-panel" role="tabpanel" id="workflow-panel-steer" aria-labelledby="workflow-tab-steer" tabindex="0" hidden>
-          <p class="workflow-panel__kicker">Stage 3 · Feedback steers the model</p>
-          <h3 class="workflow-panel__title">Your judgement, <em>applied everywhere</em></h3>
-          <ul class="workflow-panel__lines">
-            <li>Fix what needs fixing and confirm. Save a corrected piece as a point-level exemplar, or set a whole paper as Standard to make it a response-level exemplar.</li>
-            <li>Exemplars join the prompt as few-shot examples. Regrade one paper, only the flagged ones, or every unconfirmed paper. No prompt writing.</li>
-          </ul>
-
-          <figure class="workflow-steer" aria-label="Relabel a piece from Unclear to Wrong, save it as an exemplar, then regrade the remaining papers.">
-            <div class="workflow-steer__step" style="--i: 0">
-              <p class="workflow-steer__label"><b>a</b> Relabel</p>
-              <p class="workflow-steer__piece">“and approximation sometimes loses details.”</p>
-              <p class="workflow-steer__relabel">
-                <span class="workflow-steer__chip">
-                  <span class="tag tag--unclear workflow-steer__from">Unclear</span>
-                  <span class="tag tag--wrong workflow-steer__to">Wrong</span>
-                </span>
-                <span class="workflow-steer__sp">SP8</span>
-              </p>
-              <p class="workflow-steer__note">Too vague to meet SP8. No credit.</p>
-            </div>
-            <div class="workflow-steer__arrow" aria-hidden="true"></div>
-            <div class="workflow-steer__step" style="--i: 1">
-              <p class="workflow-steer__label"><b>b</b> Save</p>
-              <ul class="workflow-steer__stack">
-                <li class="workflow-steer__ex workflow-steer__ex--point"><span>Point-level exemplar</span> piece · SP8 · Wrong · reason</li>
-                <li class="workflow-steer__ex workflow-steer__ex--resp"><span>Response-level exemplar</span> Student 6, set as Standard</li>
-              </ul>
-            </div>
-            <div class="workflow-steer__arrow" aria-hidden="true"></div>
-            <div class="workflow-steer__step" style="--i: 2">
-              <p class="workflow-steer__label"><b>c</b> Regrade</p>
-              <p class="workflow-steer__scope" aria-hidden="true"><span>One</span><span>Problem</span><span class="is-on">All</span></p>
-              <p class="workflow-steer__grid" aria-hidden="true">
-                <i class="is-done"></i><i class="is-done"></i><i class="is-done"></i><i style="--i: 0"></i><i style="--i: 1"></i><i class="is-std"></i><i style="--i: 2"></i><i style="--i: 3"></i><i style="--i: 4"></i><i style="--i: 5"></i><i style="--i: 6"></i><i style="--i: 7"></i>
-              </p>
-              <p class="workflow-steer__legend">
-                <span><i class="is-done"></i>Confirmed</span>
-                <span><i class="is-std"></i>Standard</span>
-                <span><i></i>Regraded</span>
-              </p>
-            </div>
-          </figure>
-
-          <div class="workflow-proof">
-            <p class="workflow-proof__item">
-              <span class="workflow-proof__num">+2.7%</span>
-              <span class="workflow-proof__label">average accuracy once participants’ exemplars were added</span>
-            </p>
-            <p class="workflow-proof__item">
-              <span class="workflow-proof__num">≈ +5.6%</span>
-              <span class="workflow-proof__label">after the final human review</span>
-            </p>
-            <p class="workflow-proof__note">Both relative to the first LLM pass without exemplars. User study, 12 teaching assistants.</p>
           </div>
         </div>
+        <div class="workflow-canvas card" id="workflow-panel-canvas" role="tabpanel" aria-labelledby="workflow-tab-grade" tabindex="0">
+          <iframe class="workflow-canvas__frame" title="Interactive grading workflow" src="demo/#/workflow-review" loading="lazy"></iframe>
+        </div>
       </div>
-    </div>
-
-    <!-- Design rationales R1–R4 -->
-    <div class="workflow-principles reveal">
-      <p class="workflow-principles__title">Built on four design principles</p>
-      <ul class="workflow-principles__list">
-        <li class="workflow-principle" data-stages="0 1">
-          <span class="workflow-principle__id">R1</span>
-          <b>Fine-grained, interpretable feedback</b>
-          <span>Every mark traces back to a piece, a scoring point and a reason.</span>
-        </li>
-        <li class="workflow-principle" data-stages="2">
-          <span class="workflow-principle__id">R2</span>
-          <b>Learnable, adaptable scoring</b>
-          <span>Your corrections feed back, so grading adapts to your standard.</span>
-        </li>
-        <li class="workflow-principle" data-stages="1">
-          <span class="workflow-principle__id">R3</span>
-          <b>Intuitive visual hints</b>
-          <span>Verdicts are drawn on the response text itself.</span>
-        </li>
-        <li class="workflow-principle" data-stages="2">
-          <span class="workflow-principle__id">R4</span>
-          <b>Interactions that steer</b>
-          <span>Click, relabel, confirm. The prompt builds itself.</span>
-        </li>
-      </ul>
     </div>
   </div>
 </section>

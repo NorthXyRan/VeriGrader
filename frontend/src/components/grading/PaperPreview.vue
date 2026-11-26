@@ -5,6 +5,7 @@
       :class="['preview-content', { 'has-focused-highlight': clickedHighlight }]"
       v-html="highlightedContent"
       @click="handleHighlightClick"
+      @keydown="handleHighlightKeydown"
       @mouseover="handleHighlightMouseover"
       @mouseout="handleHighlightMouseout"
     ></div>
@@ -26,11 +27,13 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 interface Props {
   studentAnswer?: string
   highlightData?: HighlightData | null
+  showLabels?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   studentAnswer: '',
   highlightData: null,
+  showLabels: true,
 })
 
 const emits = defineEmits<{
@@ -55,7 +58,7 @@ const splitMode = ref({
 })
 
 const highlightedContent = computed(() => {
-  return generateHighlightedHTML(props.studentAnswer, props.highlightData)
+  return generateHighlightedHTML(props.studentAnswer, props.highlightData, props.showLabels)
 })
 
 const handleHighlightClick = (event: MouseEvent) => {
@@ -137,6 +140,13 @@ const handleHighlightMouseover = (event: MouseEvent) => {
       occurrence: highlightData.occurrenceIndex ?? 0,
     })
   }
+}
+
+const handleHighlightKeydown = (event: KeyboardEvent) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+  if (!(event.target instanceof HTMLElement) || !event.target.matches('.text-highlight')) return
+  event.preventDefault()
+  event.target.click()
 }
 
 const handleHighlightMouseout = (event: MouseEvent) => {
