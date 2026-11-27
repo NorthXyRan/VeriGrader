@@ -68,7 +68,11 @@ node --test scripts/*.test.mjs # Pages build, preview and interaction regression
 node scripts/serve-site.mjs    # preview at http://localhost:4173/VeriGrader/
 ```
 
-Install the frontend dependencies before building or running the tests. The Pages build runs TypeScript checks and excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`. Missing sections fail the build.
+Use Node.js 24 and install the frontend dependencies (`npm ci --prefix frontend`) before building or running the tests. The Pages build runs TypeScript checks and excludes the local `VITE_` environment variables. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`. Missing sections fail the build.
+
+Every push or merge to `main` automatically runs the [Deploy Pages workflow](https://github.com/NorthXyRan/VeriGrader/actions/workflows/pages.yml): install locked dependencies, check formatting and lint, run frontend and Pages tests, build `site/dist/`, then deploy the artifact to GitHub Pages. Pull requests run the same checks and build without deploying. A failed check or build leaves the previous site online. The workflow can also be run manually from the Actions tab on `main`.
+
+Repository Settings → Pages uses **GitHub Actions**, and the `github-pages` environment permits deployment from `main`. The old `gh-pages` branch is no longer the publishing source. [build-info.json](https://northxyran.github.io/VeriGrader/build-info.json) records the deployed source commit and workflow run so the live version can be checked against `main`.
 
 The page has no bundler or framework dependency: `assets/js/main.js` initializes the page shell, usage videos, demo embed, and workflow as separate ES modules. Section styles (including their responsive layouts) live in matching CSS files; `base.css` owns shared layout and tokens, while `mobile.css` owns shared compact typography and page spacing. `embedded-frame.js` shares desktop iframe sizing and conditional loading.
 

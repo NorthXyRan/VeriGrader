@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the GitHub Pages bundle: project page at the root, demo app under demo/.
-# Output: site/dist (publish its contents to the root of the gh-pages branch).
+# Output: site/dist (uploaded and deployed by .github/workflows/pages.yml).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 node "$root/scripts/build-site.mjs"
