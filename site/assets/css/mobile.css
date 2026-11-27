@@ -100,12 +100,14 @@
     align-items: center;
   }
 
-  /* ---------- Hero: compact links, with every resource available ---------- */
+  /* ---------- Hero: prominent paper title and three compact links ---------- */
   .hero {
     padding: calc(var(--nav-h) + var(--s-6)) 0 var(--s-7);
   }
   .hero__subtitle {
     margin-top: var(--s-4);
+    font-size: clamp(1.75rem, 6.5vw, 2rem);
+    color: var(--ink);
   }
   .hero__venue {
     margin-top: var(--s-3);
@@ -119,8 +121,11 @@
   }
   .hero__actions {
     gap: var(--s-2);
-    max-width: 20rem;
     margin: var(--s-5) auto 0;
+  }
+  .hero__actions a[href$='.pptx'],
+  .hero__actions a[href='https://github.com/NorthXyRan/VeriGrader'] {
+    display: none;
   }
   .hero__actions .btn {
     min-height: 36px;
