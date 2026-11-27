@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container grading-layout">
+  <div class="page-container grading-layout" :class="`grading-layout--${layout}`">
     <grading-header
       ref="gradingHeaderRef"
       class="hover"
@@ -16,7 +16,7 @@
       @batch-grading="startBatchGrading"
     />
 
-    <div class="page-row page-row--fixed">
+    <div class="page-row question-row">
       <question-display
         class="grading-card question-card hover"
         :current-question="currentQuestionId"
@@ -35,8 +35,8 @@
       />
     </div>
 
-    <div class="page-row page-row--fill">
-      <div class="grading-card preview-card hover">
+    <div class="page-row workspace-row">
+      <grading-panel class="preview-card hover" kind="response">
         <highlight-toolbar
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
@@ -60,12 +60,9 @@
           @highlight-hover-cleared="handleHighlightHoverCleared"
           @highlight-cleared="handleHighlightCleared"
         />
-      </div>
+      </grading-panel>
 
-      <div class="grading-card reference-card hover">
-        <div class="card-header">
-          <h3>Reference Answer</h3>
-        </div>
+      <grading-panel class="reference-card hover" kind="reference">
         <reference-answer
           :reference-answer="currentReferenceAnswer"
           :highlight-data="currentHighlightData"
@@ -73,12 +70,9 @@
           @erase-reference-highlight="handleEraseReferenceHighlight"
           @set-reference-highlight="handleSetReferenceHighlight"
         />
-      </div>
+      </grading-panel>
 
-      <div class="grading-card feedback-card hover">
-        <div class="card-header">
-          <h3>Scoring Rationale</h3>
-        </div>
+      <grading-panel class="feedback-card hover" kind="rationale">
         <feedback-panel
           ref="feedbackPanelRef"
           :current-question-id="currentQuestionId"
@@ -88,13 +82,14 @@
           @submit-reason-example="handleSubmitReasonExample"
           @cancel-reason-example="handleCancelReasonExample"
         />
-      </div>
+      </grading-panel>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Message } from '@/components/Message'
+import { useContentLayout } from '@/composables/useContentLayout'
 import { useCurrentGradingContext } from '@/composables/useCurrentGradingContext'
 import { useExamDataStore, type HighlightData } from '@/stores/useExamDataStore'
 import type { HighlightSelection, HighlightType, HighlightUpdate } from '@/types/exam'
@@ -102,6 +97,7 @@ import { getHighlightItem, getHighlightItemIndex } from '@/utils/highlightRanges
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import FeedbackPanel from './FeedbackPanel.vue'
 import GradingHeader from './GradingHeader.vue'
+import GradingPanel from './GradingPanel.vue'
 import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
 import QuestionDisplay from './QuestionDisplay.vue'
@@ -115,6 +111,7 @@ import { useUploadStatusStore } from '@/stores/useUploadStatusStore'
 import { computeScoreFromReferences, sanitizeHighlightData } from '@/utils/highlightMetrics'
 
 const examDataStore = useExamDataStore()
+const layout = useContentLayout()
 const uploadStatusStore = useUploadStatusStore()
 
 const {
@@ -624,105 +621,59 @@ onMounted(async () => {
 
 <style scoped>
 .grading-layout {
-  min-height: calc(100vh - 86px);
-  max-height: calc(100vh - 86px);
-  overflow: visible;
-  padding-bottom: 0;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .grading-layout :deep(.page-row) {
-  gap: 16px;
+  gap: var(--space-4);
 }
 
-.page-row--fixed {
-  height: 110px;
-  flex-shrink: 0;
-  z-index: 1;
-}
-
-.page-row--fill {
-  flex: 1;
-  display: flex;
+/* Question prompt and the confirm / gold-standard actions. */
+.question-row {
   align-items: stretch;
-  min-height: 0;
-  overflow: visible;
-  height: 0;
-  z-index: 2;
-}
-
-.navigation-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: #f8fafc;
-  border-radius: 24px;
-  border: 1px solid #e2e8f0;
-  gap: 20px;
-}
-
-.nav-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-section label {
-  font-weight: 500;
-  color: #475569;
-  min-width: 80px;
-}
-
-.nav-info {
-  font-size: 14px;
-  color: #64748b;
-  min-width: 50px;
-  text-align: center;
 }
 
 .question-card {
-  flex: 8;
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 0;
+  width: auto;
   min-width: 0;
 }
 
 .scoring-card {
-  flex: 2;
+  flex: 0 0 auto;
+  width: auto;
+}
+
+/* The three coordinated panels: student response, reference answer, scoring rationale. */
+.workspace-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.preview-card,
+.reference-card,
+.feedback-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
 }
 
 .preview-card {
-  flex: 4;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  flex: 9 1 0;
+  container-type: inline-size;
+  container-name: response-panel;
 }
 
-.reference-card {
-  flex: 3;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
+.reference-card,
 .feedback-card {
-  flex: 3;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  flex: 6 1 0;
 }
 
-.preview-card {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.preview-card.hover:hover {
+.preview-card.hover:hover,
+.reference-card.hover:hover,
+.feedback-card.hover:hover {
   z-index: 10;
 }
 
@@ -736,129 +687,71 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-.reference-card,
-.feedback-card {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.reference-card.hover:hover,
-.feedback-card.hover:hover {
-  z-index: 10;
-}
-
-.reference-card .card-header,
-.feedback-card .card-header {
-  flex-shrink: 0;
-  padding: 16px 24px;
-  background: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.reference-card .card-header h3,
-.feedback-card .card-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
 .reference-card :deep(.reference-answer),
 .feedback-card :deep(.feedback-panel) {
   flex: 1;
-  min-height: 200px;
+  min-height: 0;
   overflow: hidden;
 }
 
-@media (max-width: 1080px) {
-  .page-row--fixed .question-card {
-    flex: 7;
-  }
-
-  .page-row--fixed .scoring-card {
-    flex: 3;
-  }
-
-  .page-row--fill {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .page-row--fill .grading-card {
-    flex: 1;
-    min-height: 300px;
-  }
+/* Wide: a fixed-height workspace that fits the window; each panel scrolls on its own. */
+.grading-layout--wide {
+  height: calc(100vh - var(--app-header-height));
+  min-height: 640px;
 }
 
-@media (max-width: 768px) {
-  .page-row--fixed {
-    flex-direction: column;
-    gap: 16px;
-    height: auto;
-  }
-
-  .page-row--fixed .grading-card {
-    flex: none;
-    height: auto;
-    min-height: 80px;
-  }
-
-  .page-row--fill {
-    gap: 16px;
-  }
-
-  .page-row--fill .grading-card {
-    min-height: 250px;
-  }
+.grading-layout--wide .workspace-row {
+  flex: 1;
+  min-height: 0;
 }
 
-:global(.main-content--compact .grading-layout),
-:global(.main-content--narrow .grading-layout) {
-  min-height: calc(100vh - 86px);
-  max-height: none;
-  overflow: visible;
-  padding-bottom: 16px;
+/* Compact: the response spans the full width; reference and rationale sit side by side. */
+.grading-layout--compact .workspace-row,
+.grading-layout--narrow .workspace-row {
+  flex-wrap: wrap;
 }
 
-:global(.main-content--compact .page-row--fixed .question-card) {
-  flex: 3;
+.grading-layout--compact .preview-card,
+.grading-layout--narrow .preview-card {
+  flex: 1 1 100%;
+  min-height: 320px;
 }
 
-:global(.main-content--compact .page-row--fixed .scoring-card) {
-  flex: 2;
+.grading-layout--compact .reference-card,
+.grading-layout--compact .feedback-card {
+  flex: 1 1 0;
+  min-height: 320px;
 }
 
-:global(.main-content--compact .page-row--fill),
-:global(.main-content--narrow .page-row--fill) {
-  flex: none;
+/* Narrow: everything stacks in reading order. */
+.grading-layout--narrow .question-row {
   flex-direction: column;
-  height: auto;
 }
 
-:global(.main-content--compact .page-row--fill .grading-card),
-:global(.main-content--narrow .page-row--fill .grading-card) {
-  flex: none;
-  min-height: 360px;
-}
-
-:global(.main-content--compact .page-row--fill .preview-card),
-:global(.main-content--narrow .page-row--fill .preview-card) {
-  min-height: 420px;
-}
-
-:global(.main-content--narrow .page-row--fixed) {
-  flex-direction: column;
-  height: auto;
-}
-
-:global(.main-content--narrow .page-row--fixed .grading-card) {
-  flex: none;
+.grading-layout--narrow .question-card,
+.grading-layout--narrow .scoring-card {
+  flex: 0 0 auto;
   width: 100%;
-  min-height: 110px;
 }
 
-:global(.main-content--narrow .page-row--fixed .scoring-card) {
-  min-height: 150px;
+.grading-layout--narrow .reference-card,
+.grading-layout--narrow .feedback-card {
+  flex: 1 1 100%;
+}
+
+.grading-layout--narrow .reference-card {
+  order: 3;
+  min-height: 200px;
+}
+
+/* Directly under the response, so tapping a highlight shows its rationale right below it. */
+.grading-layout--narrow .feedback-card {
+  order: 2;
+  min-height: 220px;
+}
+
+.grading-layout--narrow .reference-card :deep(.reference-answer),
+.grading-layout--narrow .feedback-card :deep(.feedback-panel) {
+  overflow: visible;
 }
 </style>

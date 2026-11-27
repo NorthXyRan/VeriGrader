@@ -1,4 +1,5 @@
 import { Message } from '@/components/Message'
+import { isPagesDemo } from '@/config/deployment'
 import { useQualityFlag } from '@/composables/useQualityFlag'
 import {
   checkGradingServiceStatus,
@@ -10,7 +11,7 @@ import {
   generateReasonForHighlight,
 } from '@/services/llm/grading/reasonGenerationService'
 import { useExamDataStore } from '@/stores/useExamDataStore'
-import type { HighlightData, HighlightType } from '@/types/exam'
+import { HIGHLIGHT_TYPES, type HighlightData, type HighlightType } from '@/types/exam'
 import { mapWithConcurrency, withTimeout } from '@/utils/asyncUtils'
 import {
   calcHighlightMissingRate,
@@ -460,13 +461,17 @@ export function useGradingBusiness() {
       if (!result.success || !result.reason)
         throw new Error(result.error || 'No reason was returned')
 
+      const existingItem = isPagesDemo
+        ? findExistingAnnotation(text, type, studentId, questionId)
+        : undefined
       const saved = saveAnnotation({
         text,
         type,
         reason: result.reason,
         studentId,
         questionId,
-        matchedReferenceAnswer: result.matchedReferenceAnswer || '',
+        matchedReferenceAnswer:
+          existingItem?.['matched reference answer'] ?? result.matchedReferenceAnswer ?? '',
       })
       if (!saved) throw new Error('The generated reason could not be saved')
 
@@ -481,6 +486,21 @@ export function useGradingBusiness() {
     }
   }
 
+  function findExistingAnnotation(
+    text: string,
+    type: HighlightType,
+    studentId: number,
+    questionId: number,
+  ) {
+    const answer = examStore.getHighlightData(studentId, questionId)?.answer
+    const matches = (item: HighlightData['answer'][HighlightType][number]) =>
+      item['Student answer'] === text
+    return (
+      answer?.[type].find(matches) ??
+      HIGHLIGHT_TYPES.flatMap((label) => answer?.[label] ?? []).find(matches)
+    )
+  }
+
   function saveReasonDirectly(
     text: string,
     type: HighlightType,
@@ -489,9 +509,7 @@ export function useGradingBusiness() {
     questionId: number,
     feedbackPanelRef?: ComponentRef<FeedbackPanelApi>,
   ): void {
-    const existingItem = examStore
-      .getHighlightData(studentId, questionId)
-      ?.answer[type].find((item) => item['Student answer'] === text)
+    const existingItem = findExistingAnnotation(text, type, studentId, questionId)
 
     if (
       saveAnnotation({

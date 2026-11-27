@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VeriGrader · CHI 2026</title>
+    <meta
+      name="description"
+      content="VeriGrader: human–LLM collaborative grading of open-ended structured questions, one scoring point at a time. CHI 2026. Try the interactive demo."
+    />
+    <meta property="og:title" content="VeriGrader — Open-ended Structured Question Assessment with Human–LLM Collaboration" />
+    <meta
+      property="og:description"
+      content="An LLM segments every answer, aligns each piece with a scoring point and explains its call. Instructors stay in charge of every mark. CHI 2026."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://northxyran.github.io/VeriGrader/assets/media/og.png" />
+    <meta property="og:url" content="https://northxyran.github.io/VeriGrader/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="assets/media/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/css/workflow.css" />
+    <link rel="stylesheet" href="assets/css/usage.css" />
+    <link rel="stylesheet" href="assets/css/results.css" />
+    <link rel="stylesheet" href="assets/css/mobile.css" />
+  </head>
+  <body>
+    <nav class="nav" aria-label="Sections">
+      <div class="container nav__inner">
+        <a class="nav__brand" href="#top">
+          <img class="nav__logo" src="assets/media/logo.svg" alt="" width="26" height="26" />
+          VeriGrader
+        </a>
+        <div class="nav__links">
+          <a href="#top">Overview</a>
+          <a href="#demo">Live demo</a>
+          <a href="#workflow">How it works</a>
+          <a href="#results">User Study</a>
+          <a href="#bibtex">BibTeX</a>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="container">
+        <h1 class="hero__title">VeriGrader</h1>
+        <p class="hero__subtitle">Open-ended Structured Question Assessment with Human–LLM Collaboration</p>
+        <p class="hero__venue">ACM CHI 2026</p>
+
+        <p class="hero__authors">
+          <span class="author"><a href="https://northxyran.github.io/" target="_blank" rel="noopener">Fengyan Lin</a><sup>1</sup></span>
+          <span class="author"><a href="https://yannahhh.github.io/" target="_blank" rel="noopener">Yanna Lin</a><sup>2</sup></span>
+          <span class="author">Kai Cao<sup>1</sup></span>
+          <span class="author"><a href="https://zkdeng.org/" target="_blank" rel="noopener">Zikun Deng</a><sup>1,*</sup></span>
+          <span class="author"><a href="https://www2.scut.edu.cn/sse/2018/0615/c16788a270751/page.htm" target="_blank" rel="noopener">Yi Cai</a><sup>1</sup></span>
+        </p>
+        <p class="hero__affils">
+          <span><sup>1</sup>South China University of Technology</span>
+          <span><sup>2</sup>University of Waterloo</span>
+        </p>
+        <p class="hero__correspondence"><sup>*</sup> Corresponding author</p>
+
+        <div class="hero__actions">
+          <a class="btn" href="https://doi.org/10.1145/3772318.3791034" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+            Paper
+          </a>
+          <a class="btn" href="https://youtu.be/cE8lAvIZVAQ" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+            Video
+          </a>
+          <a class="btn" href="https://northxyran.github.io/slides/VeriGrader.pptx" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 19v-7h3a2 2 0 0 1 0 4H9"/></svg>
+            Slides
+          </a>
+          <a class="btn" href="https://github.com/NorthXyRan/VeriGrader" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+            Code
+          </a>
+          <a class="btn btn--ghost" href="#bibtex">BibTeX</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="abstract" id="abstract" aria-labelledby="abstract-title">
+      <div class="container">
+        <div class="prose">
+          <h2 class="section-title" id="abstract-title">Abstract</h2>
+          <p>
+            Open-ended Structured Questions (OSQs) assess not only students’ knowledge but also their reasoning and
+            expression. However, grading OSQs requires fine-grained, scoring-point-level analysis, which is
+            labor-intensive and difficult to scale. Although recent LLM-based and human–AI collaborative grading systems
+            improve efficiency, they mainly operate at the whole-response level and lack support for point-level
+            inspection, correction, and feedback integration.
+          </p>
+          <p>
+            We present VeriGrader, a novel human–AI collaborative system for OSQ grading. It combines chain-of-thought
+            prompting with scoring-point- and response-level in-context learning to enable interpretable LLM grading and
+            iterative refinement from instructor feedback. A coordinated multi-view interface supports efficient
+            verification of response segments, matched scoring points, and rationales. We evaluate VeriGrader using real
+            course data and a user study with 12 participants. Results show that VeriGrader improves grading efficiency,
+            accuracy, and consistency over the baselines, demonstrating the effectiveness of VeriGrader and promoting
+            human–AI collaboration in educational assessment.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- @include sections/demo.html -->
+
+    <!-- @include sections/workflow.html -->
+
+    <!-- @include sections/usage.html -->
+
+    <!-- @include sections/results.html -->
+
+    <section class="section section--alt section--citation" id="bibtex" aria-labelledby="bibtex-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Citation</span>
+          <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+        </div>
+        <div class="prose bibtex reveal" style="max-width: 860px">
+          <button class="btn btn--sm" type="button" data-copy="#bibtex-code">Copy</button>
+<pre id="bibtex-code">@inproceedings{lin2026verigrader,
+  author    = {Lin, Fengyan and Lin, Yanna and Cao, Kai and Deng, Zikun and Cai, Yi},
+  title     = {Open-ended Structured Question Assessment with Human-LLM Collaboration},
+  booktitle = {Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems},
+  series    = {CHI '26},
+  pages     = {1--21},
+  publisher = {ACM},
+  year      = {2026},
+  doi       = {10.1145/3772318.3791034}
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <span>© 2026 The VeriGrader authors · Code released under the MIT License</span>
+        <span>
+          <a href="https://github.com/NorthXyRan/VeriGrader" target="_blank" rel="noopener">GitHub</a>
+          ·
+          <a href="https://doi.org/10.1145/3772318.3791034" target="_blank" rel="noopener">ACM Digital Library</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="assets/js/main.js"></script>
+  </body>
+</html>

@@ -29,3 +29,6 @@ frontend/public/paper/
 
 # Local scratch files
 tmp/
+
+# Built project page
+site/dist/

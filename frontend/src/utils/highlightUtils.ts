@@ -22,12 +22,13 @@ export function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (character) => HTML_ENTITIES[character])
 }
 
-function highlightTag(range: LocatedHighlight, content: string): string {
+function highlightTag(range: LocatedHighlight, content: string, showLabels: boolean): string {
   const text = content.slice(range.start, range.end)
   const reason = range.item.reason || ''
-  const title = `${HIGHLIGHT_LABELS[range.type]}: ${reason}`
+  const variant = showLabels ? range.type : 'segment'
+  const title = showLabels ? `${HIGHLIGHT_LABELS[range.type]}: ${reason}` : 'Response piece'
 
-  return `<span class="text-highlight highlight-${range.type}" data-type="${range.type}" data-text="${escapeHtml(text)}" data-reason="${escapeHtml(reason)}" data-occurrence="${range.occurrence}" title="${escapeHtml(title)}">${escapeHtml(text)}</span>`
+  return `<span class="text-highlight highlight-${variant}" role="button" tabindex="0" data-type="${range.type}" data-text="${escapeHtml(text)}" data-reason="${escapeHtml(reason)}" data-occurrence="${range.occurrence}" title="${escapeHtml(title)}">${escapeHtml(text)}</span>`
 }
 
 function removeOverlaps(ranges: LocatedHighlight[]): LocatedHighlight[] {
@@ -48,6 +49,7 @@ function removeOverlaps(ranges: LocatedHighlight[]): LocatedHighlight[] {
 export function generateHighlightedHTML(
   content: string,
   highlightData: HighlightData | null,
+  showLabels = true,
 ): string {
   if (!content || !highlightData) return escapeHtml(content || '')
 
@@ -57,7 +59,7 @@ export function generateHighlightedHTML(
 
   for (const range of ranges) {
     result += escapeHtml(content.slice(cursor, range.start))
-    result += highlightTag(range, content)
+    result += highlightTag(range, content, showLabels)
     cursor = range.end
   }
 
@@ -87,6 +89,7 @@ export function generateReferenceHighlightedHTML(
     reason: string
     occurrence?: number
   } | null,
+  showLabels = true,
 ): string {
   if (!referenceContent || !highlightData || !currentHighlight) {
     return escapeHtml(referenceContent || '')
@@ -101,8 +104,11 @@ export function generateReferenceHighlightedHTML(
   const matchedText = item?.['matched reference answer'] || ''
   if (!matchedText || !referenceContent.includes(matchedText)) return escapeHtml(referenceContent)
 
-  const title = `${HIGHLIGHT_LABELS[currentHighlight.type]} — student answer: ${currentHighlight.text}`
-  const tag = `<span class="text-highlight reference-highlight highlight-${currentHighlight.type}" title="${escapeHtml(title)}">${escapeHtml(matchedText)}</span>`
+  const variant = showLabels ? currentHighlight.type : 'segment'
+  const title = showLabels
+    ? `${HIGHLIGHT_LABELS[currentHighlight.type]} — student answer: ${currentHighlight.text}`
+    : 'Matched scoring point'
+  const tag = `<span class="text-highlight reference-highlight highlight-${variant}" title="${escapeHtml(title)}">${escapeHtml(matchedText)}</span>`
   return renderReferenceHighlights(referenceContent, matchedText, tag)
 }
 

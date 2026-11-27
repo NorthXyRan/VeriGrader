@@ -1,4 +1,12 @@
-import type { HighlightType, Question, ReferenceAnswer, StudentAnswer } from '@/types/exam'
+import { isPagesDemo } from '@/config/deployment'
+import { getDemoGradingResult } from '@/demo/gradingResults'
+import {
+  HIGHLIGHT_TYPES,
+  type HighlightType,
+  type Question,
+  type ReferenceAnswer,
+  type StudentAnswer,
+} from '@/types/exam'
 import { abortableDelay } from '@/utils/asyncUtils'
 
 import { callLLMAPI, checkLLMServiceStatus, getReasonGenerationConfig } from '../baseLLMService'
@@ -42,6 +50,27 @@ export async function generateReasonForHighlight(
   request: ReasonGenerationRequest,
   maxRetries = 3,
 ): Promise<ReasonGenerationResponse> {
+  if (isPagesDemo) {
+    await abortableDelay(350, request.signal)
+    const result = getDemoGradingResult(
+      request.studentAnswer.student_id,
+      request.question.question_id,
+    )
+    const annotation = result?.answer[request.highlightType].find(
+      (item) => item['Student answer'] === request.highlightedText,
+    )
+    const referenceAnnotation =
+      annotation ??
+      HIGHLIGHT_TYPES.flatMap((type) => result?.answer[type] ?? []).find(
+        (item) => item['Student answer'] === request.highlightedText,
+      )
+    return {
+      success: true,
+      reason: annotation?.reason || 'Click here to write your rationale for this annotation.',
+      matchedReferenceAnswer: referenceAnnotation?.['matched reference answer'] || '',
+    }
+  }
+
   const prompt = buildReasonGenerationPrompt(
     request.question,
     request.referenceAnswer,
@@ -84,4 +113,8 @@ export async function generateReasonForHighlight(
   }
 }
 
-export const checkReasonGenerationServiceStatus = checkLLMServiceStatus
+export function checkReasonGenerationServiceStatus(): ReturnType<typeof checkLLMServiceStatus> {
+  return isPagesDemo
+    ? { available: true, message: 'Simulated grading is available' }
+    : checkLLMServiceStatus()
+}

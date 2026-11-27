@@ -38,6 +38,8 @@ The main workflow is:
 
 A fully synthetic upload example and the accepted JSON schemas are available in [`examples/`](examples/README.md).
 
+The [project page](https://northxyran.github.io/VeriGrader/) embeds an [interactive demo](https://northxyran.github.io/VeriGrader/demo/) of the grading workspace with a synthetic Numerical Analysis midterm: four structured questions (interpolation vs. approximation, bisection vs. Newton's method, explicit vs. implicit Euler, direct vs. iterative linear solvers) answered by twelve students. You can inspect and correct pre-graded responses and use One, Problem, or All to regrade them. The demo loads prepared model results in the browser and needs no API key.
+
 To run the prototype locally:
 
 ```bash
@@ -55,6 +57,22 @@ VITE_API_URL=https://your-openai-compatible-endpoint/v1/chat/completions
 ```
 
 Model names and generation settings can be changed in `frontend/src/config/api.ts`. Because this research prototype calls the LLM endpoint from the browser, use it locally and do not deploy it publicly with a real API key.
+
+### Build the project page and demo
+
+The GitHub Pages site has two parts: the project page in `site/` at the root, and the demo app under `demo/`.
+
+```bash
+bash scripts/build-pages.sh    # assembles site/ and builds the demo into site/dist/demo
+node --test scripts/*.test.mjs # Pages build, preview and interaction regression tests
+node scripts/serve-site.mjs    # preview at http://localhost:4173/VeriGrader/
+```
+
+Install the frontend dependencies before building or running the tests. The Pages build runs TypeScript checks and excludes the local `VITE_` environment variables. Publish the contents of `site/dist/` to the root of the `gh-pages` branch. The project page combines `site/index.html` with section files in `site/sections/` and assets in `site/assets/`. Missing sections fail the build.
+
+The page has no bundler or framework dependency: `assets/js/main.js` initializes the page shell, usage videos, demo embed, and workflow as separate ES modules. Section styles (including their responsive layouts) live in matching CSS files; `base.css` owns shared layout and tokens, while `mobile.css` owns shared compact typography and page spacing. `embedded-frame.js` shares desktop iframe sizing and conditional loading.
+
+Inside the Vue demo, `demo/gradingResults.ts` computes prepared results without stores, `demo/loadDemo.ts` seeds application state, and `demo/useWorkflowLink.ts` draws the selected-piece connection only when selection or layout changes.
 
 ## Citation
 

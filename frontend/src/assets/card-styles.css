@@ -98,15 +98,14 @@
 
 .card-badge {
   display: inline-block;
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: var(--text-primary);
   background: transparent;
   padding: 0;
   border-radius: 0;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
 }
@@ -183,9 +182,11 @@
   border-radius: var(--border-radius-card-large);
 }
 
-.grading-card.hover:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--card-shadow-dark);
+@media (hover: hover) {
+  .grading-card.hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lifted);
+  }
 }
 
 .custom-dialog-overlay {
@@ -329,7 +330,7 @@
   }
 
   .card-badge {
-    font-size: 28px;
+    font-size: 20px;
   }
 }
 
@@ -339,7 +340,28 @@
   }
 
   .card-badge {
-    font-size: 24px;
+    font-size: 19px;
     margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .custom-paper-dialog-content {
+    width: calc(100vw - 24px);
+    max-width: none;
+    height: calc(100dvh - 48px);
+    max-height: none;
+    border-radius: 20px;
+  }
+
+  .paper-dialog-body .paper-viewer {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .paper-dialog-body .question-content,
+  .paper-dialog-body .student-answer,
+  .paper-dialog-body .reference-answer {
+    font-size: 16px;
   }
 }

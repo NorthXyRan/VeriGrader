@@ -5,8 +5,8 @@ import { getContentLayout } from './responsive'
 describe('getContentLayout', () => {
   it.each([
     [1600, 'wide'],
-    [1201, 'wide'],
-    [1200, 'compact'],
+    [1081, 'wide'],
+    [1080, 'compact'],
     [761, 'compact'],
     [760, 'narrow'],
     [320, 'narrow'],

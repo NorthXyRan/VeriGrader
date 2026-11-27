@@ -1,5 +1,5 @@
 <template>
-  <div class="action-section" :class="[`action-section--${variant}`]">
+  <div class="action-section" :class="[`action-section--${variant}`, `action-section--${layout}`]">
     <template v-if="isInline">
       <div class="inline-buttons">
         <template v-for="item in buttonConfigs" :key="item.key">
@@ -9,6 +9,7 @@
               size="default"
               :loading="item.loading"
               :disabled="item.disabled"
+              :aria-label="item.label"
               class="action-btn dock-btn"
               @click="item.onClick"
             >
@@ -48,6 +49,7 @@
                   size="default"
                   :loading="item.loading"
                   :disabled="item.disabled"
+                  :aria-label="item.label"
                   class="action-btn dock-btn"
                   @click="item.onClick"
                 >
@@ -67,6 +69,7 @@
 
 <script setup lang="ts">
 import { ArrowLeft, ArrowRight, Menu, QuestionFilled, VideoPlay } from '@element-plus/icons-vue'
+import { useContentLayout } from '@/composables/useContentLayout'
 import { computed, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue'
 
 type BatchMode = 'overlap' | 'missing' | 'red' | 'orange' | 'color' | 'all'
@@ -85,6 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   currentStudentId: undefined,
 })
 
+const layout = useContentLayout()
 const scrollContainer = ref<HTMLElement>()
 
 const isBatchGrading = ref(false)
@@ -285,15 +289,12 @@ defineExpose({
 <style scoped>
 .action-section {
   display: flex;
-  width: 100%;
-  height: 100%;
   align-items: center;
   justify-content: center;
-  border: none;
-  padding: 0;
+  width: 100%;
   margin: 0;
-  box-sizing: border-box;
-  overflow: visible;
+  padding: 0;
+  border: none;
 }
 
 .action-section--inline {
@@ -302,11 +303,10 @@ defineExpose({
 
 .inline-buttons {
   display: flex;
-  gap: 20px;
-  width: 100%;
-  justify-content: flex-end;
   align-items: center;
-  overflow: visible;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
 }
 
 .action-group {
@@ -414,43 +414,43 @@ defineExpose({
 }
 
 .action-section :deep(.dock-btn) {
-  border-radius: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
-  font-weight: 600;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  padding: 10px 16px;
-  min-width: 110px;
-  height: 40px;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 34px;
+  min-width: 0;
+  margin: 0;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  position: relative;
-  overflow: visible;
   cursor: pointer;
-  margin: 16px 0;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .action-section :deep(.dock-btn .btn-text) {
-  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .action-section :deep(.dock-btn .el-icon) {
   margin-right: 6px;
   font-size: 14px;
-  transition: all 0.2s ease;
 }
 
 .action-section :deep(.el-button) {
   background: #ffffff !important;
   color: #1d1d1f !important;
-  border-width: 2px !important;
+  border-width: 1.5px !important;
   border-style: solid !important;
+}
+
+.action-section :deep(.el-button + .el-button) {
+  margin-left: 0;
 }
 
 .action-section :deep(.el-button--primary) {
@@ -468,14 +468,12 @@ defineExpose({
 .action-section :deep(.el-button--info) {
   border-color: #8e8e93 !important;
 }
-.action-section :deep(.missing-btn) {
-  border-color: #ffcc02 !important;
-}
 
 .action-section :deep(.el-button:hover:not(.is-disabled)) {
   background: #ffffff !important;
   color: #1d1d1f !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12) !important;
+  transform: translateY(-1px);
 }
 
 .action-section :deep(.el-button:disabled) {
@@ -484,75 +482,33 @@ defineExpose({
   box-shadow: none !important;
 }
 
-@media (max-width: 1200px) {
-  .buttons-container {
-    padding: 16px 50px;
-    gap: 16px;
-  }
+/* Compact: the actions sit at the end of the legend row. */
+.action-section--inline.action-section--compact {
+  justify-content: flex-end;
+}
 
-  .scroll-arrow {
-    width: 28px;
-    height: 28px;
-    border-radius: 24px;
-  }
+/* Narrow: three equal, touch-sized buttons across the full width. */
+.action-section--inline.action-section--narrow .inline-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
 
-  .scroll-arrow-left {
-    left: 16px;
-  }
+.action-section--inline.action-section--narrow .inline-buttons > :deep(*) {
+  min-width: 0;
+}
 
-  .scroll-arrow-right {
-    right: 16px;
-  }
-
-  .scroll-arrow .el-icon {
-    font-size: 14px;
-  }
-
-  .action-section :deep(.dock-btn) {
-    min-width: 80px;
-    padding: 10px 16px;
-    font-size: 13px;
-    margin: 10px 0;
-  }
-
-  .action-section :deep(.dock-btn .btn-text) {
-    display: none;
-  }
-
-  .action-section :deep(.dock-btn .el-icon) {
-    margin-right: 0;
-    font-size: 16px;
-  }
+.action-section--narrow :deep(.dock-btn) {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
   .buttons-container {
     padding: 12px 40px;
     gap: 12px;
-  }
-
-  .scroll-arrow {
-    width: 24px;
-    height: 24px;
-    border-radius: 24px;
-  }
-
-  .scroll-arrow-left {
-    left: 12px;
-  }
-
-  .scroll-arrow-right {
-    right: 12px;
-  }
-
-  .scroll-arrow .el-icon {
-    font-size: 12px;
-  }
-
-  .action-section :deep(.dock-btn) {
-    min-width: 60px;
-    padding: 8px 12px;
-    margin: 8px 0;
   }
 
   .button-item:hover {

@@ -1,6 +1,6 @@
 <template>
   <BaseExamplesCard
-    title="REASON EXAMPLES"
+    title="Reason Examples"
     :examples="reasonExamples"
     :empty-image-src="womanIcon"
     empty-image-alt="No rationale examples"

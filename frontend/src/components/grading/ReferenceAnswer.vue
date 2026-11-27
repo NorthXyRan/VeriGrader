@@ -1,6 +1,7 @@
 <template>
   <div class="reference-answer">
     <div
+      ref="contentRef"
       class="reference-content"
       v-html="highlightedContent"
       @mouseup="handleTextSelection"
@@ -47,6 +48,8 @@ import { computed, ref, watch } from 'vue'
 interface Props {
   referenceAnswer?: string
   highlightData?: HighlightData | null
+  readOnly?: boolean
+  showLabels?: boolean
   currentHighlight?: {
     text: string
     type: HighlightType
@@ -59,6 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
   referenceAnswer: '',
   highlightData: null,
   currentHighlight: null,
+  showLabels: true,
 })
 
 const emits = defineEmits<{
@@ -82,16 +86,19 @@ const emits = defineEmits<{
 }>()
 
 const selectedText = ref('')
+const contentRef = ref<HTMLElement | null>(null)
 
 const highlightedContent = computed(() => {
   return generateReferenceHighlightedHTML(
     props.referenceAnswer,
     props.highlightData,
     props.currentHighlight,
+    props.showLabels,
   )
 })
 
 const showActionButton = computed(() => {
+  if (props.readOnly) return false
   const hasCurrentHighlight = !!props.currentHighlight
   const hasReference = hasExistingReferenceAnswer.value
   return hasCurrentHighlight && (hasReference || (!!selectedText.value && !hasReference))
@@ -126,6 +133,7 @@ const handleContentClick = (event: Event) => {
 }
 
 const handleTextSelection = () => {
+  if (props.readOnly) return
   const selection = window.getSelection()
   if (selection && selection.toString().trim()) {
     const selected = selection.toString().trim()
@@ -178,6 +186,15 @@ watch(
       selectedText.value = ''
       clearTextSelection()
     }
+
+    if (props.readOnly && contentRef.value) {
+      const content = contentRef.value
+      const highlight = content.querySelector('.reference-highlight')?.getBoundingClientRect()
+      const viewport = content.getBoundingClientRect()
+      if (highlight && (highlight.top < viewport.top || highlight.bottom > viewport.bottom)) {
+        content.scrollTop += highlight.top - viewport.top - 12
+      }
+    }
   },
   { deep: true, flush: 'post' },
 )
@@ -198,11 +215,11 @@ watch(
 .reference-content {
   flex: 1;
   min-height: 0;
-  padding: 20px 24px;
+  padding: 18px 20px;
   white-space: pre-wrap;
   line-height: 1.7;
   color: rgba(0, 0, 0, 0.87);
-  font-size: 20px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -293,9 +310,9 @@ watch(
   font-size: 14px !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .reference-content {
-    padding: 24px;
+    padding: 16px;
     font-size: 16px;
   }
 
@@ -312,8 +329,8 @@ watch(
 
 @media (max-width: 480px) {
   .reference-content {
-    padding: 16px;
-    font-size: 15px;
+    padding: 14px 16px;
+    font-size: 16px;
   }
 
   .action-button-container {

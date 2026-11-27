@@ -1,0 +1,451 @@
+/* How it works: the human–LLM grading loop (section #workflow). */
+
+.workflow {
+  --content: 1440px;
+}
+
+.workflow .section-head {
+  max-width: 800px;
+  margin-bottom: clamp(var(--s-5), 3vw, var(--s-7));
+}
+
+.workflow .section-lead {
+  text-wrap: balance;
+}
+
+/* ---------- Stage: loop + detail panel ---------- */
+
+.workflow-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: center;
+}
+@media (min-width: 1100px) {
+  .workflow-stage {
+    grid-template-columns: minmax(0, clamp(360px, 29vw, 410px)) minmax(0, 1fr);
+    gap: clamp(var(--s-5), 3vw, var(--s-7));
+    /* The canvas ends level with the bottom of the loop. */
+    align-items: end;
+  }
+}
+
+.workflow-loop {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.workflow-loop__ring {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 480 / 460;
+}
+.workflow-loop__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.workflow-loop__track {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+.workflow-loop__trail {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0 2000;
+}
+.workflow-loop__chevrons path {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.workflow-loop__edge-labels text {
+  font: 500 12px var(--font-mono);
+  fill: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.workflow-loop__center text {
+  font-family: var(--font-display);
+  font-size: 29px;
+  fill: var(--ink);
+}
+.workflow-loop__center-em {
+  font-style: italic;
+  fill: var(--accent);
+}
+.workflow-loop__token-core {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.workflow-loop__token-halo {
+  fill: var(--accent);
+  opacity: 0.16;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: workflow-pulse 2.2s var(--ease) infinite;
+}
+@keyframes workflow-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.32;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* Stage buttons sit on the ring */
+.workflow-loop__tabs {
+  position: absolute;
+  inset: 0;
+}
+.workflow-node {
+  --x: 50%;
+  --y: 15.43%;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: max-content;
+  min-height: 58px;
+  padding: 9px var(--s-4) 9px 9px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.3s var(--ease),
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+.workflow-node:nth-child(2) {
+  --x: 79.77%;
+  --y: 69.24%;
+}
+.workflow-node:nth-child(3) {
+  --x: 20.23%;
+  --y: 69.24%;
+}
+.workflow-node:hover {
+  transform: translate(-50%, calc(-50% - 2px));
+  box-shadow: var(--shadow);
+}
+.workflow-node.is-active {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 4px rgb(43 89 255 / 0.12),
+    var(--shadow);
+}
+.workflow-node__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  font: 600 15px/1 var(--font-mono);
+  color: var(--ink-2);
+  transition:
+    background 0.3s,
+    border-color 0.3s,
+    color 0.3s;
+}
+.workflow-node.is-active .workflow-node__num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.workflow-node__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.workflow-node__title {
+  white-space: nowrap;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.workflow-node__sub {
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+.workflow-loop__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+.workflow-play {
+  min-height: 40px;
+}
+/* .btn sets display, so restate what [hidden] means. */
+.workflow-play[hidden] {
+  display: none;
+}
+.workflow-play svg {
+  width: 14px;
+  height: 14px;
+}
+.workflow-play__play,
+.workflow-play[data-paused='true'] .workflow-play__pause {
+  display: none;
+}
+.workflow-play[data-paused='true'] .workflow-play__play {
+  display: block;
+}
+.workflow-loop__hint {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+/* ---------- Shared grading canvas ---------- */
+
+.workflow-canvas {
+  position: relative;
+  min-width: 0;
+  height: 520px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.workflow-canvas-wrap {
+  display: grid;
+  gap: var(--s-5);
+  min-width: 0;
+}
+
+/* Step track above the card, drawn like the loop beside it: a hairline rail, the accent trail
+   up to where playback is, and the same haloed token at its head. */
+.workflow-track {
+  display: grid;
+  gap: var(--s-3);
+  padding: 0 var(--s-2);
+}
+.workflow-track__note {
+  min-height: 1.45em;
+  overflow: hidden;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.workflow-track__note strong {
+  margin-right: 6px;
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.workflow-track__note.is-new {
+  animation: workflow-note-in 0.45s var(--ease);
+}
+@keyframes workflow-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+.workflow-track__line {
+  position: relative;
+  --rail-y: 9px;
+}
+.workflow-track__rail,
+.workflow-track__fill {
+  position: absolute;
+  left: 0;
+  top: var(--rail-y);
+  border-radius: 999px;
+  pointer-events: none;
+}
+.workflow-track__rail {
+  right: 0;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: var(--line-strong);
+}
+.workflow-track__fill {
+  width: calc(var(--track-progress, 0) * 100%);
+  height: 3px;
+  margin-top: -1.5px;
+  background: var(--accent);
+}
+.workflow-track__token {
+  position: absolute;
+  top: var(--rail-y);
+  left: calc(var(--track-progress, 0) * 100%);
+  z-index: 2;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px rgb(43 89 255 / 0.12);
+  pointer-events: none;
+}
+.workflow-track__token i {
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.16;
+  animation: workflow-pulse 2.2s var(--ease) infinite;
+}
+.workflow-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.workflow-step {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font: 500 12px/1.2 var(--font-mono);
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.workflow-step__dot {
+  width: 9px;
+  height: 9px;
+  margin: calc(var(--rail-y) - 4.5px) 0 0 -4.5px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--bg-alt);
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+.workflow-step.is-reached .workflow-step__dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.workflow-step__name {
+  margin-left: -4.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.workflow-step:hover {
+  color: var(--ink);
+}
+.workflow-step:hover .workflow-step__dot {
+  border-color: var(--accent);
+}
+.workflow-step:focus-visible {
+  outline-offset: 4px;
+}
+.workflow-step[aria-current='step'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* workflow.js lays the app out at its desktop size and scales it to the card. */
+.workflow-canvas__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--canvas-w, 100%);
+  max-width: none;
+  height: var(--canvas-h, 100%);
+  border: 0;
+  background: #eef1f5;
+  transform: scale(var(--canvas-scale, 1));
+  transform-origin: 0 0;
+}
+
+/* Reduced motion: every element rests in its final state. */
+@media (prefers-reduced-motion: reduce) {
+  .workflow *,
+  .workflow *::before,
+  .workflow *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* The section heading already provides this text when larger fonts crowd the ring. */
+@media (max-width: 640px) and (max-width: 18em) {
+  .workflow-loop__center {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* ---------- How it works: the loop, smaller ----------
+     The canvas and its step track need a big screen, so phones keep only the ring, its token
+     circling on its own (workflow.js), with compact stage labels. */
+  .workflow-canvas-wrap {
+    display: none;
+  }
+  .workflow-stage {
+    gap: 0;
+  }
+  .workflow-loop {
+    max-width: 380px;
+  }
+  .workflow-loop__edge-labels text {
+    font-size: 16px;
+  }
+  .workflow-node {
+    gap: 6px;
+    min-height: 44px;
+    max-width: calc(50% - var(--s-1));
+    padding: 4px 11px 4px 4px;
+  }
+  .workflow-node__num {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+  .workflow-node__title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .workflow-node__sub {
+    display: none;
+  }
+}
+
+/* Phones held sideways keep the wider layout but, like portrait phones, skip the canvas
+   (too small to read or tap at that height); the loop circles on its own. */
+@media (max-height: 500px) and (pointer: coarse) {
+  .workflow-canvas-wrap {
+    display: none;
+  }
+  .workflow-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

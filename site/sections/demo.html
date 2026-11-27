@@ -1,0 +1,38 @@
+<section class="demo" id="demo" aria-label="Live demo">
+  <div class="demo-screen">
+    <!-- Wider screens: the live app. demo.js loads the app when this viewport is visible. -->
+    <div class="demo-viewport">
+      <iframe
+        class="demo-frame"
+        data-src="demo/#/grading"
+        title="VeriGrader grading demo with sample responses"
+        width="1920"
+        height="1080"
+        loading="lazy"
+      ></iframe>
+    </div>
+    <!-- Phones: a screenshot of the same view that opens the demo. -->
+    <a class="demo-shot" href="demo/">
+      <picture>
+        <source srcset="assets/media/demo-screenshot.webp" type="image/webp" />
+        <img
+          src="assets/media/demo-screenshot.jpg"
+          width="3240"
+          height="1728"
+          loading="lazy"
+          decoding="async"
+          alt="VeriGrader grading view showing an unclear response piece, its highlighted scoring point in the reference answer, and the scoring rationale"
+        />
+      </picture>
+      <span class="demo-shot-cta">
+        Open the live demo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+      </span>
+    </a>
+  </div>
+  <p class="demo-caption">
+    <span class="demo-caption-live"><span class="demo-live-dot" aria-hidden="true"></span>Live</span>
+    <span class="demo-caption-text">Runs in your browser on prepared model results.</span>
+    <span class="demo-caption-phone">The live demo is best on a larger screen.</span>
+  </p>
+</section>

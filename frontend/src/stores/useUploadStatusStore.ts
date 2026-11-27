@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 
+import { workspaceStorageKey } from '@/config/deployment'
+
 export type UploadStatus = 'idle' | 'processing' | 'ready' | 'error'
 
 export interface UploadMeta {
@@ -129,13 +131,16 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   function saveToLocal(): void {
     const withoutContent = (item: UploadItem) => ({ ...item, rawContent: '' })
     try {
-      localStorage.setItem('upload_exam_paper', JSON.stringify(withoutContent(examPaper.value)))
       localStorage.setItem(
-        'upload_reference_answer',
+        workspaceStorageKey('upload_exam_paper'),
+        JSON.stringify(withoutContent(examPaper.value)),
+      )
+      localStorage.setItem(
+        workspaceStorageKey('upload_reference_answer'),
         JSON.stringify(withoutContent(referenceAnswer.value)),
       )
       localStorage.setItem(
-        'upload_student_answers',
+        workspaceStorageKey('upload_student_answers'),
         JSON.stringify(withoutContent(studentAnswers.value)),
       )
     } catch {}
@@ -143,9 +148,13 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
 
   function loadFromLocal(): void {
     try {
-      const paper = parseStoredItem(localStorage.getItem('upload_exam_paper'))
-      const answer = parseStoredItem(localStorage.getItem('upload_reference_answer'))
-      const students = parseStoredItem(localStorage.getItem('upload_student_answers'))
+      const paper = parseStoredItem(localStorage.getItem(workspaceStorageKey('upload_exam_paper')))
+      const answer = parseStoredItem(
+        localStorage.getItem(workspaceStorageKey('upload_reference_answer')),
+      )
+      const students = parseStoredItem(
+        localStorage.getItem(workspaceStorageKey('upload_student_answers')),
+      )
       if (paper) examPaper.value = paper
       if (answer) referenceAnswer.value = answer
       if (students) studentAnswers.value = students

@@ -1,7 +1,11 @@
 <template>
-  <div class="sidebar" :class="{ collapsed: isCollapse }">
-    <div class="sidebar-card hover">
-      <el-menu v-if="!isCollapse" :default-active="activeMenu" class="nav-menu" :router="true">
+  <nav
+    class="sidebar"
+    :class="{ collapsed: showIconsOnly, 'sidebar--bar': isBar }"
+    aria-label="Main navigation"
+  >
+    <div class="sidebar-card">
+      <el-menu v-if="!showIconsOnly" :default-active="activeMenu" class="nav-menu" :router="true">
         <template v-for="item in menuItems" :key="item.index">
           <el-menu-item v-if="!item.children" :index="item.index" :route="item.route">
             <el-icon><component :is="item.icon" /></el-icon>
@@ -27,28 +31,39 @@
 
       <div v-else class="nav-menu collapsed-menu">
         <template v-for="item in menuItems" :key="item.index">
-          <el-tooltip v-if="!item.children && item.route" :content="item.title" placement="right">
-            <div
+          <el-tooltip
+            v-if="!item.children && item.route"
+            :content="item.title"
+            :placement="isBar ? 'bottom' : 'right'"
+          >
+            <button
+              type="button"
               class="menu-item"
               :class="{ active: isMenuActiveItem(item) }"
+              :aria-label="item.title"
               @click="navigateToRoute(item.route)"
             >
               <el-icon><component :is="item.icon" /></el-icon>
-            </div>
+            </button>
           </el-tooltip>
 
           <el-popover
             v-else
-            placement="right-start"
+            :placement="isBar ? 'bottom' : 'right-start'"
             :width="180"
             trigger="hover"
             :offset="10"
             popper-class="submenu-popover"
           >
             <template #reference>
-              <div class="menu-item" :class="{ active: isMenuActiveItem(item) }">
+              <button
+                type="button"
+                class="menu-item"
+                :class="{ active: isMenuActiveItem(item) }"
+                :aria-label="item.title"
+              >
                 <el-icon><component :is="item.icon" /></el-icon>
-              </div>
+              </button>
             </template>
             <div class="popover-menu">
               <div
@@ -65,7 +80,7 @@
         </template>
       </div>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script setup lang="ts">
@@ -75,9 +90,11 @@ import { createRouteToIndexMap, isMenuActive, menuItems, type MenuItem } from '.
 
 interface Props {
   isCollapse: boolean
+  /** Phone layout: the navigation sits in a bar above the page instead of beside it. */
+  isBar?: boolean
 }
 
-defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { isBar: false })
 
 const router = useRouter()
 const route = useRoute()
@@ -92,6 +109,8 @@ const isMenuActiveItem = (item: MenuItem): boolean => {
   return isMenuActive(item, activeMenu.value)
 }
 
+const showIconsOnly = computed(() => props.isBar || props.isCollapse)
+
 const navigateToRoute = (routePath: string) => {
   router.push(routePath)
 }
@@ -99,44 +118,49 @@ const navigateToRoute = (routePath: string) => {
 
 <style scoped>
 .sidebar {
-  width: 300px;
-  padding: 20px 15px;
-  transition: width 0.3s ease;
+  flex: 0 0 auto;
+  width: 228px;
+  padding: var(--shell-gutter) 0 var(--shell-gutter) var(--shell-gutter);
+  white-space: nowrap;
 }
 
 .sidebar.collapsed {
-  width: 100px;
+  width: calc(76px + var(--shell-gutter));
 }
 
 .sidebar-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: var(--shell-gutter);
   height: 100%;
+  max-height: calc(100vh - var(--app-header-height) - var(--shell-gutter) * 2);
   overflow: hidden;
-  padding: 20px 0;
+  padding: 12px 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
 }
 
 .nav-menu {
   border: none;
   background: transparent;
-  padding: 0 20px;
+  padding: 0 12px;
 }
 
 .nav-menu :deep(.el-menu-item),
 .nav-menu :deep(.el-sub-menu__title),
 .nav-menu :deep(.el-sub-menu .el-menu-item) {
-  height: 50px;
-  line-height: 50px;
-  margin: 8px 0;
-  border-radius: 24px;
+  height: 44px;
+  line-height: 44px;
+  margin: 4px 0;
+  padding: 0 16px !important;
+  border-radius: var(--radius-pill);
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
-  color: #333;
-  font-size: 16px;
+  color: var(--text-strong);
+  font-size: 14px;
 }
 
 .nav-menu :deep(.el-sub-menu .el-menu) {
@@ -149,8 +173,8 @@ const navigateToRoute = (routePath: string) => {
 
 .nav-menu :deep(.el-sub-menu .el-menu-item) {
   color: #666;
-  padding-left: 50px !important;
-  font-size: 15px;
+  padding-left: 48px !important;
+  font-size: 14px;
 }
 
 .nav-menu :deep(.el-menu-item:hover),
@@ -172,8 +196,8 @@ const navigateToRoute = (routePath: string) => {
 
 .nav-menu :deep(.el-menu-item i),
 .nav-menu :deep(.el-sub-menu__title i) {
-  margin-right: 16px;
-  font-size: 20px;
+  margin-right: 12px;
+  font-size: 18px;
 }
 
 .nav-menu :deep(.el-sub-menu),
@@ -182,36 +206,79 @@ const navigateToRoute = (routePath: string) => {
 }
 
 .collapsed-menu {
-  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
 }
 
 .collapsed-menu .menu-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  margin: 10px 0;
-  border-radius: 24px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #333;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  color: var(--text-strong);
 }
 
 .collapsed-menu .menu-item:hover {
   background: rgba(56, 112, 168, 0.1);
   color: #3870a8;
-  transform: scale(1.05);
 }
 
 .collapsed-menu .menu-item.active {
   background: #ffd04b !important;
   color: #3870a8 !important;
-  font-weight: bold;
   box-shadow: 0 4px 12px rgba(255, 208, 75, 0.3);
 }
 
 .collapsed-menu .menu-item .el-icon {
-  font-size: 22px;
+  font-size: 20px;
+}
+
+/* Phone: a single row of destinations above the page. */
+.sidebar--bar,
+.sidebar--bar.collapsed {
+  width: 100%;
+  padding: var(--shell-gutter) var(--shell-gutter) 0;
+}
+
+.sidebar--bar .sidebar-card {
+  position: static;
+  max-height: none;
+  padding: 6px;
+}
+
+.sidebar--bar .nav-menu {
+  display: flex;
+  gap: 6px;
+  padding: 0;
+}
+
+.sidebar--bar .nav-menu :deep(.el-menu-item) {
+  flex: 1;
+  justify-content: center;
+  margin: 0;
+  height: 44px;
+  line-height: 44px;
+}
+
+.sidebar--bar .nav-menu :deep(.el-menu-item i) {
+  margin-right: 8px;
+}
+
+.sidebar--bar .collapsed-menu {
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 0;
 }
 
 .popover-menu {
@@ -221,11 +288,11 @@ const navigateToRoute = (routePath: string) => {
 .popover-menu-item {
   padding: 12px 20px;
   margin: 6px 10px;
-  border-radius: 24px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   color: #666;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .popover-menu-item:hover {

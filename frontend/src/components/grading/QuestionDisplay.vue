@@ -1,20 +1,21 @@
 <template>
-  <div class="question-display">
+  <div class="question-display" :class="`question-display--${layout}`">
     <div class="question-container">
-      <div class="question-row">
+      <div class="question-heading">
         <el-icon class="question-icon"><Document /></el-icon>
         <span class="question-label">Question {{ currentQuestion }}</span>
-        <p class="question-text">{{ questionText }}</p>
         <div class="question-score">
           <span class="score-value">{{ questionScore }}</span>
           <span class="score-unit">marks</span>
         </div>
       </div>
+      <p class="question-text">{{ questionText }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useContentLayout } from '@/composables/useContentLayout'
 import { Document } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 
@@ -26,6 +27,8 @@ interface Props {
     score: number
   }>
 }
+
+const layout = useContentLayout()
 
 const props = withDefaults(defineProps<Props>(), {
   currentQuestion: 1,
@@ -51,169 +54,95 @@ const questionScore = computed(() => {
 <style scoped>
 .question-display {
   background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  border: 1px solid #e9e9ec;
 }
 
-.question-display:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
+/* The full prompt is always shown: it sits beside its label on wide screens and below it on
+   narrow ones, wrapping as needed rather than being cut off. */
 .question-container {
-  padding: 16px 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   height: 100%;
+  padding: 14px 20px;
 }
 
-.question-row {
+.question-heading {
   display: flex;
   align-items: center;
-  gap: 16px;
-  width: 100%;
-  min-height: 0;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 24px;
 }
 
 .question-icon {
-  width: 24px;
-  height: 24px;
-  color: #007aff;
-  font-size: 20px;
   flex-shrink: 0;
+  font-size: 18px;
+  color: #007aff;
 }
 
 .question-label {
-  font-size: 18px;
-  font-weight: 600;
   color: #1d1d1f;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .question-score {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  padding: 8px 16px;
-  background: #ffffff;
-  border: 2px solid #30d158;
-  border-radius: 16px;
-  color: #000000;
   flex-shrink: 0;
+  gap: 3px;
+  margin-left: 4px;
+  padding: 1px 10px;
+  border: 1.5px solid #30d158;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: #000000;
+  white-space: nowrap;
 }
 
 .score-value {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .score-unit {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
-  opacity: 0.9;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  opacity: 0.75;
 }
 
 .question-text {
-  font-size: 18px;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.4;
-  color: rgba(0, 0, 0, 0.87);
-  margin: 0;
-  letter-spacing: -0.01em;
-  font-weight: 500;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.82);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
 }
 
-:global(.main-content--narrow .question-container) {
-  padding: 12px 16px;
+/* Compact and narrow: label row on top, prompt underneath at full width. */
+.question-display--compact .question-container,
+.question-display--narrow .question-container {
+  flex-direction: column;
+  gap: 8px;
 }
 
-:global(.main-content--narrow .question-row) {
-  gap: 12px;
+.question-display--compact .question-heading,
+.question-display--narrow .question-heading {
+  width: 100%;
 }
 
-:global(.main-content--narrow .question-label) {
-  font-size: 16px;
+.question-display--compact .question-score,
+.question-display--narrow .question-score {
+  margin-left: auto;
 }
 
-:global(.main-content--narrow .question-text) {
-  font-size: 13px;
-}
-
-:global(.main-content--narrow .score-value) {
-  font-size: 12px;
-}
-
-:global(.main-content--narrow .question-icon) {
-  width: 20px;
-  height: 20px;
-  font-size: 16px;
-}
-
-@media (max-width: 768px) {
-  .question-container {
-    padding: 12px 16px;
-  }
-
-  .question-row {
-    gap: 12px;
-  }
-
-  .question-label {
-    font-size: 16px;
-  }
-
-  .question-text {
-    font-size: 13px;
-  }
-
-  .score-value {
-    font-size: 12px;
-  }
-
-  .question-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .question-row {
-    gap: 8px;
-  }
-
-  .question-label {
-    font-size: 14px;
-  }
-
-  .question-text {
-    font-size: 12px;
-  }
-
-  .question-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 14px;
-  }
-
-  .question-score {
-    padding: 6px 12px;
-  }
+.question-display--narrow .question-container {
+  padding: 14px 16px;
 }
 </style>

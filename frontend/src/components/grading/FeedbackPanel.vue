@@ -1,19 +1,29 @@
 <template>
-  <div class="feedback-panel">
+  <div class="feedback-panel" :class="{ 'feedback-panel--readonly': readOnly }">
     <div class="feedback-content">
       <div class="reason-area">
         <el-input
           v-if="isEditing"
+          ref="reasonInput"
           v-model="editableReason"
           type="textarea"
           placeholder="Please enter the scoring reason..."
           :rows="6"
           resize="none"
           class="reason-textarea"
+          aria-label="Scoring rationale"
           @blur="autoSave"
         />
 
-        <div v-else class="reason-display" @click="enterEditMode">
+        <div
+          v-else
+          class="reason-display"
+          :role="canEdit ? 'button' : undefined"
+          :tabindex="canEdit ? 0 : undefined"
+          @click="enterEditMode"
+          @keydown.enter="enterEditMode"
+          @keydown.space="enterEditMode"
+        >
           <div v-if="isCurrentReasonInExamples" class="example-indicator">
             <el-icon><Star /></el-icon>
             <span>This rationale is currently used as a few-shot example</span>
@@ -26,13 +36,13 @@
       </div>
     </div>
 
-    <div class="action-buttons">
+    <div v-if="!readOnly" class="action-buttons">
       <el-button
         :type="isCurrentReasonInExamples ? 'warning' : 'primary'"
         @click="toggleSubmitReason"
-        :disabled="!editableReason.trim()"
+        :disabled="!editableReason.trim() || exampleDisabled"
       >
-        {{ isCurrentReasonInExamples ? 'Remove Example' : 'Save as Example' }}
+        {{ isCurrentReasonInExamples ? 'Remove Example' : exampleLabel }}
       </el-button>
     </div>
   </div>
@@ -40,9 +50,10 @@
 
 <script setup lang="ts">
 import { Message } from '@/components/Message'
+import { useContentLayout } from '@/composables/useContentLayout'
 import type { HighlightType } from '@/utils/highlightUtils'
 import { Star } from '@element-plus/icons-vue'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 
 interface HighlightClickData {
   text: string
@@ -60,6 +71,9 @@ interface SelectedHighlight {
 
 interface Props {
   currentQuestionId?: number
+  readOnly?: boolean
+  exampleLabel?: string
+  exampleDisabled?: boolean
   reasonExamples?: Array<{
     questionId: number
     studentId: number
@@ -72,6 +86,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   currentQuestionId: 1,
+  exampleLabel: 'Save as Example',
   reasonExamples: () => [],
 })
 
@@ -89,13 +104,18 @@ const emits = defineEmits<{
   (e: 'cancelReasonExample', data: ReasonExampleData): void
 }>()
 
+const layout = useContentLayout()
 const selectedHighlight = ref<SelectedHighlight | null>(null)
 const editableReason = ref('')
 const isEditing = ref(false)
+const reasonInput = useTemplateRef<{ focus: () => void }>('reasonInput')
 
 const displayReason = computed(() => {
   if (!selectedHighlight.value) {
-    return 'Select text on the left to view its scoring rationale, or click here to enter one.'
+    // Below the wide layout the student response sits above this panel, not to its left.
+    return layout.value === 'wide'
+      ? 'Select text on the left to view its scoring rationale, or click here to enter one.'
+      : 'Select text in the student response to view its scoring rationale, or click here to enter one.'
   }
 
   if (isEditing.value) {
@@ -148,16 +168,16 @@ watch(
   { immediate: true },
 )
 
-const enterEditMode = () => {
-  if (!selectedHighlight.value || isCurrentReasonInExamples.value) {
-    return
-  }
+const canEdit = computed(
+  () => !props.readOnly && !!selectedHighlight.value && !isCurrentReasonInExamples.value,
+)
 
+const enterEditMode = (event?: Event) => {
+  if (!canEdit.value) return
+  event?.preventDefault()
   isEditing.value = true
-
-  if (selectedHighlight.value) {
-    emits('modifyReason', selectedHighlight.value)
-  }
+  if (selectedHighlight.value) emits('modifyReason', selectedHighlight.value)
+  if (event) void nextTick(() => reasonInput.value?.focus())
 }
 
 const autoSave = () => {
@@ -181,6 +201,7 @@ const autoSave = () => {
 }
 
 const toggleSubmitReason = () => {
+  if (props.readOnly || props.exampleDisabled) return
   if (!editableReason.value.trim()) {
     Message.warning('Please enter reason content')
     return
@@ -212,8 +233,11 @@ const resetPanel = () => {
 }
 
 defineExpose({
+  editableReason,
+  enterEditMode,
   handleHighlightClicked,
   resetPanel,
+  toggleSubmitReason,
 })
 </script>
 
@@ -232,7 +256,7 @@ defineExpose({
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 20px 24px;
+  padding: 18px 20px;
   background: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
@@ -273,10 +297,15 @@ defineExpose({
 
 .reason-content-text {
   flex: 1;
-  padding: 16px 0;
+  margin: -6px -10px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
   line-height: 1.7;
   color: rgba(0, 0, 0, 0.6);
-  font-size: 20px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -287,13 +316,13 @@ defineExpose({
   overflow-y: auto;
 }
 
-.reason-content-text:hover {
+.feedback-panel:not(.feedback-panel--readonly) .reason-content-text:hover {
   color: rgba(0, 0, 0, 0.8);
   background: rgba(0, 122, 255, 0.05);
-  border-radius: 8px;
-  padding: 16px 12px;
-  margin: 0 -12px;
-  transition: all 0.2s ease;
+}
+
+.feedback-panel--readonly .reason-content-text {
+  cursor: default;
 }
 
 .reason-textarea {
@@ -315,7 +344,7 @@ defineExpose({
   background: #ffffff;
   transition: all 0.2s ease;
   line-height: 1.7;
-  font-size: 17px;
+  font-size: 16px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
   flex: 1;
@@ -337,7 +366,7 @@ defineExpose({
   display: flex;
   justify-content: center;
   gap: 16px;
-  padding: 20px 24px;
+  padding: 14px 20px;
   background: #ffffff;
   flex-shrink: 0;
   border-top: 1px solid #f0f0f0;
@@ -348,10 +377,10 @@ defineExpose({
   border-radius: 24px;
   font-weight: 500;
   transition: all 0.2s ease;
-  font-size: 16px;
+  font-size: 15px;
   font-family:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .action-buttons .el-button--primary {
@@ -437,14 +466,18 @@ defineExpose({
   color: rgba(0, 0, 0, 0.6);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .feedback-content {
     padding: 16px;
   }
 
+  .reason-content-text {
+    font-size: 16px;
+  }
+
   .action-buttons {
     flex-direction: column;
-    padding: 16px 24px;
+    padding: 12px 16px;
     gap: 12px;
   }
 

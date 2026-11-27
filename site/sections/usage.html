@@ -1,0 +1,84 @@
+<section class="section section--tight usage" id="usage" aria-labelledby="usage-title">
+  <div class="container">
+    <header class="section-head usage__head reveal">
+      <span class="eyebrow">In practice</span>
+      <h2 class="section-title" id="usage-title">Usage Scenario</h2>
+      <p class="section-lead">Three short clips from the paper’s scenario: an instructor checks the LLM’s calls and teaches it with exemplars.</p>
+    </header>
+    <div class="usage__layout reveal">
+      <div class="usage__stage">
+        <figure class="usage__panel" id="usage-resolve">
+          <div class="usage__player">
+            <video controls playsinline preload="none" width="1920" height="992" aria-labelledby="usage-resolve-title"
+              aria-describedby="usage-resolve-desc" src="assets/media/usage/resolving-unclear-response.mp4" poster="assets/media/usage/resolving-unclear-response.jpg"></video>
+            <button class="usage__play" type="button" aria-label="Play Resolving unclear response piece (0:23)" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.1a1.2 1.2 0 0 1 1.82-1.03l9.7 5.9a1.2 1.2 0 0 1 0 2.06l-9.7 5.9A1.2 1.2 0 0 1 8 17.9Z" fill="currentColor" /></svg>
+            </button>
+          </div>
+          <figcaption class="usage__caption">
+            <span class="usage__meta"><span class="usage__num">01</span><span>0:23</span></span>
+            <strong class="usage__title" id="usage-resolve-title">Resolving unclear response piece</strong>
+            <span class="usage__desc" id="usage-resolve-desc">The LLM flags two vague pieces as <em>unclear</em>. The instructor checks them against the scoring points, relabels them as wrong, and VeriGrader rewrites the rationale.</span>
+          </figcaption>
+        </figure>
+        <figure class="usage__panel" id="usage-add">
+          <div class="usage__player">
+            <video controls playsinline preload="none" width="1920" height="988" aria-labelledby="usage-add-title"
+              aria-describedby="usage-add-desc" src="assets/media/usage/adding-missing-scoring-point.mp4" poster="assets/media/usage/adding-missing-scoring-point.jpg"></video>
+            <button class="usage__play" type="button" aria-label="Play Adding a missing scoring point (0:17)" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.1a1.2 1.2 0 0 1 1.82-1.03l9.7 5.9a1.2 1.2 0 0 1 0 2.06l-9.7 5.9A1.2 1.2 0 0 1 8 17.9Z" fill="currentColor" /></svg>
+            </button>
+          </div>
+          <figcaption class="usage__caption">
+            <span class="usage__meta"><span class="usage__num">02</span><span>0:17</span></span>
+            <strong class="usage__title" id="usage-add-title">Adding a missing scoring point</strong>
+            <span class="usage__desc" id="usage-add-desc">The LLM missed a correct piece. The instructor selects it and labels it correct; VeriGrader finds the matching scoring point, writes the rationale and updates the score.</span>
+          </figcaption>
+        </figure>
+        <figure class="usage__panel" id="usage-exemplar">
+          <div class="usage__player">
+            <video controls playsinline preload="none" width="1920" height="992" aria-labelledby="usage-exemplar-title"
+              aria-describedby="usage-exemplar-desc" src="assets/media/usage/setting-point-level-exemplar.mp4" poster="assets/media/usage/setting-point-level-exemplar.jpg"></video>
+            <button class="usage__play" type="button" aria-label="Play Setting a point-level exemplar (0:22)" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.1a1.2 1.2 0 0 1 1.82-1.03l9.7 5.9a1.2 1.2 0 0 1 0 2.06l-9.7 5.9A1.2 1.2 0 0 1 8 17.9Z" fill="currentColor" /></svg>
+            </button>
+          </div>
+          <figcaption class="usage__caption">
+            <span class="usage__meta"><span class="usage__num">03</span><span>0:22</span></span>
+            <strong class="usage__title" id="usage-exemplar-title">Setting a <span class="usage__nobr">point-level</span> exemplar</strong>
+            <span class="usage__desc" id="usage-exemplar-desc">The LLM missed that “overfitting” means the same as “sensitive to noise”. The instructor credits it, explains why, and saves it as an exemplar so similar answers are credited from now on.</span>
+          </figcaption>
+        </figure>
+      </div>
+      <div class="usage__chapters" role="tablist" aria-label="Usage scenarios" hidden>
+        <button class="usage__chapter" type="button" role="tab" id="usage-resolve-tab" aria-controls="usage-resolve"
+          aria-selected="true" aria-labelledby="usage-resolve-tab-title">
+          <img class="usage__thumb" src="assets/media/usage/resolving-unclear-response.jpg" width="960" height="496" alt="" loading="lazy" decoding="async" />
+          <span class="usage__chapter-text">
+            <span class="usage__meta"><span class="usage__num">01</span><span>0:23</span></span>
+            <span class="usage__title" id="usage-resolve-tab-title">Resolving unclear response piece</span>
+          </span>
+          <span class="usage__progress" aria-hidden="true"></span>
+        </button>
+        <button class="usage__chapter" type="button" role="tab" id="usage-add-tab" aria-controls="usage-add"
+          aria-selected="false" aria-labelledby="usage-add-tab-title">
+          <img class="usage__thumb" src="assets/media/usage/adding-missing-scoring-point.jpg" width="960" height="494" alt="" loading="lazy" decoding="async" />
+          <span class="usage__chapter-text">
+            <span class="usage__meta"><span class="usage__num">02</span><span>0:17</span></span>
+            <span class="usage__title" id="usage-add-tab-title">Adding a missing scoring point</span>
+          </span>
+          <span class="usage__progress" aria-hidden="true"></span>
+        </button>
+        <button class="usage__chapter" type="button" role="tab" id="usage-exemplar-tab" aria-controls="usage-exemplar"
+          aria-selected="false" aria-labelledby="usage-exemplar-tab-title">
+          <img class="usage__thumb" src="assets/media/usage/setting-point-level-exemplar.jpg" width="960" height="496" alt="" loading="lazy" decoding="async" />
+          <span class="usage__chapter-text">
+            <span class="usage__meta"><span class="usage__num">03</span><span>0:22</span></span>
+            <span class="usage__title" id="usage-exemplar-tab-title">Setting a <span class="usage__nobr">point-level</span> exemplar</span>
+          </span>
+          <span class="usage__progress" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
