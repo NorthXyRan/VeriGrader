@@ -1,6 +1,12 @@
 import { isPagesDemo } from '@/config/deployment'
 import { getDemoGradingResult } from '@/demo/gradingResults'
-import type { HighlightType, Question, ReferenceAnswer, StudentAnswer } from '@/types/exam'
+import {
+  HIGHLIGHT_TYPES,
+  type HighlightType,
+  type Question,
+  type ReferenceAnswer,
+  type StudentAnswer,
+} from '@/types/exam'
 import { abortableDelay } from '@/utils/asyncUtils'
 
 import { callLLMAPI, checkLLMServiceStatus, getReasonGenerationConfig } from '../baseLLMService'
@@ -53,10 +59,15 @@ export async function generateReasonForHighlight(
     const annotation = result?.answer[request.highlightType].find(
       (item) => item['Student answer'] === request.highlightedText,
     )
+    const referenceAnnotation =
+      annotation ??
+      HIGHLIGHT_TYPES.flatMap((type) => result?.answer[type] ?? []).find(
+        (item) => item['Student answer'] === request.highlightedText,
+      )
     return {
       success: true,
       reason: annotation?.reason || 'Click here to write your rationale for this annotation.',
-      matchedReferenceAnswer: annotation?.['matched reference answer'] || '',
+      matchedReferenceAnswer: referenceAnnotation?.['matched reference answer'] || '',
     }
   }
 
