@@ -100,7 +100,7 @@
     align-items: center;
   }
 
-  /* ---------- Hero: one row of three links ---------- */
+  /* ---------- Hero: compact links, with every resource available ---------- */
   .hero {
     padding: calc(var(--nav-h) + var(--s-6)) 0 var(--s-7);
   }
@@ -117,20 +117,20 @@
   .hero__correspondence {
     margin-top: var(--s-1);
   }
-  /* The slide deck is a .pptx download and BibTeX is at the bottom of the page anyway. */
-  .hero__actions a[href$='.pptx'],
-  .hero__actions a[href='#bibtex'] {
-    display: none;
-  }
   .hero__actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 5rem), 1fr));
     gap: var(--s-2);
-    max-width: 400px;
+    max-width: 20rem;
     margin: var(--s-5) auto 0;
   }
   .hero__actions .btn {
-    padding: 0 var(--s-2);
+    min-height: 36px;
+    padding: 0 var(--s-3);
+    gap: 6px;
+    font-size: var(--compact-meta);
+  }
+  .hero__actions .btn svg {
+    width: 15px;
+    height: 15px;
   }
 
   /* ---------- Abstract ---------- */
