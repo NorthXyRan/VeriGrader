@@ -1,0 +1,134 @@
+/* User Study findings and paper figures.
+ *
+ * Type scale for this section (the figures are raster exports from the paper, so their text
+ * size is set by how wide each image is drawn):
+ *   section title  base .section-title (36–60px, Instrument Serif)
+ *   finding title  26–36px Instrument Serif
+ *   takeaway text  17px Inter (body)
+ *   figure caption 15px Inter
+ *   figure text    each figure's --fig-w is chosen so its main labels and table figures draw at
+ *                  about 14px (cap height ≈ 10px) on desktop. Below --fig-w the figure shrinks
+ *                  with the column (on phones the text gets small; pinch to zoom).
+ */
+
+.results .section-head {
+  margin-bottom: clamp(var(--s-6), 4vw, var(--s-7));
+}
+
+.results-materials {
+  display: grid;
+}
+
+.results-protocol {
+  justify-self: center;
+  padding-bottom: var(--s-6);
+}
+
+.results-finding {
+  display: grid;
+  gap: var(--s-6);
+  border-top: 1px solid var(--line);
+  padding-block: clamp(var(--s-6), 5vw, var(--s-8));
+}
+
+.results-finding:last-child {
+  padding-bottom: 0;
+}
+
+.results-finding__copy {
+  max-width: 76ch;
+}
+
+.results-finding__copy h3 {
+  font: 400 clamp(26px, 3vw, 36px)/1.12 var(--font-display);
+  text-wrap: balance;
+}
+
+.results-finding__copy p {
+  margin-top: var(--s-3);
+  color: var(--ink-2);
+  font-size: 17px;
+}
+
+.results-finding__figures {
+  display: grid;
+  align-items: start;
+  gap: var(--s-6);
+}
+
+@media (min-width: 1024px) {
+  .results-finding:nth-of-type(even) {
+    text-align: end;
+  }
+
+  .results-finding:nth-of-type(even) .results-finding__copy,
+  .results-finding:nth-of-type(even) .results-figure {
+    justify-self: end;
+  }
+}
+
+.results-figure {
+  width: 100%;
+  max-width: var(--fig-w, 100%);
+  min-width: 0;
+  margin: 0;
+}
+
+.results-figure img {
+  width: 100%;
+  height: auto;
+}
+
+.results-figure figcaption {
+  margin-top: var(--s-3);
+  color: var(--ink-3);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Figures always scale to their column; nothing scrolls sideways inside a figure. */
+.results-figure__media {
+  overflow: hidden;
+}
+
+.results-figure--paper .results-figure__media,
+.results-figure--table .results-figure__media {
+  isolation: isolate;
+  background: var(--bg);
+}
+
+/* Crop captions and empty margins from the original screenshots without changing their scale. */
+.results-figure__crop {
+  aspect-ratio: var(--crop-width) / var(--crop-height);
+  overflow: hidden;
+}
+
+.results-figure__crop img {
+  width: calc(100% * var(--crop-image-width) / var(--crop-width));
+  max-width: none;
+  margin-top: calc(-100% * var(--crop-top) / var(--crop-width));
+  margin-inline-start: calc(-100% * var(--crop-left) / var(--crop-width));
+}
+
+.results-figure--paper img,
+.results-figure--table img {
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 640px) {
+  /* ---------- User Study: every figure and table, scaled to the screen width ---------- */
+  .results-finding {
+    gap: var(--s-4);
+    padding-block: var(--s-6);
+  }
+  .results-finding:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .results-finding__copy p {
+    margin-top: var(--s-2);
+  }
+  .results-figure figcaption {
+    margin-top: var(--s-2);
+  }
+}

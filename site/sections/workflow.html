@@ -1,0 +1,123 @@
+<section class="section section--alt workflow" id="workflow" aria-labelledby="workflow-title">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2 class="section-title" id="workflow-title">Review a few, <em>scale</em> to the rest</h2>
+      <p class="section-lead">
+        The LLM grades one scoring point at a time and explains every call. You settle the pieces it is
+        unsure about, and the rationales you confirm become examples that steer how it grades the rest.
+      </p>
+    </header>
+
+    <div class="workflow-stage reveal">
+      <!-- The loop stays interactive at every screen size. -->
+      <div class="workflow-loop">
+        <div class="workflow-loop__ring">
+          <svg class="workflow-loop__svg" viewBox="0 0 480 460" aria-hidden="true" focusable="false">
+            <circle class="workflow-loop__track" cx="240" cy="236" r="165" />
+            <path
+              class="workflow-loop__trail"
+              d="M240 71 A165 165 0 1 1 240 401 A165 165 0 1 1 240 71"
+            />
+            <g class="workflow-loop__chevrons">
+              <path d="M-4 -6 4 0-4 6" transform="translate(382.9 153.5) rotate(60)" />
+              <path d="M-4 -6 4 0-4 6" transform="translate(240 401) rotate(180)" />
+              <path d="M-4 -6 4 0-4 6" transform="translate(97.1 153.5) rotate(300)" />
+            </g>
+            <g class="workflow-loop__edge-labels">
+              <text x="400" y="138"><tspan x="400">graded</tspan><tspan x="400" dy="15">pieces</tspan></text>
+              <text x="80" y="138" text-anchor="end"><tspan x="80">few-shot</tspan><tspan x="80" dy="15">exemplars</tspan></text>
+              <text x="240" y="430" text-anchor="middle">confirmed results</text>
+            </g>
+            <g class="workflow-loop__center">
+              <text x="240" y="232" text-anchor="middle">Review a few,</text>
+              <text x="240" y="262" text-anchor="middle"><tspan class="workflow-loop__center-em">scale</tspan> to the rest</text>
+            </g>
+            <g class="workflow-loop__token" transform="translate(240 71)">
+              <circle class="workflow-loop__token-halo" r="15" />
+              <circle class="workflow-loop__token-core" r="6.5" />
+            </g>
+          </svg>
+
+          <div class="workflow-loop__tabs" role="tablist" aria-label="Stages of the grading loop" aria-orientation="vertical">
+            <button
+              class="workflow-node is-active"
+              type="button"
+              role="tab"
+              id="workflow-tab-grade"
+              aria-controls="workflow-panel-canvas"
+              aria-selected="true"
+            >
+              <span class="workflow-node__num" aria-hidden="true">1</span>
+              <span class="workflow-node__text">
+                <span class="workflow-node__title">LLM grades</span>
+                <span class="workflow-node__sub">Segment · align · classify · explain</span>
+              </span>
+            </button>
+            <button
+              class="workflow-node"
+              type="button"
+              role="tab"
+              id="workflow-tab-verify"
+              aria-controls="workflow-panel-canvas"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              <span class="workflow-node__num" aria-hidden="true">2</span>
+              <span class="workflow-node__text">
+                <span class="workflow-node__title">You verify</span>
+                <span class="workflow-node__sub">Settle unclear pieces</span>
+              </span>
+            </button>
+            <button
+              class="workflow-node"
+              type="button"
+              role="tab"
+              id="workflow-tab-steer"
+              aria-controls="workflow-panel-canvas"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              <span class="workflow-node__num" aria-hidden="true">3</span>
+              <span class="workflow-node__text">
+                <span class="workflow-node__title">Feedback steers</span>
+                <span class="workflow-node__sub">Revise · save · regrade</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div class="workflow-loop__controls">
+          <button class="workflow-play btn btn--ghost btn--sm" type="button">
+            <svg class="workflow-play__pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+            <svg class="workflow-play__play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" /></svg>
+            <span class="workflow-play__label">Pause tour</span>
+          </button>
+          <span class="workflow-loop__hint">Or pick a stage</span>
+        </div>
+      </div>
+
+      <div class="workflow-canvas-wrap">
+        <div class="workflow-track">
+          <p class="workflow-track__note" aria-live="polite"><strong data-workflow-stage>LLM grades</strong> <span data-workflow-narration>Split the student response into pieces that can be graded separately.</span></p>
+          <div class="workflow-track__line">
+            <span class="workflow-track__rail" aria-hidden="true"></span>
+            <span class="workflow-track__fill" aria-hidden="true"></span>
+            <span class="workflow-track__token" aria-hidden="true"><i></i></span>
+            <ol class="workflow-steps" aria-label="Steps in the grading workflow">
+              <li><button type="button" class="workflow-step" data-step="1" aria-current="step"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">segment</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="2"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">align</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="3"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">classify</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="4"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">explain</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="5"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">verify</span></button></li>
+              <li><button type="button" class="workflow-step" data-step="6"><span class="workflow-step__dot" aria-hidden="true"></span><span class="workflow-step__name">regrade</span></button></li>
+            </ol>
+          </div>
+        </div>
+        <div class="workflow-canvas card" id="workflow-panel-canvas" role="tabpanel" aria-labelledby="workflow-tab-grade" tabindex="0">
+          <iframe class="workflow-canvas__frame" title="Interactive grading workflow" data-src="demo/#/workflow-review" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

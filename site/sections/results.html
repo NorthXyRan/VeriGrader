@@ -1,0 +1,139 @@
+<section class="section results" id="results" aria-labelledby="results-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Evaluation</span>
+      <h2 class="section-title" id="results-title">User Study</h2>
+      <p class="section-lead">
+        <strong>12 teaching assistants</strong> with grading experience graded real student responses to two OSQs, one on
+        data structures and one on numerical methods, both by hand and with VeriGrader. We asked whether VeriGrader makes
+        grading faster and more accurate, how well the LLM grades on its own, whether instructor exemplars help, and whether
+        graders agree more.
+      </p>
+    </div>
+
+    <div class="results-materials">
+      <figure class="results-figure results-protocol reveal" style="--fig-w: 816px">
+        <div class="results-figure__media">
+          <img src="assets/media/study/study-protocol.png" width="3568" height="1811" loading="lazy" decoding="async" alt="Study procedure: background and consent, a warm-up with the system, formal grading by hand and with VeriGrader over four batches of responses, then interviews and questionnaires." />
+        </div>
+      </figure>
+
+      <section class="results-finding reveal" aria-labelledby="results-efficiency">
+        <div class="results-finding__copy">
+          <h3 id="results-efficiency">Faster and more accurate than grading by hand</h3>
+          <p>
+            VeriGrader cut grading time by <strong>56.3%</strong>, from 3.82 to <strong>1.67 minutes</strong> per response,
+            and raised accuracy (F1) from 86.26% to <strong>91.86%</strong>. Every participant graded faster, and
+            <strong>10 of 12</strong> graded more accurately.
+          </p>
+        </div>
+        <div class="results-finding__figures">
+          <figure class="results-figure results-figure--paper" style="--fig-w: 892px">
+            <div class="results-figure__media">
+              <img src="assets/media/study/grading-accuracy-and-time.png" width="3569" height="1157" loading="lazy" decoding="async" alt="Dot plots of grading accuracy and time per response for manual and VeriGrader-assisted grading on both questions." />
+            </div>
+            <figcaption>
+              Accuracy (F1) and time per response by hand and with <em>VeriGrader</em>. Each dot is one participant; the line
+              marks the mean. * <i>p</i> &lt; .05, *** <i>p</i> &lt; .001.
+            </figcaption>
+          </figure>
+          <figure class="results-figure results-figure--table" style="--fig-w: 842px">
+            <div class="results-figure__media" role="group" aria-label="Table 1, grading accuracy and time by participant">
+              <div class="results-figure__crop" style="--crop-image-width: 2236; --crop-width: 2020; --crop-left: 102; --crop-top: 238; --crop-height: 536">
+                <img src="assets/media/study/manual-and-verigrader-table.png" width="2236" height="832" loading="lazy" decoding="async" alt="Table 1 compares manual and VeriGrader-assisted F1 scores and grading times for all 12 participants. All graded faster, and 10 achieved higher F1 scores." />
+              </div>
+            </div>
+            <figcaption>
+              F1 and minutes per response for each participant, by hand (S1) and with <em>VeriGrader</em> (S2).
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="results-finding reveal" aria-labelledby="results-exemplars">
+        <div class="results-finding__copy">
+          <h3 id="results-exemplars">Strong on its own, stronger with your exemplars</h3>
+          <p>
+            With no exemplars and no human input, the LLM already reached <strong>89.4%</strong> average accuracy.
+            Instructor-verified exemplars raised it to <strong>92.1%</strong> and improved how closely its pieces match the
+            ground truth in <strong>7 of 8</strong> settings. After the instructor’s final review, accuracy averaged
+            <strong>95%</strong>.
+          </p>
+        </div>
+        <div class="results-finding__figures">
+          <figure class="results-figure results-figure--table" style="--fig-w: 647px">
+            <div class="results-figure__media" role="group" aria-label="Table 2, piece-matching rates across thresholds">
+              <div class="results-figure__crop" style="--crop-image-width: 1996; --crop-width: 1424; --crop-left: 290; --crop-top: 100; --crop-height: 387">
+                <img src="assets/media/study/piece-matching-rates-table.png" width="1996" height="520" loading="lazy" decoding="async" alt="Table 2 reports Jaccard-based piece-matching rates with the LLM alone and before and after adding five exemplars, for both questions at four thresholds." />
+              </div>
+            </div>
+            <figcaption>
+              Piece matching rate: the share of LLM pieces whose words overlap a ground-truth piece above each Jaccard
+              threshold <i>J</i>, for the LLM alone and with five exemplars.
+            </figcaption>
+          </figure>
+          <figure class="results-figure" style="--fig-w: 770px">
+            <div class="results-figure__media">
+              <img src="assets/media/study/exemplar-and-review.png" width="3583" height="1731" loading="lazy" decoding="async" alt="Bar charts compare grading accuracy before exemplars, after exemplars, and after final instructor review for both questions." />
+            </div>
+            <figcaption>
+              Each participant’s accuracy with the LLM alone, with their exemplars, and after their final review. Exemplars
+              helped 10 of 12 participants; review lifted everyone.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="results-finding reveal" aria-labelledby="results-consistency">
+        <div class="results-finding__copy">
+          <h3 id="results-consistency">Graders agree more</h3>
+          <p>
+            Agreement on total scores (weighted Fleiss’ κ) rose from grading by hand to grading with VeriGrader:
+            <strong>0.485 → 0.771</strong> on OSQ1 and <strong>0.812 → 0.916</strong> on OSQ2. Per scoring point (Gwet’s
+            AC1), VeriGrader lifted OSQ1 from 0.752 with the LLM alone to <strong>0.877</strong>, while OSQ2 stayed high
+            (0.827 and 0.801).
+          </p>
+        </div>
+        <div class="results-finding__figures">
+          <figure class="results-figure results-figure--table" style="--fig-w: 834px">
+            <div class="results-figure__media" role="group" aria-label="Table 3, agreement by scoring point">
+              <div class="results-figure__crop" style="--crop-image-width: 2162; --crop-width: 2001; --crop-left: 82; --crop-top: 96; --crop-height: 335">
+                <img src="assets/media/study/inter-rater-consistency-table.png" width="2162" height="468" loading="lazy" decoding="async" alt="Table 3 compares scoring-point agreement (Gwet’s AC1) with the LLM alone and with VeriGrader across eight scoring points in each question." />
+              </div>
+            </div>
+            <figcaption>Agreement between graders on each scoring point (Gwet’s AC1), LLM alone and with <em>VeriGrader</em>.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="results-finding reveal" aria-labelledby="results-feedback">
+        <div class="results-finding__copy">
+          <h3 id="results-feedback">Easier to use, and you keep the final say</h3>
+          <p>
+            Participants rated VeriGrader far above the manual tool for ease of use (<strong>6.42 vs. 4.33</strong>) and for
+            how well its functions fit together (<strong>6.50 vs. 3.58</strong>). They valued seeing <strong>which piece earned
+            each mark and why</strong>, keeping control over final scores, and spending less time grading.
+          </p>
+        </div>
+        <div class="results-finding__figures">
+          <figure class="results-figure" style="--fig-w: 556px">
+            <div class="results-figure__media">
+              <div class="results-figure__crop" style="--crop-image-width: 2281; --crop-width: 2226; --crop-left: 0; --crop-top: 0; --crop-height: 1832">
+                <img src="assets/media/study/system-usability-scale.png" width="2281" height="1832" loading="lazy" decoding="async" alt="System Usability Scale response distributions for manual and VeriGrader-assisted grading across ten items." />
+              </div>
+            </div>
+            <figcaption>System Usability Scale, by hand and with <em>VeriGrader</em>.</figcaption>
+          </figure>
+          <figure class="results-figure" style="--fig-w: 712px">
+            <div class="results-figure__media">
+              <div class="results-figure__crop" style="--crop-image-width: 3079; --crop-width: 2712; --crop-left: 0; --crop-top: 0; --crop-height: 1120">
+                <img src="assets/media/study/verigrader-questionnaire.png" width="3079" height="1120" loading="lazy" decoding="async" alt="Response distributions for six statements about transparency, control, efficiency, accuracy, and continued use." />
+              </div>
+            </div>
+            <figcaption>Questionnaire on <em>VeriGrader</em> (7-point Likert scale).</figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

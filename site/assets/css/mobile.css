@@ -1,0 +1,171 @@
+/* Small-screen typography and phone layout. Loaded after the section stylesheets. */
+
+/* Keep the compact scale on landscape tablets, even when the desktop layout fits. */
+@media (width < 1100px), (max-width: 1400px) and (pointer: coarse) {
+  :root {
+    --compact-copy: 1rem;
+    --compact-label: 0.875rem;
+    --compact-meta: 0.8125rem;
+  }
+
+  body,
+  .abstract,
+  .hero__authors,
+  .section-lead,
+  .usage__desc,
+  .results-finding__copy p {
+    font-size: var(--compact-copy);
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 9.4vw, 6rem);
+    overflow-wrap: anywhere;
+  }
+  .hero__subtitle {
+    max-width: 36rem;
+    font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+    white-space: normal;
+  }
+  .section-title,
+  .abstract h2 {
+    font-size: clamp(1.875rem, 5vw, 2.625rem);
+    text-wrap: balance;
+  }
+  .results-finding__copy h3 {
+    font-size: clamp(1.375rem, 2.65vw, 1.6875rem);
+  }
+  .usage__title {
+    font-size: 1.25rem;
+  }
+  .usage__chapter .usage__title {
+    font: 500 0.9375rem/1.3 var(--font-body);
+  }
+
+  .btn,
+  .demo-caption,
+  .demo-shot-cta,
+  .hero__venue,
+  .nav__links a,
+  .results-figure figcaption,
+  .workflow-node__title {
+    font-size: var(--compact-label);
+  }
+  .demo-caption,
+  .results-figure figcaption {
+    line-height: 1.5;
+  }
+  .demo-shot-cta {
+    width: max-content;
+    max-width: calc(100% - 2 * var(--s-2));
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+  }
+  .bibtex pre,
+  .eyebrow,
+  .footer,
+  .hero__affils,
+  .hero__correspondence,
+  .usage__meta {
+    font-size: var(--compact-meta);
+  }
+}
+
+@media (max-width: 640px) {
+  /* ---------- Rhythm: shorter section spacing ---------- */
+  .section,
+  .section--tight {
+    padding: var(--s-7) 0;
+  }
+  .section-head {
+    margin-bottom: var(--s-6);
+  }
+  .section-lead {
+    margin-top: var(--s-3);
+  }
+  /* Small mono labels above the titles repeat the title; the workflow one names the section. */
+  .usage .eyebrow,
+  .section--citation .eyebrow {
+    display: none;
+  }
+  .eyebrow {
+    margin-bottom: var(--s-3);
+  }
+
+  /* ---------- Nav: full-size touch targets ---------- */
+  .nav__brand,
+  .nav__links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ---------- Hero: prominent paper title and three compact links ---------- */
+  .hero {
+    padding: calc(var(--nav-h) + var(--s-6)) 0 var(--s-7);
+  }
+  .hero__subtitle {
+    margin-top: var(--s-4);
+    font-size: clamp(1.75rem, 6.5vw, 2rem);
+    color: var(--ink);
+  }
+  .hero__venue {
+    margin-top: var(--s-3);
+  }
+  .hero__authors {
+    margin-top: var(--s-5);
+  }
+  .hero__affils,
+  .hero__correspondence {
+    margin-top: var(--s-1);
+  }
+  .hero__actions {
+    gap: var(--s-2);
+    margin: var(--s-5) auto 0;
+  }
+  .hero__actions a[href$='.pptx'],
+  .hero__actions a[href='https://github.com/NorthXyRan/VeriGrader'] {
+    display: none;
+  }
+  .hero__actions .btn {
+    min-height: 36px;
+    padding: 0 var(--s-3);
+    gap: 6px;
+    font-size: var(--compact-meta);
+  }
+  .hero__actions .btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* ---------- Abstract ---------- */
+  .abstract h2 {
+    margin-bottom: var(--s-3);
+  }
+
+  /* ---------- BibTeX and footer ---------- */
+  .section--citation {
+    padding: var(--s-7) 0;
+  }
+  .section--citation .section-head {
+    margin-bottom: var(--s-4);
+  }
+  .section:has(+ .section--citation) {
+    padding-bottom: var(--s-7);
+  }
+  .bibtex pre {
+    padding: calc(var(--s-3) + 44px) var(--s-4) var(--s-4);
+    border-radius: var(--radius);
+  }
+  .bibtex .btn {
+    top: var(--s-3);
+    right: var(--s-3);
+    min-height: 40px;
+  }
+  .footer {
+    padding: var(--s-6) 0;
+  }
+  .footer__inner {
+    gap: var(--s-2);
+  }
+}

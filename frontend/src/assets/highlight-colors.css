@@ -1,0 +1,195 @@
+:root {
+  --highlight-correct-bg: rgba(212, 237, 218, 1);
+  --highlight-correct-border: rgba(40, 167, 69, 1);
+  --highlight-correct-hover-bg: rgba(195, 230, 203, 1);
+  --highlight-correct-hover-border: rgba(30, 126, 52, 1);
+  --highlight-correct-text: rgba(30, 126, 52, 1);
+
+  --highlight-wrong-bg: rgba(248, 215, 218, 1);
+  --highlight-wrong-border: rgba(220, 53, 69, 1);
+  --highlight-wrong-hover-bg: rgba(245, 198, 203, 1);
+  --highlight-wrong-hover-border: rgba(200, 35, 51, 1);
+  --highlight-wrong-text: rgba(200, 35, 51, 1);
+
+  --highlight-unclear-bg: rgba(255, 243, 205, 1);
+  --highlight-unclear-border: rgba(255, 193, 7, 1);
+  --highlight-unclear-hover-bg: rgba(255, 234, 167, 1);
+  --highlight-unclear-hover-border: rgba(224, 168, 0, 1);
+  --highlight-unclear-text: rgba(224, 168, 0, 1);
+}
+
+.text-highlight {
+  position: relative;
+  padding: 2px 4px;
+  margin: 0 1px;
+  border-radius: 3px;
+  border-left: 3px solid;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.text-highlight.highlight-correct {
+  background-color: var(--highlight-correct-bg);
+  border-left-color: var(--highlight-correct-border);
+}
+
+.text-highlight.highlight-correct:hover {
+  background-color: var(--highlight-correct-hover-bg);
+  border-left-color: var(--highlight-correct-hover-border);
+}
+
+.text-highlight.highlight-wrong {
+  background-color: var(--highlight-wrong-bg);
+  border-left-color: var(--highlight-wrong-border);
+}
+
+.text-highlight.highlight-wrong:hover {
+  background-color: var(--highlight-wrong-hover-bg);
+  border-left-color: var(--highlight-wrong-hover-border);
+}
+
+.text-highlight:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reference-highlight {
+  font-weight: 500;
+}
+
+.highlight-type-correct {
+  background-color: var(--highlight-correct-bg);
+  border-color: var(--highlight-correct-border);
+  color: var(--highlight-correct-text);
+}
+
+.highlight-type-wrong {
+  background-color: var(--highlight-wrong-bg);
+  border-color: var(--highlight-wrong-border);
+  color: var(--highlight-wrong-text);
+}
+
+.highlight-type-unclear {
+  background-color: var(--highlight-unclear-bg);
+  border-color: var(--highlight-unclear-border);
+  color: var(--highlight-unclear-text);
+}
+
+.type-correct {
+  color: var(--highlight-correct-text);
+  background: rgba(40, 167, 69, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.type-wrong {
+  color: var(--highlight-wrong-text);
+  background: rgba(220, 53, 69, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.type-unclear {
+  color: var(--highlight-unclear-text);
+  background: rgba(255, 193, 7, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.el-tag--correct {
+  background-color: var(--highlight-correct-bg) !important;
+  border-color: var(--highlight-correct-border) !important;
+  color: var(--highlight-correct-text) !important;
+}
+
+.el-tag--wrong {
+  background-color: var(--highlight-wrong-bg) !important;
+  border-color: var(--highlight-wrong-border) !important;
+  color: var(--highlight-wrong-text) !important;
+}
+
+.el-tag--unclear {
+  background-color: var(--highlight-unclear-bg) !important;
+  border-color: var(--highlight-unclear-border) !important;
+  color: var(--highlight-unclear-text) !important;
+}
+
+.highlight-item {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.highlight-item.correct {
+  background-color: var(--highlight-correct-bg);
+  border-color: var(--highlight-correct-border);
+}
+
+.highlight-item.wrong {
+  background-color: var(--highlight-wrong-bg);
+  border-color: var(--highlight-wrong-border);
+}
+
+.highlight-item.unclear {
+  background-color: var(--highlight-unclear-bg);
+  border-color: var(--highlight-unclear-border);
+}
+
+.grading-item.correct {
+  background: linear-gradient(135deg, var(--highlight-correct-bg), rgba(212, 237, 218, 0.5));
+  border-left-color: var(--highlight-correct-border);
+}
+
+.grading-item.wrong {
+  background: linear-gradient(135deg, var(--highlight-wrong-bg), rgba(248, 215, 218, 0.5));
+  border-left-color: var(--highlight-wrong-border);
+}
+
+.grading-item.unclear {
+  background: linear-gradient(135deg, var(--highlight-unclear-bg), rgba(255, 243, 205, 0.5));
+  border-left-color: var(--highlight-unclear-border);
+}
+
+.section-title.correct {
+  background: linear-gradient(135deg, var(--highlight-correct-bg), rgba(212, 237, 218, 0.8));
+  color: var(--highlight-correct-text);
+  border: 1px solid var(--highlight-correct-border);
+}
+
+.section-title.wrong {
+  background: linear-gradient(135deg, var(--highlight-wrong-bg), rgba(248, 215, 218, 0.8));
+  color: var(--highlight-wrong-text);
+  border: 1px solid var(--highlight-wrong-border);
+}
+
+.section-title.unclear {
+  background: linear-gradient(135deg, var(--highlight-unclear-bg), rgba(255, 243, 205, 0.8));
+  color: var(--highlight-unclear-text);
+  border: 1px solid var(--highlight-unclear-border);
+}
+
+.text-highlight.highlight-unclear {
+  background-color: transparent !important;
+  border-left: none !important;
+  border-left-color: transparent !important;
+  border-bottom: 4px solid var(--highlight-unclear-border) !important;
+
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  cursor: pointer;
+  margin: 0 1px !important;
+  position: relative;
+  transition: all 0.2s ease !important;
+  font-weight: 500;
+}
+
+.text-highlight.highlight-unclear:hover {
+  border-bottom-color: var(--highlight-unclear-hover-border) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(224, 168, 0, 0.15) !important;
+  background-color: transparent !important;
+}
