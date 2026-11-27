@@ -22,6 +22,7 @@ export function initWorkflow() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   // Matches workflow.css: phones in either orientation show only the circling loop.
   const phone = window.matchMedia('(max-width: 640px), (max-height: 500px) and (pointer: coarse)')
+  const MOBILE_PLAYBACK_RATE = 3
   const origin = window.location.origin
 
   const order = [0, 4, 5, 6] // First step index of each stage, followed by the end of the tour.
@@ -106,7 +107,7 @@ export function initWorkflow() {
     if (!playing()) return
     const dt = lastFrame ? Math.min(100, now - lastFrame) : 0
     lastFrame = now
-    elapsed += dt
+    elapsed += dt * (phone.matches ? MOBILE_PLAYBACK_RATE : 1)
     if (elapsed >= steps[index].duration) {
       // The tour loops: after Regrade it starts again from Segment.
       index = (index + 1) % steps.length
@@ -137,7 +138,7 @@ export function initWorkflow() {
     index = next
     elapsed = 0
     // Jump there and keep the tour running from that step.
-    paused = reducedMotion.matches
+    paused = !phone.matches && reducedMotion.matches
     showStep()
     drawRing()
     syncPlayback()
@@ -219,6 +220,8 @@ export function initWorkflow() {
     showStep()
   }
   phone.addEventListener('change', () => {
+    // The phone-only loop has no playback control; resume if the desktop tour was paused.
+    if (phone.matches) paused = false
     applyLayout()
     syncPlayback()
   })

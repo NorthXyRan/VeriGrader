@@ -74,7 +74,7 @@ function setup(t, { phone = false, reduced = false } = {}) {
   }
 }
 
-test('phone tour stays interactive and pausable without loading the hidden app', (t) => {
+test('phone tour stays interactive and respects reduced motion without loading the hidden app', (t) => {
   const fixture = setup(t, { phone: true })
   const messages = fixture.initialize()
   const { document, iframe, frames } = fixture
@@ -89,16 +89,35 @@ test('phone tour stays interactive and pausable without loading the hidden app',
   fixture.tick(100)
   fixture.tick(200)
   assert.equal(messages.length, sent, 'phone animation must not publish hidden iframe frames')
-  document.querySelector('.workflow-play').click()
+  fixture.media[0].change(true)
   assert.equal(frames.size, 0)
-  assert.equal(document.querySelector('.workflow-play__label').textContent, 'Play tour')
+  verify.click()
+  assert.equal(frames.size, 0, 'selecting a stage must not override reduced motion')
+  fixture.media[0].change(false)
+  assert.equal(frames.size, 1)
 })
 
-test('desktop-to-phone change stops the embedded app while preserving ring playback', (t) => {
+for (const phone of [true, false]) {
+  test(`${phone ? 'phone' : 'desktop'} tour advances after ${phone ? 1100 : 3300}ms`, (t) => {
+    const fixture = setup(t, { phone })
+    fixture.initialize()
+    const firstStepDuration = phone ? 1100 : 3300
+    const steps = [...fixture.document.querySelectorAll('.workflow-step')]
+    for (let elapsed = 0; elapsed < firstStepDuration; elapsed += 100) fixture.tick(1 + elapsed)
+    assert.equal(steps[0].getAttribute('aria-current'), 'step')
+    fixture.tick(1 + firstStepDuration)
+    assert.equal(steps[1].getAttribute('aria-current'), 'step')
+  })
+}
+
+test('desktop-to-phone change stops the embedded app and resumes a paused ring', (t) => {
   const fixture = setup(t)
   const messages = fixture.initialize()
   assert.equal(messages.at(-1).playing, true)
   assert.equal(fixture.iframe.getAttribute('src'), 'demo/#/workflow-review')
+  fixture.document.querySelector('.workflow-play').click()
+  assert.equal(messages.at(-1).playing, false)
+  assert.equal(fixture.frames.size, 0)
   fixture.media[1].change(true)
   assert.equal(messages.at(-1).playing, false)
   assert.equal(fixture.frames.size, 1)

@@ -407,7 +407,8 @@
   /* ---------- How it works: the loop, smaller ----------
      The canvas and its step track need a big screen, so phones keep only the ring, its token
      circling on its own (workflow.js), with compact stage labels. */
-  .workflow-canvas-wrap {
+  .workflow-canvas-wrap,
+  .workflow-loop__controls {
     display: none;
   }
   .workflow-stage {
@@ -442,7 +443,8 @@
 /* Phones held sideways keep the wider layout but, like portrait phones, skip the canvas
    (too small to read or tap at that height); the loop circles on its own. */
 @media (max-height: 500px) and (pointer: coarse) {
-  .workflow-canvas-wrap {
+  .workflow-canvas-wrap,
+  .workflow-loop__controls {
     display: none;
   }
   .workflow-stage {
